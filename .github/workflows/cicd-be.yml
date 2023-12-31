@@ -49,7 +49,7 @@ jobs:
           chmod 644 ~/.ssh/known_hosts
 
       - name: SCP transfer
-        run: scp *.jar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/cicd
+        run: scp *.jar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/deploy
 
       - name: Execute remote shell script
         run: |
