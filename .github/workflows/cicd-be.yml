@@ -61,6 +61,9 @@ jobs:
       - name: SCP transfer
         run: scp *.jar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/deploy
 
+      - name: Set execute permission for deploy.sh
+        run: chmod +x ./deploy.sh
+
       - name: Execute remote shell script
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "./deploy.sh"
