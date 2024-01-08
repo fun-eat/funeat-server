@@ -5,9 +5,6 @@ on:
     branches:
       - main
       - develop
-    paths:
-      - '.github/**'
-      - 'backend/**'
 
 jobs:
   test:
@@ -39,11 +36,9 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Gradle 권한 부여
-        working-directory: backend/
-        run: chmod +x ./gradlew
+        run: chmod +x gradlew
 
       - name: 테스트 실행
-        working-directory: backend/
         run: ./gradlew --info test
 
       - name: 테스트 결과 PR에 코멘트 등록
@@ -72,5 +67,5 @@ jobs:
           SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
           SLACK_TITLE: Build Failure - ${{ github.event.pull_request.title }}
           SLACK_MESSAGE: PR Url - ${{ github.event.pull_request.url }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_PR_TEST }}
         if: failure()
