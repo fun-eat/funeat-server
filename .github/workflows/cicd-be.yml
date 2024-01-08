@@ -45,6 +45,19 @@ jobs:
           name: cicdsample
           path: build/libs/*.jar
 
+      - name: Slack notification when build fail
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: [CI/CD] 백엔드 빌드 실패
+          fields: repo, message, commit, author, action, eventName, ref, workflow, job, took
+        env:
+          SLACK_COLOR: '#FF2D00'
+          SLACK_USERNAME: 'Github Action'
+          SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_CICD }}
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -71,3 +84,29 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "chmod +x ./deploy.sh"
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "./deploy.sh"
+
+      - name: Slack notification when deploy fail
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: [CI/CD] 백엔드 배포 실패
+          fields: repo, message, commit, author, action, eventName, ref, workflow, job, took
+        env:
+          SLACK_COLOR: '#FF2D00'
+          SLACK_USERNAME: 'Github Action'
+          SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_CICD }}
+
+      - name: Slack notification when deploy success
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: [CI/CD] 백엔드 배포 성공
+          fields: repo, message, commit, author, action, eventName, ref, workflow, job, took
+        env:
+          SLACK_COLOR: '#0019F4'
+          SLACK_USERNAME: 'Github Action'
+          SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_CICD }}
