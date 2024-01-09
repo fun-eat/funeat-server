@@ -10,7 +10,7 @@ import com.funeat.member.dto.MemberRequest;
 import com.funeat.member.dto.MemberReviewsResponse;
 import com.funeat.recipe.application.RecipeService;
 import com.funeat.review.application.ReviewService;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;

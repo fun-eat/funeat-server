@@ -1,6 +1,6 @@
 package com.funeat.review.persistence;
 
-import static javax.persistence.LockModeType.PESSIMISTIC_WRITE;
+import static jakarta.persistence.LockModeType.PESSIMISTIC_WRITE;
 
 import com.funeat.member.domain.Member;
 import com.funeat.product.domain.Product;

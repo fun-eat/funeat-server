@@ -7,10 +7,10 @@ import com.funeat.product.domain.Product;
 import com.funeat.product.dto.ProductSortCondition;
 import com.funeat.product.exception.ProductException.NotSupportedProductSortingConditionException;
 import java.util.Objects;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 public class ProductSpecification {

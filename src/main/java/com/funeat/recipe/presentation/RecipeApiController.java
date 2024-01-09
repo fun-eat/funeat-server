@@ -15,7 +15,7 @@ import com.funeat.recipe.dto.SearchRecipeResultsResponse;
 import com.funeat.recipe.dto.SortingRecipesResponse;
 import java.net.URI;
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;

@@ -1,11 +1,11 @@
 spring:
   profiles:
     active: test
-
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:test${random.uuid};MODE=MySQL
-    username: sa
+#
+#  datasource:
+#    driver-class-name: org.h2.Driver
+#    url: jdbc:h2:mem:test${random.uuid};MODE=MySQL
+#    username: sa
 
   jpa:
     hibernate:
@@ -16,7 +16,9 @@ spring:
         show_sql: true
 
   session:
-    store-type: none
+    jdbc:
+      initialize-schema: always
+
 
 logging:
   level:
