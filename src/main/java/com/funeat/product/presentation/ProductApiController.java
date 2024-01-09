@@ -33,6 +33,8 @@ public class ProductApiController implements ProductController {
                                                                                @RequestParam final Long lastProductId,
                                                                                @RequestParam final String sort) {
         final ProductSortCondition sortCondition = ProductSortCondition.toDto(sort);
+        System.out.println(sortCondition.getBy());
+        System.out.println(sortCondition.getOrder());
         final ProductsInCategoryResponse response = productService.getAllProductsInCategory(categoryId, lastProductId, sortCondition);
         return ResponseEntity.ok(response);
     }

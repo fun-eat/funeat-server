@@ -2,10 +2,10 @@ package com.funeat.common;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -39,8 +39,12 @@ public class DataCleaner {
     private void truncate() {
         entityManager.createNativeQuery(String.format(FOREIGN_KEY_CHECK_FORMAT, "FALSE")).executeUpdate();
         for (String tableName : tableNames) {
-            entityManager.createNativeQuery(String.format(TRUNCATE_FORMAT, tableName)).executeUpdate();
-            entityManager.createNativeQuery(String.format(AUTO_INCREMENT_FORMAT, tableName)).executeUpdate();
+            if (tableName.equals("SPRING_SESSION") || tableName.equals("SPRING_SESSION_ATTRIBUTES")) {
+                entityManager.createNativeQuery(String.format(TRUNCATE_FORMAT, tableName)).executeUpdate();
+            } else {
+                entityManager.createNativeQuery(String.format(TRUNCATE_FORMAT, tableName)).executeUpdate();
+                entityManager.createNativeQuery(String.format(AUTO_INCREMENT_FORMAT, tableName)).executeUpdate();
+            }
         }
         entityManager.createNativeQuery(String.format(FOREIGN_KEY_CHECK_FORMAT, "TRUE")).executeUpdate();
     }

@@ -1,7 +1,7 @@
 package com.funeat.review.dto;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public class SortingReviewRequest {
 
