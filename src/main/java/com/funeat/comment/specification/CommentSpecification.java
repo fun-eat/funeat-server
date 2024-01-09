@@ -4,8 +4,8 @@ import com.funeat.comment.domain.Comment;
 import com.funeat.recipe.domain.Recipe;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
 import org.springframework.data.jpa.domain.Specification;
 
 public class CommentSpecification {

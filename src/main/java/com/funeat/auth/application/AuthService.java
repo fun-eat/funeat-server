@@ -4,7 +4,7 @@ import com.funeat.auth.dto.SignUserDto;
 import com.funeat.auth.dto.UserInfoDto;
 import com.funeat.auth.util.PlatformUserProvider;
 import com.funeat.member.application.MemberService;
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
