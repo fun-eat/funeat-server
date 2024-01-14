@@ -59,9 +59,8 @@ public class ProductApiController implements ProductController {
 
     @GetMapping("/search/products/results")
     public ResponseEntity<SearchProductResultsResponse> getSearchResults(@RequestParam final String query,
-                                                                         @PageableDefault final Pageable pageable) {
-        final PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
-        final SearchProductResultsResponse response = productService.getSearchResults(query, pageRequest);
+                                                                         @RequestParam final Long lastProductId) {
+        final SearchProductResultsResponse response = productService.getSearchResults(query, lastProductId);
         return ResponseEntity.ok(response);
     }
 

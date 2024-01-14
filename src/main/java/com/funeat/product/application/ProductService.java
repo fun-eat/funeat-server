@@ -146,16 +146,23 @@ public class ProductService {
         return SearchProductsResponse.toResponse(pageDto, productDtos);
     }
 
-    public SearchProductResultsResponse getSearchResults(final String query, final Pageable pageable) {
-        final Page<ProductReviewCountDto> products = productRepository.findAllWithReviewCountByNameContaining(query,
-                pageable);
+    public SearchProductResultsResponse getSearchResults(final String query, final Long lastProductId) {
+        final List<ProductReviewCountDto> products = findAllWithReviewCountByNameContaining(query, lastProductId);
 
-        final PageDto pageDto = PageDto.toDto(products);
+        final boolean hasNext = products.size() > DEFAULT_PAGE_SIZE;
         final List<SearchProductResultDto> resultDtos = products.stream()
                 .map(it -> SearchProductResultDto.toDto(it.getProduct(), it.getReviewCount()))
                 .collect(Collectors.toList());
 
-        return SearchProductResultsResponse.toResponse(pageDto, resultDtos);
+        return SearchProductResultsResponse.toResponse(hasNext, resultDtos);
+    }
+
+    private List<ProductReviewCountDto> findAllWithReviewCountByNameContaining(final String query, final Long lastProductId) {
+        final PageRequest size = PageRequest.ofSize(DEFAULT_PAGE_SIZE);
+        if (lastProductId == 0) {
+            return productRepository.findAllWithReviewCountByNameContainingFirst(query, size);
+        }
+        return productRepository.findAllWithReviewCountByNameContaining(query, lastProductId, size);
     }
 
     public SortingRecipesResponse getProductRecipes(final Long productId, final Pageable pageable) {
