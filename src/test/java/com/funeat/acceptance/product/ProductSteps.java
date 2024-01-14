@@ -2,7 +2,6 @@ package com.funeat.acceptance.product;
 
 import static io.restassured.RestAssured.given;
 
-
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
@@ -46,10 +45,10 @@ public class ProductSteps {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 상품_검색_결과_조회_요청(final String query, final Long page) {
+    public static ExtractableResponse<Response> 상품_검색_결과_조회_요청(final String query, final Long lastProductId) {
         return given()
                 .queryParam("query", query)
-                .queryParam("page", page)
+                .queryParam("lastProductId", lastProductId)
                 .when()
                 .get("/api/search/products/results")
                 .then()
