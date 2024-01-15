@@ -384,15 +384,12 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지2), 레시피추가요청_생성(상품1, 상품2));
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지3), 레시피추가요청_생성(상품2));
 
-            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(2L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
-
             // when
-            final var 응답 = 레시피_검색_결과_조회_요청("망고", FIRST_PAGE);
+            final var 응답 = 레시피_검색_결과_조회_요청("망고", 0L);
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            페이지를_검증한다(응답, 예상_응답_페이지);
-            레시피_검색_결과를_검증한다(응답, List.of(레시피2, 레시피3));
+            레시피_검색_결과를_검증한다(응답, List.of(레시피3, 레시피2));
         }
 
         @Test
@@ -405,14 +402,11 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
 
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품1, 상품2));
 
-            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(1L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
-
             // when
-            final var 응답 = 레시피_검색_결과_조회_요청("망고", FIRST_PAGE);
+            final var 응답 = 레시피_검색_결과_조회_요청("망고", 0L);
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            페이지를_검증한다(응답, 예상_응답_페이지);
             레시피_검색_결과를_검증한다(응답, List.of(레시피));
         }
 
@@ -425,14 +419,11 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
 
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
 
-            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(0L), 총_페이지(0L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
-
             // when
-            final var 응답 = 레시피_검색_결과_조회_요청("참치", FIRST_PAGE);
+            final var 응답 = 레시피_검색_결과_조회_요청("참치", 0L);
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            페이지를_검증한다(응답, 예상_응답_페이지);
             레시피_검색_결과를_검증한다(응답, Collections.emptyList());
         }
     }
