@@ -28,8 +28,10 @@ public class ReviewSteps {
         return requestSpec
                 .multiPart("reviewRequest", request, "application/json")
                 .when()
+                .log().all()
                 .post("/api/products/{productId}/reviews", productId)
                 .then()
+                .log().all()
                 .extract();
     }
 
@@ -87,8 +89,10 @@ public class ReviewSteps {
     public static ExtractableResponse<Response> 리뷰_상세_조회_요청(final Long reviewId) {
         return given()
                 .when()
+                .log().all()
                 .get("/api/reviews/{reviewId}", reviewId)
                 .then()
+                .log().all()
                 .extract();
     }
 }
