@@ -16,7 +16,6 @@ import com.funeat.recipe.dto.SortingRecipesResponse;
 import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
@@ -86,9 +85,8 @@ public class RecipeApiController implements RecipeController {
 
     @GetMapping("/api/search/recipes/results")
     public ResponseEntity<SearchRecipeResultsResponse> getSearchResults(@RequestParam final String query,
-                                                                        @PageableDefault final Pageable pageable) {
-        final PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
-        final SearchRecipeResultsResponse response = recipeService.getSearchResults(query, pageRequest);
+                                                                        @RequestParam final Long lastRecipeId) {
+        final SearchRecipeResultsResponse response = recipeService.getSearchResults(query, lastRecipeId);
 
         return ResponseEntity.ok(response);
     }

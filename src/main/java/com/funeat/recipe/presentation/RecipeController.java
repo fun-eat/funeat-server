@@ -83,7 +83,7 @@ public interface RecipeController {
     )
     @GetMapping
     ResponseEntity<SearchRecipeResultsResponse> getSearchResults(@RequestParam final String query,
-                                                                 @PageableDefault final Pageable pageable);
+                                                                 @RequestParam final Long lastRecipeId);
 
     @Operation(summary = "꿀조합 댓글 작성", description = "꿀조합 상세에서 댓글을 작성한다.")
     @ApiResponse(

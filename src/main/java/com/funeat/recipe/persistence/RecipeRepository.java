@@ -24,8 +24,18 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     @Query("SELECT DISTINCT r FROM Recipe r "
             + "LEFT JOIN ProductRecipe pr ON pr.recipe.id = r.id "
-            + "WHERE pr.product.name LIKE CONCAT('%', :name, '%')")
-    Page<Recipe> findAllByProductNameContaining(@Param("name") final String name, final Pageable pageable);
+            + "WHERE pr.product.name LIKE CONCAT('%', :name, '%')"
+            + "ORDER BY r.id DESC")
+    List<Recipe> findAllByProductNameContainingFirst(@Param("name") final String name, final Pageable pageable);
+
+    @Query("SELECT DISTINCT r FROM Recipe r "
+            + "LEFT JOIN ProductRecipe pr ON pr.recipe.id = r.id "
+            + "JOIN Recipe last ON last.id = :lastId "
+            + "LEFT JOIN ProductRecipe last_pr ON last_pr.recipe.id = last.id "
+            + "WHERE pr.product.name LIKE CONCAT('%', :name, '%') AND r.id < :lastId "
+            + "ORDER BY r.id DESC")
+    List<Recipe> findAllByProductNameContaining(@Param("name") final String name, final Long lastId,
+                                                final Pageable pageable);
 
     Page<Recipe> findAll(final Pageable pageable);
 
