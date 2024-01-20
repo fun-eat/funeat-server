@@ -18,6 +18,13 @@ public class RecipeFixture {
     public static final Long 레시피2 = 2L;
     public static final Long 레시피3 = 3L;
     public static final Long 레시피4 = 4L;
+    public static final Long 레시피5 = 5L;
+    public static final Long 레시피6 = 6L;
+    public static final Long 레시피7 = 7L;
+    public static final Long 레시피8 = 8L;
+    public static final Long 레시피9 = 9L;
+    public static final Long 레시피10 = 10L;
+    public static final Long 레시피11 = 11L;
 
     public static final boolean 좋아요O = true;
     public static final boolean 좋아요X = false;
