@@ -35,10 +35,10 @@ public class ProductSteps {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 상품_자동_완성_검색_요청(final String query, final Long page) {
+    public static ExtractableResponse<Response> 상품_자동_완성_검색_요청(final String query, final Long lastProductId) {
         return given()
                 .queryParam("query", query)
-                .queryParam("page", page)
+                .queryParam("lastProductId", lastProductId)
                 .when()
                 .get("/api/search/products")
                 .then()

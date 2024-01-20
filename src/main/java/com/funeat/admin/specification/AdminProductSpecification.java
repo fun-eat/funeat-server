@@ -5,8 +5,8 @@ import com.funeat.product.domain.Category;
 import com.funeat.product.domain.Product;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
 import org.springframework.data.jpa.domain.Specification;
 
 public class AdminProductSpecification {
