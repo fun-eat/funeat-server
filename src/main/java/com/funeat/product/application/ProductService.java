@@ -99,14 +99,14 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    private int getResultSize(final List<Product> findProducts) {
+    private <T> int getResultSize(final List<T> findProducts) {
         if (findProducts.size() < DEFAULT_CURSOR_PAGINATION_SIZE) {
             return findProducts.size();
         }
         return DEFAULT_PAGE_SIZE;
     }
 
-    private boolean hasNextPage(final List<Product> findProducts) {
+    private <T> boolean hasNextPage(final List<T> findProducts) {
         return findProducts.size() > DEFAULT_PAGE_SIZE;
     }
 
@@ -147,9 +147,11 @@ public class ProductService {
     }
 
     public SearchProductResultsResponse getSearchResults(final String query, final Long lastProductId) {
-        final List<ProductReviewCountDto> products = findAllWithReviewCountByNameContaining(query, lastProductId);
+        final List<ProductReviewCountDto> findProducts = findAllWithReviewCountByNameContaining(query, lastProductId);
+        final int resultSize = getResultSize(findProducts);
+        final List<ProductReviewCountDto> products = findProducts.subList(0, resultSize);
 
-        final boolean hasNext = products.size() > DEFAULT_PAGE_SIZE;
+        final boolean hasNext = hasNextPage(findProducts);
         final List<SearchProductResultDto> resultDtos = products.stream()
                 .map(it -> SearchProductResultDto.toDto(it.getProduct(), it.getReviewCount()))
                 .collect(Collectors.toList());
@@ -158,7 +160,7 @@ public class ProductService {
     }
 
     private List<ProductReviewCountDto> findAllWithReviewCountByNameContaining(final String query, final Long lastProductId) {
-        final PageRequest size = PageRequest.ofSize(DEFAULT_PAGE_SIZE);
+        final PageRequest size = PageRequest.ofSize(DEFAULT_CURSOR_PAGINATION_SIZE);
         if (lastProductId == 0) {
             return productRepository.findAllWithReviewCountByNameContainingFirst(query, size);
         }
