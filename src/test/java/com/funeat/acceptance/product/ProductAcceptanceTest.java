@@ -507,7 +507,7 @@ class ProductAcceptanceTest extends AcceptanceTest {
 
             // then
             STATUS_CODE를_검증한다(response, 정상_처리);
-            상품_검색_결과를_검증한다(response, List.of(상품2, 상품1));
+            상품_검색_결과를_검증한다(response, false, List.of(상품2, 상품1));
         }
 
         @Test
@@ -523,7 +523,22 @@ class ProductAcceptanceTest extends AcceptanceTest {
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            상품_검색_결과를_검증한다(응답, Collections.emptyList());
+            상품_검색_결과를_검증한다(응답, false, Collections.emptyList());
+        }
+
+        @Test
+        void 검색_결과가_10개_이상일_때_해당_페이지_상품_10개만_반환한다() {
+            // given
+            final var 카테고리 = 카테고리_간편식사_생성();
+            단일_카테고리_저장(카테고리);
+            반복_애플망고_상품_저장(11, 카테고리);
+
+            // when
+            final var response = 상품_검색_결과_조회_요청("망고", 0L);
+
+            // then
+            STATUS_CODE를_검증한다(response, 정상_처리);
+            상품_검색_결과를_검증한다(response, true, List.of(상품11, 상품10, 상품9, 상품8, 상품7, 상품6, 상품5, 상품4, 상품3, 상품2));
         }
 
         @Test
@@ -561,7 +576,7 @@ class ProductAcceptanceTest extends AcceptanceTest {
 
             // then
             STATUS_CODE를_검증한다(response, 정상_처리);
-            상품_검색_결과를_검증한다(response, List.of(상품11, 상품1, 상품10, 상품9, 상품8, 상품7, 상품6, 상품5, 상품4, 상품3));
+            상품_검색_결과를_검증한다(response, true, List.of(상품11, 상품1, 상품10, 상품9, 상품8, 상품7, 상품6, 상품5, 상품4, 상품3));
         }
     }
 
@@ -699,11 +714,14 @@ class ProductAcceptanceTest extends AcceptanceTest {
                 .doesNotContain(currentResponse);
     }
 
-    private void 상품_검색_결과를_검증한다(final ExtractableResponse<Response> response, final List<Long> productIds) {
-        final var actual = response.jsonPath()
+    private void 상품_검색_결과를_검증한다(final ExtractableResponse<Response> response, final boolean hasNext, final List<Long> productIds) {
+        final var actualHasNext = response.jsonPath()
+                .getBoolean("hasNext");
+        final var actualProducts = response.jsonPath()
                 .getList("products", SearchProductResultDto.class);
 
-        assertThat(actual).extracting(SearchProductResultDto::getId)
+        assertThat(actualHasNext).isEqualTo(hasNext);
+        assertThat(actualProducts).extracting(SearchProductResultDto::getId)
                 .containsExactlyElementsOf(productIds);
     }
 
