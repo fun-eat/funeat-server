@@ -194,9 +194,11 @@ public class RecipeService {
     }
 
     public SearchRecipeResultsResponse getSearchResults(final String query, final Long lastRecipeId) {
-        final List<Recipe> recipes = findAllByProductNameContaining(query, lastRecipeId);
+        final List<Recipe> findRecipes = findAllByProductNameContaining(query, lastRecipeId);
+        final int resultSize = getResultSize(findRecipes);
+        final List<Recipe> recipes = findRecipes.subList(0, resultSize);
 
-        final boolean hasNext = recipes.size() > DEFAULT_PAGE_SIZE;
+        final boolean hasNext = hasNextPage(findRecipes);
         final List<SearchRecipeResultDto> dtos = recipes.stream()
                 .map(recipe -> {
                     final List<RecipeImage> findRecipeImages = recipeImageRepository.findByRecipe(recipe);
@@ -208,7 +210,7 @@ public class RecipeService {
     }
 
     private List<Recipe> findAllByProductNameContaining(final String query, final Long lastRecipeId) {
-        final PageRequest size = PageRequest.ofSize(DEFAULT_PAGE_SIZE);
+        final PageRequest size = PageRequest.ofSize(DEFAULT_CURSOR_PAGINATION_SIZE);
         if (lastRecipeId == 0) {
             return recipeRepository.findAllByProductNameContainingFirst(query, size);
         }
@@ -278,14 +280,18 @@ public class RecipeService {
         return recipeCommentResponses;
     }
 
-    private int getResultSize(final List<Comment> findComments) {
+    private <T> int getResultSize(final List<T> findComments) {
         if (findComments.size() < DEFAULT_CURSOR_PAGINATION_SIZE) {
             return findComments.size();
         }
-        return RECIPE_COMMENT_PAGE_SIZE;
+        return DEFAULT_PAGE_SIZE;
     }
 
     private Boolean hasNextPage(final Page<Comment> findComments) {
         return findComments.getContent().size() > RECIPE_COMMENT_PAGE_SIZE;
+    }
+
+    private <T> Boolean hasNextPage(final List<T> findComments) {
+        return findComments.size() > RECIPE_COMMENT_PAGE_SIZE;
     }
 }
