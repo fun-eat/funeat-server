@@ -99,14 +99,14 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    private int getResultSize(final List<Product> findProducts) {
+    private <T> int getResultSize(final List<T> findProducts) {
         if (findProducts.size() < DEFAULT_CURSOR_PAGINATION_SIZE) {
             return findProducts.size();
         }
         return DEFAULT_PAGE_SIZE;
     }
 
-    private boolean hasNextPage(final List<Product> findProducts) {
+    private <T> boolean hasNextPage(final List<T> findProducts) {
         return findProducts.size() > DEFAULT_PAGE_SIZE;
     }
 
@@ -154,16 +154,25 @@ public class ProductService {
         return productRepository.findAllByNameContaining(query, lastProductId, size);
     }
 
-    public SearchProductResultsResponse getSearchResults(final String query, final Pageable pageable) {
-        final Page<ProductReviewCountDto> products = productRepository.findAllWithReviewCountByNameContaining(query,
-                pageable);
+    public SearchProductResultsResponse getSearchResults(final String query, final Long lastProductId) {
+        final List<ProductReviewCountDto> findProducts = findAllWithReviewCountByNameContaining(query, lastProductId);
+        final int resultSize = getResultSize(findProducts);
+        final List<ProductReviewCountDto> products = findProducts.subList(0, resultSize);
 
-        final PageDto pageDto = PageDto.toDto(products);
+        final boolean hasNext = hasNextPage(findProducts);
         final List<SearchProductResultDto> resultDtos = products.stream()
                 .map(it -> SearchProductResultDto.toDto(it.getProduct(), it.getReviewCount()))
                 .collect(Collectors.toList());
 
-        return SearchProductResultsResponse.toResponse(pageDto, resultDtos);
+        return SearchProductResultsResponse.toResponse(hasNext, resultDtos);
+    }
+
+    private List<ProductReviewCountDto> findAllWithReviewCountByNameContaining(final String query, final Long lastProductId) {
+        final PageRequest size = PageRequest.ofSize(DEFAULT_CURSOR_PAGINATION_SIZE);
+        if (lastProductId == 0) {
+            return productRepository.findAllWithReviewCountByNameContainingFirst(query, size);
+        }
+        return productRepository.findAllWithReviewCountByNameContaining(query, lastProductId, size);
     }
 
     public SortingRecipesResponse getProductRecipes(final Long productId, final Pageable pageable) {

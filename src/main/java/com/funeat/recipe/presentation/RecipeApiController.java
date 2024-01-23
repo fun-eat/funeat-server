@@ -86,9 +86,8 @@ public class RecipeApiController implements RecipeController {
 
     @GetMapping("/api/search/recipes/results")
     public ResponseEntity<SearchRecipeResultsResponse> getSearchResults(@RequestParam final String query,
-                                                                        @PageableDefault final Pageable pageable) {
-        final PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
-        final SearchRecipeResultsResponse response = recipeService.getSearchResults(query, pageRequest);
+                                                                        @RequestParam final Long lastRecipeId) {
+        final SearchRecipeResultsResponse response = recipeService.getSearchResults(query, lastRecipeId);
 
         return ResponseEntity.ok(response);
     }

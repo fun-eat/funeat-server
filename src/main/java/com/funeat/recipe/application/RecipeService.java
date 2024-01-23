@@ -64,6 +64,7 @@ public class RecipeService {
 
     private static final long RANKING_MINIMUM_FAVORITE_COUNT = 1L;
     private static final int RANKING_SIZE = 3;
+    private static final int DEFAULT_PAGE_SIZE = 10;
     private static final int RECIPE_COMMENT_PAGE_SIZE = 10;
     private static final int DEFAULT_CURSOR_PAGINATION_SIZE = 11;
 
@@ -192,18 +193,28 @@ public class RecipeService {
         }
     }
 
-    public SearchRecipeResultsResponse getSearchResults(final String query, final Pageable pageable) {
-        final Page<Recipe> recipePages = recipeRepository.findAllByProductNameContaining(query, pageable);
+    public SearchRecipeResultsResponse getSearchResults(final String query, final Long lastRecipeId) {
+        final List<Recipe> findRecipes = findAllByProductNameContaining(query, lastRecipeId);
+        final int resultSize = getResultSize(findRecipes);
+        final List<Recipe> recipes = findRecipes.subList(0, resultSize);
 
-        final PageDto page = PageDto.toDto(recipePages);
-        final List<SearchRecipeResultDto> dtos = recipePages.stream()
+        final boolean hasNext = hasNextPage(findRecipes);
+        final List<SearchRecipeResultDto> dtos = recipes.stream()
                 .map(recipe -> {
                     final List<RecipeImage> findRecipeImages = recipeImageRepository.findByRecipe(recipe);
                     final List<Product> productsByRecipe = productRecipeRepository.findProductByRecipe(recipe);
                     return SearchRecipeResultDto.toDto(recipe, findRecipeImages, productsByRecipe);
                 })
                 .collect(Collectors.toList());
-        return SearchRecipeResultsResponse.toResponse(page, dtos);
+        return SearchRecipeResultsResponse.toResponse(hasNext, dtos);
+    }
+
+    private List<Recipe> findAllByProductNameContaining(final String query, final Long lastRecipeId) {
+        final PageRequest size = PageRequest.ofSize(DEFAULT_CURSOR_PAGINATION_SIZE);
+        if (lastRecipeId == 0) {
+            return recipeRepository.findAllByProductNameContainingFirst(query, size);
+        }
+        return recipeRepository.findAllByProductNameContaining(query, lastRecipeId, size);
     }
 
     public RankingRecipesResponse getTop3Recipes() {
@@ -269,14 +280,18 @@ public class RecipeService {
         return recipeCommentResponses;
     }
 
-    private int getResultSize(final List<Comment> findComments) {
+    private <T> int getResultSize(final List<T> findComments) {
         if (findComments.size() < DEFAULT_CURSOR_PAGINATION_SIZE) {
             return findComments.size();
         }
-        return RECIPE_COMMENT_PAGE_SIZE;
+        return DEFAULT_PAGE_SIZE;
     }
 
     private Boolean hasNextPage(final Page<Comment> findComments) {
         return findComments.getContent().size() > RECIPE_COMMENT_PAGE_SIZE;
+    }
+
+    private <T> Boolean hasNextPage(final List<T> findComments) {
+        return findComments.size() > RECIPE_COMMENT_PAGE_SIZE;
     }
 }

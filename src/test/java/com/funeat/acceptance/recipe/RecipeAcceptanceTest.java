@@ -46,9 +46,16 @@ import static com.funeat.fixture.ProductFixture.상품_삼각김밥_가격3000�
 import static com.funeat.fixture.ProductFixture.상품_애플망고_가격3000원_평점5점_생성;
 import static com.funeat.fixture.RecipeFixture.레시피;
 import static com.funeat.fixture.RecipeFixture.레시피1;
+import static com.funeat.fixture.RecipeFixture.레시피10;
+import static com.funeat.fixture.RecipeFixture.레시피11;
 import static com.funeat.fixture.RecipeFixture.레시피2;
 import static com.funeat.fixture.RecipeFixture.레시피3;
 import static com.funeat.fixture.RecipeFixture.레시피4;
+import static com.funeat.fixture.RecipeFixture.레시피5;
+import static com.funeat.fixture.RecipeFixture.레시피6;
+import static com.funeat.fixture.RecipeFixture.레시피7;
+import static com.funeat.fixture.RecipeFixture.레시피8;
+import static com.funeat.fixture.RecipeFixture.레시피9;
 import static com.funeat.fixture.RecipeFixture.레시피_본문;
 import static com.funeat.fixture.RecipeFixture.레시피_제목;
 import static com.funeat.fixture.RecipeFixture.레시피좋아요요청_생성;
@@ -384,15 +391,12 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지2), 레시피추가요청_생성(상품1, 상품2));
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지3), 레시피추가요청_생성(상품2));
 
-            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(2L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
-
             // when
-            final var 응답 = 레시피_검색_결과_조회_요청("망고", FIRST_PAGE);
+            final var 응답 = 레시피_검색_결과_조회_요청("망고", 0L);
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            페이지를_검증한다(응답, 예상_응답_페이지);
-            레시피_검색_결과를_검증한다(응답, List.of(레시피2, 레시피3));
+            레시피_검색_결과를_검증한다(응답, false, List.of(레시피3, 레시피2));
         }
 
         @Test
@@ -405,15 +409,12 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
 
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품1, 상품2));
 
-            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(1L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
-
             // when
-            final var 응답 = 레시피_검색_결과_조회_요청("망고", FIRST_PAGE);
+            final var 응답 = 레시피_검색_결과_조회_요청("망고", 0L);
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            페이지를_검증한다(응답, 예상_응답_페이지);
-            레시피_검색_결과를_검증한다(응답, List.of(레시피));
+            레시피_검색_결과를_검증한다(응답, false, List.of(레시피));
         }
 
         @Test
@@ -425,15 +426,28 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
 
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
 
-            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(0L), 총_페이지(0L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
-
             // when
-            final var 응답 = 레시피_검색_결과_조회_요청("참치", FIRST_PAGE);
+            final var 응답 = 레시피_검색_결과_조회_요청("참치", 0L);
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            페이지를_검증한다(응답, 예상_응답_페이지);
-            레시피_검색_결과를_검증한다(응답, Collections.emptyList());
+            레시피_검색_결과를_검증한다(응답, false, Collections.emptyList());
+        }
+
+        @Test
+        void 검색_결과가_10개_이상일_때_해당_페이지_레시피_10개만_반환한다() {
+            // given
+            final var 카테고리 = 카테고리_간편식사_생성();
+            단일_카테고리_저장(카테고리);
+            final var 상품1 = 단일_상품_저장(상품_망고빙수_가격5000원_평점4점_생성(카테고리));
+            반복_레시피_작성_요청(11, 상품1);
+
+            // when
+            final var 응답 = 레시피_검색_결과_조회_요청("망고", 0L);
+
+            // then
+            STATUS_CODE를_검증한다(응답, 정상_처리);
+            레시피_검색_결과를_검증한다(응답, true, List.of(레시피11, 레시피10, 레시피9, 레시피8, 레시피7, 레시피6, 레시피5, 레시피4, 레시피3, 레시피2));
         }
     }
 
@@ -770,11 +784,14 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
                 .isEqualTo(recipeIds);
     }
 
-    private void 레시피_검색_결과를_검증한다(final ExtractableResponse<Response> response, final List<Long> recipeIds) {
-        final var actual = response.jsonPath()
+    private void 레시피_검색_결과를_검증한다(final ExtractableResponse<Response> response, final boolean hasNext, final List<Long> recipeIds) {
+        final var actualHasNext = response.jsonPath()
+                .getBoolean("hasNext");
+        final var actualRecipes = response.jsonPath()
                 .getList("recipes", SearchRecipeResultDto.class);
 
-        assertThat(actual).extracting(SearchRecipeResultDto::getId)
+        assertThat(actualHasNext).isEqualTo(hasNext);
+        assertThat(actualRecipes).extracting(SearchRecipeResultDto::getId)
                 .containsExactlyElementsOf(recipeIds);
     }
 
@@ -802,5 +819,11 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
 
         assertThat(actualComments).hasSize(expectedSize);
         assertThat(actualHasNext).isEqualTo(expectedHasNext);
+    }
+
+    private void 반복_레시피_작성_요청(final int repeat, final Long productId) {
+        for (int i = 0; i < repeat; i++) {
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(productId));
+        }
     }
 }

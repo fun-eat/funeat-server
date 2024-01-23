@@ -98,6 +98,7 @@ import com.funeat.product.dto.ProductResponse;
 import com.funeat.product.dto.RankingProductDto;
 import com.funeat.product.dto.SearchProductDto;
 import com.funeat.product.dto.SearchProductResultDto;
+import com.funeat.product.dto.SearchProductResultsResponse;
 import com.funeat.product.dto.SearchProductsResponse;
 import com.funeat.recipe.dto.RecipeDto;
 import com.funeat.tag.dto.TagDto;
@@ -489,15 +490,12 @@ class ProductAcceptanceTest extends AcceptanceTest {
             단일_상품_저장(상품_망고빙수_가격5000원_평점4점_생성(카테고리));
             단일_태그_저장(태그_맛있어요_TASTE_생성());
 
-            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(2L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
-
             // when
-            final var response = 상품_검색_결과_조회_요청("망고", FIRST_PAGE);
+            final var response = 상품_검색_결과_조회_요청("망고", 0L);
 
             // then
             STATUS_CODE를_검증한다(response, 정상_처리);
-            페이지를_검증한다(response, 예상_응답_페이지);
-            상품_검색_결과를_검증한다(response, List.of(상품2, 상품1));
+            상품_검색_결과를_검증한다(response, false, List.of(상품2, 상품1));
         }
 
         @Test
@@ -508,15 +506,27 @@ class ProductAcceptanceTest extends AcceptanceTest {
             단일_상품_저장(상품_애플망고_가격3000원_평점5점_생성(카테고리));
             단일_상품_저장(상품_망고빙수_가격5000원_평점4점_생성(카테고리));
 
-            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(0L), 총_페이지(0L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
-
             // when
-            final var 응답 = 상품_검색_결과_조회_요청("김밥", FIRST_PAGE);
+            final var 응답 = 상품_검색_결과_조회_요청("김밥", 0L);
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            페이지를_검증한다(응답, 예상_응답_페이지);
-            상품_검색_결과를_검증한다(응답, Collections.emptyList());
+            상품_검색_결과를_검증한다(응답, false, Collections.emptyList());
+        }
+
+        @Test
+        void 검색_결과가_10개_이상일_때_해당_페이지_상품_10개만_반환한다() {
+            // given
+            final var 카테고리 = 카테고리_간편식사_생성();
+            단일_카테고리_저장(카테고리);
+            반복_애플망고_상품_저장(11, 카테고리);
+
+            // when
+            final var response = 상품_검색_결과_조회_요청("망고", 0L);
+
+            // then
+            STATUS_CODE를_검증한다(response, 정상_처리);
+            상품_검색_결과를_검증한다(response, true, List.of(상품11, 상품10, 상품9, 상품8, 상품7, 상품6, 상품5, 상품4, 상품3, 상품2));
         }
 
         @Test
@@ -527,19 +537,15 @@ class ProductAcceptanceTest extends AcceptanceTest {
             단일_상품_저장(상품_망고빙수_가격5000원_평점4점_생성(카테고리));
             반복_애플망고_상품_저장(10, 카테고리);
 
-            final var 예상_응답_페이지1 = 응답_페이지_생성(총_데이터_개수(11L), 총_페이지(2L), 첫페이지O, 마지막페이지X, FIRST_PAGE, PAGE_SIZE);
-            final var 예상_응답_페이지2 = 응답_페이지_생성(총_데이터_개수(11L), 총_페이지(2L), 첫페이지X, 마지막페이지O, SECOND_PAGE, PAGE_SIZE);
-
             // when
-            final var 응답1 = 상품_검색_결과_조회_요청("망고", FIRST_PAGE);
-            final var 응답2 = 상품_검색_결과_조회_요청("망고", SECOND_PAGE);
+            final var 응답1 = 상품_검색_결과_조회_요청("망고", 0L);
+            final var result = 응답1.as(SearchProductResultsResponse.class).getProducts();
+            final var lastId = result.get(result.size() - 1).getId();
+            final var 응답2 = 상품_검색_결과_조회_요청("망고", lastId);
 
             // then
             STATUS_CODE를_검증한다(응답1, 정상_처리);
-            페이지를_검증한다(응답1, 예상_응답_페이지1);
-
             STATUS_CODE를_검증한다(응답2, 정상_처리);
-            페이지를_검증한다(응답2, 예상_응답_페이지2);
 
             결과값이_이전_요청_결과값에_중복되는지_검증(응답1, 응답2);
         }
@@ -553,15 +559,12 @@ class ProductAcceptanceTest extends AcceptanceTest {
             반복_애플망고_상품_저장(9, 카테고리);
             단일_상품_저장(상품_망고빙수_가격5000원_평점4점_생성(카테고리));
 
-            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(11L), 총_페이지(2L), 첫페이지O, 마지막페이지X, FIRST_PAGE, PAGE_SIZE);
-
             // when
-            final var response = 상품_검색_결과_조회_요청("망고", FIRST_PAGE);
+            final var response = 상품_검색_결과_조회_요청("망고", 0L);
 
             // then
             STATUS_CODE를_검증한다(response, 정상_처리);
-            페이지를_검증한다(response, 예상_응답_페이지);
-            상품_검색_결과를_검증한다(response, List.of(상품11, 상품1, 상품10, 상품9, 상품8, 상품7, 상품6, 상품5, 상품4, 상품3));
+            상품_검색_결과를_검증한다(response, true, List.of(상품11, 상품1, 상품10, 상품9, 상품8, 상품7, 상품6, 상품5, 상품4, 상품3));
         }
     }
 
@@ -699,11 +702,14 @@ class ProductAcceptanceTest extends AcceptanceTest {
                 .doesNotContain(currentResponse);
     }
 
-    private void 상품_검색_결과를_검증한다(final ExtractableResponse<Response> response, final List<Long> productIds) {
-        final var actual = response.jsonPath()
+    private void 상품_검색_결과를_검증한다(final ExtractableResponse<Response> response, final boolean hasNext, final List<Long> productIds) {
+        final var actualHasNext = response.jsonPath()
+                .getBoolean("hasNext");
+        final var actualProducts = response.jsonPath()
                 .getList("products", SearchProductResultDto.class);
 
-        assertThat(actual).extracting(SearchProductResultDto::getId)
+        assertThat(actualHasNext).isEqualTo(hasNext);
+        assertThat(actualProducts).extracting(SearchProductResultDto::getId)
                 .containsExactlyElementsOf(productIds);
     }
 

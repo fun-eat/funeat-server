@@ -63,7 +63,7 @@ public interface ProductController {
     )
     @GetMapping
     ResponseEntity<SearchProductResultsResponse> getSearchResults(@RequestParam final String query,
-                                                                  @PageableDefault final Pageable pageable);
+                                                                  @RequestParam final Long lastProductId);
 
     @Operation(summary = "해당 상품 꿀조합 목록 조회", description = "해당 상품이 포함된 꿀조합 목록을 조회한다.")
     @ApiResponse(

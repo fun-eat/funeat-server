@@ -1,25 +1,24 @@
 package com.funeat.product.dto;
 
-import com.funeat.common.dto.PageDto;
 import java.util.List;
 
 public class SearchProductResultsResponse {
 
-    private final PageDto page;
+    private final boolean hasNext;
     private final List<SearchProductResultDto> products;
 
-    public SearchProductResultsResponse(final PageDto page, final List<SearchProductResultDto> products) {
-        this.page = page;
+    private SearchProductResultsResponse(final boolean hasNext, final List<SearchProductResultDto> products) {
+        this.hasNext = hasNext;
         this.products = products;
     }
 
-    public static SearchProductResultsResponse toResponse(final PageDto page,
+    public static SearchProductResultsResponse toResponse(final boolean hasNext,
                                                           final List<SearchProductResultDto> products) {
-        return new SearchProductResultsResponse(page, products);
+        return new SearchProductResultsResponse(hasNext, products);
     }
 
-    public PageDto getPage() {
-        return page;
+    public boolean isHasNext() {
+        return hasNext;
     }
 
     public List<SearchProductResultDto> getProducts() {

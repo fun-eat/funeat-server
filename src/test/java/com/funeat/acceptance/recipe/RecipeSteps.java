@@ -83,10 +83,10 @@ public class RecipeSteps {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 레시피_검색_결과_조회_요청(final String query, final Long page) {
+    public static ExtractableResponse<Response> 레시피_검색_결과_조회_요청(final String query, final Long lastRecipeId) {
         return given()
                 .queryParam("query", query)
-                .queryParam("page", page)
+                .queryParam("lastRecipeId", lastRecipeId)
                 .when()
                 .get("/api/search/recipes/results")
                 .then()

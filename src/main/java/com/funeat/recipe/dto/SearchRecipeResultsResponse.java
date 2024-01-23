@@ -1,25 +1,24 @@
 package com.funeat.recipe.dto;
 
-import com.funeat.common.dto.PageDto;
 import java.util.List;
 
 public class SearchRecipeResultsResponse {
 
-    private final PageDto page;
+    private final boolean hasNext;
     private final List<SearchRecipeResultDto> recipes;
 
-    public SearchRecipeResultsResponse(final PageDto page, final List<SearchRecipeResultDto> recipes) {
-        this.page = page;
+    private SearchRecipeResultsResponse(final boolean hasNext, final List<SearchRecipeResultDto> recipes) {
+        this.hasNext = hasNext;
         this.recipes = recipes;
     }
 
-    public static SearchRecipeResultsResponse toResponse(final PageDto page,
+    public static SearchRecipeResultsResponse toResponse(final boolean hasNext,
                                                          final List<SearchRecipeResultDto> recipes) {
-        return new SearchRecipeResultsResponse(page, recipes);
+        return new SearchRecipeResultsResponse(hasNext, recipes);
     }
 
-    public PageDto getPage() {
-        return page;
+    public boolean isHasNext() {
+        return hasNext;
     }
 
     public List<SearchRecipeResultDto> getRecipes() {
