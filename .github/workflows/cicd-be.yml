@@ -50,7 +50,7 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          author_name: [CI/CD] 백엔드 빌드 실패
+          author_name: "[CI/CD] 백엔드 빌드 실패"
           fields: repo, message, commit, author, action, eventName, ref, workflow, job, took
         env:
           SLACK_COLOR: '#FF2D00'
@@ -90,7 +90,7 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          author_name: [CI/CD] 백엔드 배포 실패
+          author_name: "[CI/CD] 백엔드 배포 실패"
           fields: repo, message, commit, author, action, eventName, ref, workflow, job, took
         env:
           SLACK_COLOR: '#FF2D00'
@@ -103,7 +103,7 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          author_name: [CI/CD] 백엔드 배포 성공
+          author_name: "[CI/CD] 백엔드 배포 성공"
           fields: repo, message, commit, author, action, eventName, ref, workflow, job, took
         env:
           SLACK_COLOR: '#0019F4'
