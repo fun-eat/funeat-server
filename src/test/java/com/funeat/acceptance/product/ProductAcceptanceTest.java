@@ -31,7 +31,6 @@ import static com.funeat.fixture.MemberFixture.멤버2;
 import static com.funeat.fixture.MemberFixture.멤버3;
 import static com.funeat.fixture.PageFixture.FIRST_PAGE;
 import static com.funeat.fixture.PageFixture.PAGE_SIZE;
-import static com.funeat.fixture.PageFixture.SECOND_PAGE;
 import static com.funeat.fixture.PageFixture.가격_내림차순;
 import static com.funeat.fixture.PageFixture.가격_오름차순;
 import static com.funeat.fixture.PageFixture.과거순;
@@ -41,7 +40,6 @@ import static com.funeat.fixture.PageFixture.마지막페이지X;
 import static com.funeat.fixture.PageFixture.응답_페이지_생성;
 import static com.funeat.fixture.PageFixture.좋아요수_내림차순;
 import static com.funeat.fixture.PageFixture.첫페이지O;
-import static com.funeat.fixture.PageFixture.첫페이지X;
 import static com.funeat.fixture.PageFixture.총_데이터_개수;
 import static com.funeat.fixture.PageFixture.총_페이지;
 import static com.funeat.fixture.PageFixture.최신순;
@@ -421,7 +419,7 @@ class ProductAcceptanceTest extends AcceptanceTest {
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            상품_자동_완성_검색_결과를_검증한다(응답, List.of(상품2, 상품1));
+            상품_자동_완성_검색_결과를_검증한다(응답, false, List.of(상품2, 상품1));
         }
 
         @Test
@@ -436,7 +434,7 @@ class ProductAcceptanceTest extends AcceptanceTest {
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            상품_자동_완성_검색_결과를_검증한다(응답, Collections.emptyList());
+            상품_자동_완성_검색_결과를_검증한다(응답, false, Collections.emptyList());
         }
 
         @Test
@@ -474,7 +472,22 @@ class ProductAcceptanceTest extends AcceptanceTest {
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            상품_자동_완성_검색_결과를_검증한다(응답, List.of(상품11, 상품1, 상품10, 상품9, 상품8, 상품7, 상품6, 상품5, 상품4, 상품3));
+            상품_자동_완성_검색_결과를_검증한다(응답, true, List.of(상품11, 상품1, 상품10, 상품9, 상품8, 상품7, 상품6, 상품5, 상품4, 상품3));
+        }
+
+        @Test
+        void 검색_결과가_10개_이상일_때_해당_페이지_결과_10개만_반환한다() {
+            // given
+            final var 카테고리 = 카테고리_간편식사_생성();
+            단일_카테고리_저장(카테고리);
+            반복_애플망고_상품_저장(11, 카테고리);
+
+            // when
+            final var 응답 = 상품_자동_완성_검색_요청("망고", 0L);
+
+            // then
+            STATUS_CODE를_검증한다(응답, 정상_처리);
+            상품_자동_완성_검색_결과를_검증한다(응답, true, List.of(상품11, 상품10, 상품9, 상품8, 상품7, 상품6, 상품5, 상품4, 상품3, 상품2));
         }
     }
 
@@ -683,11 +696,15 @@ class ProductAcceptanceTest extends AcceptanceTest {
                 .isEqualTo(productIds);
     }
 
-    private void 상품_자동_완성_검색_결과를_검증한다(final ExtractableResponse<Response> response, final List<Long> productIds) {
-        final var actual = response.jsonPath()
+    private void 상품_자동_완성_검색_결과를_검증한다(final ExtractableResponse<Response> response, final boolean hasNext,
+                                      final List<Long> productIds) {
+        final var actualHasNext = response.jsonPath()
+                .getBoolean("hasNext");
+        final var actualProducts = response.jsonPath()
                 .getList("products", SearchProductDto.class);
 
-        assertThat(actual).extracting(SearchProductDto::getId)
+        assertThat(actualHasNext).isEqualTo(hasNext);
+        assertThat(actualProducts).extracting(SearchProductDto::getId)
                 .isEqualTo(productIds);
     }
 

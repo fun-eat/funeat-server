@@ -136,18 +136,20 @@ public class ProductService {
     }
 
     public SearchProductsResponse searchProducts(final String query, final Long lastProductId) {
-        final List<Product> products = findAllByNameContaining(query, lastProductId);
+        final List<Product> findProducts = findAllByNameContaining(query, lastProductId);
+        final int resultSize = getResultSize(findProducts);
+        final List<Product> products = findProducts.subList(0, resultSize);
 
-        final boolean hasNext = products.size() > DEFAULT_PAGE_SIZE;
+        final boolean hasNext = hasNextPage(findProducts);
         final List<SearchProductDto> productDtos = products.stream()
                 .map(SearchProductDto::toDto)
-                .collect(Collectors.toList());
+                .toList();
 
         return SearchProductsResponse.toResponse(hasNext, productDtos);
     }
 
     private List<Product> findAllByNameContaining(final String query, final Long lastProductId) {
-        final PageRequest size = PageRequest.ofSize(DEFAULT_PAGE_SIZE);
+        final PageRequest size = PageRequest.ofSize(DEFAULT_CURSOR_PAGINATION_SIZE);
         if (lastProductId == 0) {
             return productRepository.findAllByNameContainingFirst(query, size);
         }
