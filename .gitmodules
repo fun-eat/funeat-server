@@ -1,0 +1,4 @@
+[submodule "src/main/resources"]
+	path = src/main/resources
+	url = git@github.com:fun-eat/funeat-env.git
+	branch = main

@@ -1,0 +1,43 @@
+spring:
+  profiles:
+    active: test
+
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+  session:
+    jdbc:
+      initialize-schema: always
+
+
+logging:
+  level:
+    org.hibernate.type.descriptor.sql: trace
+
+cloud:
+  aws:
+    region:
+      static: testRegion
+    s3:
+      bucket: testBucket
+      folder: testFolder
+      cloudfrontPath: testCloudfrontPath
+    image:
+      food: foodimage
+      store: storeimage
+
+back-office:
+  id: test
+  key: test
+
+server:
+  servlet:
+    session:
+      cookie:
+        name: SESSION
