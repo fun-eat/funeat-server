@@ -32,7 +32,6 @@ import com.funeat.recipe.persistence.RecipeRepository;
 import com.funeat.review.persistence.ReviewRepository;
 import com.funeat.review.persistence.ReviewTagRepository;
 import com.funeat.tag.domain.Tag;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -119,9 +118,7 @@ public class ProductService {
     }
 
     public RankingProductsResponse getTop3Products() {
-        final LocalDateTime endDateTime = LocalDateTime.now();
-        final LocalDateTime startDateTime = endDateTime.minusWeeks(2L);
-        final List<ProductReviewCountDto> productsAndReviewCounts = productRepository.findAllByAverageRatingGreaterThan3(startDateTime, endDateTime);
+        final List<ProductReviewCountDto> productsAndReviewCounts = productRepository.findAllByAverageRatingGreaterThan3();
         final Comparator<ProductReviewCountDto> rankingScoreComparator = Comparator.comparing(
                 (ProductReviewCountDto it) -> it.getProduct().calculateRankingScore(it.getReviewCount())
         ).reversed();
