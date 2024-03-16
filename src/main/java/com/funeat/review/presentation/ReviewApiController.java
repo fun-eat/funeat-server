@@ -54,7 +54,6 @@ public class ReviewApiController implements ReviewController {
                                                  @AuthenticationPrincipal final LoginInfo loginInfo,
                                                  @RequestBody @Valid final ReviewFavoriteRequest request) {
         reviewService.likeReview(reviewId, loginInfo.getId(), request);
-        reviewService.updateProductImage(productId);
 
         return ResponseEntity.noContent().build();
     }
