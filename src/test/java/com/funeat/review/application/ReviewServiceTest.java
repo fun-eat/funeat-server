@@ -48,12 +48,14 @@ import com.funeat.review.dto.SortingReviewDto;
 import com.funeat.review.exception.ReviewException.NotAuthorOfReviewException;
 import com.funeat.review.exception.ReviewException.ReviewNotFoundException;
 import com.funeat.tag.domain.Tag;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -386,11 +388,13 @@ class ReviewServiceTest extends ServiceTest {
             final var productId = 단일_상품_저장(product);
 
             final var review1 = 리뷰_이미지test3_평점3점_재구매O_생성(member, product, 351L);
+            단일_리뷰_저장(review1);
             Thread.sleep(100);
             final var review2 = 리뷰_이미지test4_평점4점_재구매O_생성(member, product, 24L);
+            단일_리뷰_저장(review2);
             Thread.sleep(100);
             final var review3 = 리뷰_이미지test3_평점3점_재구매X_생성(member, product, 130L);
-            복수_리뷰_저장(review1, review2, review3);
+            단일_리뷰_저장(review3);
 
             final var request = 리뷰정렬요청_최신순_생성(3L);
 
@@ -1066,7 +1070,7 @@ class ReviewServiceTest extends ServiceTest {
                     .isInstanceOf(ReviewNotFoundException.class);
         }
     }
-  
+
     @Nested
     class getTopReviews_성공_테스트 {
 

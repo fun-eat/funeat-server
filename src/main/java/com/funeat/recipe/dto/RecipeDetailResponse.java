@@ -3,6 +3,7 @@ package com.funeat.recipe.dto;
 import com.funeat.product.domain.Product;
 import com.funeat.recipe.domain.Recipe;
 import com.funeat.recipe.domain.RecipeImage;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,14 +15,14 @@ public class RecipeDetailResponse {
     private final String title;
     private final String content;
     private final RecipeAuthorDto author;
-    private final List<ProductRecipeDto> products;
+    private final List<DetailProductRecipeDto> products;
     private final Long totalPrice;
     private final Long favoriteCount;
     private final Boolean favorite;
     private final LocalDateTime createdAt;
 
     public RecipeDetailResponse(final Long id, final List<String> images, final String title, final String content,
-                                final RecipeAuthorDto author, final List<ProductRecipeDto> products,
+                                final RecipeAuthorDto author, final List<DetailProductRecipeDto> products,
                                 final Long totalPrice, final Long favoriteCount, final Boolean favorite,
                                 final LocalDateTime createdAt) {
         this.id = id;
@@ -40,8 +41,8 @@ public class RecipeDetailResponse {
                                                   final List<Product> products, final Long totalPrice,
                                                   final Boolean favorite) {
         final RecipeAuthorDto authorDto = RecipeAuthorDto.toDto(recipe.getMember());
-        final List<ProductRecipeDto> productDtos = products.stream()
-                .map(ProductRecipeDto::toDto)
+        final List<DetailProductRecipeDto> productDtos = products.stream()
+                .map(DetailProductRecipeDto::toDto)
                 .collect(Collectors.toList());
         final List<String> images = recipeImages.stream()
                 .map(RecipeImage::getImage)
@@ -70,7 +71,7 @@ public class RecipeDetailResponse {
         return author;
     }
 
-    public List<ProductRecipeDto> getProducts() {
+    public List<DetailProductRecipeDto> getProducts() {
         return products;
     }
 
