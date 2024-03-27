@@ -91,19 +91,15 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.funeat.acceptance.common.AcceptanceTest;
 import com.funeat.product.domain.Category;
-import com.funeat.product.dto.ProductInCategoryDto;
-import com.funeat.product.dto.ProductResponse;
-import com.funeat.product.dto.RankingProductDto;
-import com.funeat.product.dto.SearchProductDto;
-import com.funeat.product.dto.SearchProductResultDto;
-import com.funeat.product.dto.SearchProductResultsResponse;
-import com.funeat.product.dto.SearchProductsResponse;
+import com.funeat.product.dto.*;
 import com.funeat.recipe.dto.RecipeDto;
 import com.funeat.tag.dto.TagDto;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+
 import java.util.Collections;
 import java.util.List;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -673,6 +669,7 @@ class ProductAcceptanceTest extends AcceptanceTest {
 
     private void 상품_상세_정보_조회_결과를_검증한다(final ExtractableResponse<Response> response) {
         final var actual = response.as(ProductResponse.class);
+        final var actualCategory = response.jsonPath().getObject("category", CategoryDto.class);
         final var actualTags = response.jsonPath()
                 .getList("tags", TagDto.class);
 
@@ -684,6 +681,7 @@ class ProductAcceptanceTest extends AcceptanceTest {
             soft.assertThat(actual.getContent()).isEqualTo("맛있는 삼각김밥");
             soft.assertThat(actual.getAverageRating()).isEqualTo(3.0);
             soft.assertThat(actual.getReviewCount()).isEqualTo(3L);
+            soft.assertThat(actualCategory.getName()).isEqualTo("간편식사");
             soft.assertThat(actualTags).extracting("id").containsExactly(2L, 1L);
         });
     }
