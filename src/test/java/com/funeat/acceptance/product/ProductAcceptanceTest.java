@@ -98,6 +98,7 @@ import com.funeat.product.dto.SearchProductDto;
 import com.funeat.product.dto.SearchProductResultDto;
 import com.funeat.product.dto.SearchProductResultsResponse;
 import com.funeat.product.dto.SearchProductsResponse;
+import com.funeat.product.dto.CategoryDto;
 import com.funeat.recipe.dto.RecipeDto;
 import com.funeat.tag.dto.TagDto;
 import io.restassured.response.ExtractableResponse;
@@ -673,6 +674,7 @@ class ProductAcceptanceTest extends AcceptanceTest {
 
     private void 상품_상세_정보_조회_결과를_검증한다(final ExtractableResponse<Response> response) {
         final var actual = response.as(ProductResponse.class);
+        final var actualCategory = response.jsonPath().getObject("category", CategoryDto.class);
         final var actualTags = response.jsonPath()
                 .getList("tags", TagDto.class);
 
@@ -684,6 +686,7 @@ class ProductAcceptanceTest extends AcceptanceTest {
             soft.assertThat(actual.getContent()).isEqualTo("맛있는 삼각김밥");
             soft.assertThat(actual.getAverageRating()).isEqualTo(3.0);
             soft.assertThat(actual.getReviewCount()).isEqualTo(3L);
+            soft.assertThat(actualCategory.getName()).isEqualTo("간편식사");
             soft.assertThat(actualTags).extracting("id").containsExactly(2L, 1L);
         });
     }
