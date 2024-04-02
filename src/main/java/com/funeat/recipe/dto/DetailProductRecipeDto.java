@@ -7,7 +7,6 @@ public class DetailProductRecipeDto {
     private final Long id;
     private final String name;
     private final Long price;
-
     private final String image;
 
     private DetailProductRecipeDto(final Long id, final String name, final Long price, final String image) {
