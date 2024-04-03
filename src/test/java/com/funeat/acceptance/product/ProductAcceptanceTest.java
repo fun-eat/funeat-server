@@ -99,6 +99,7 @@ import com.funeat.product.dto.SearchProductDto;
 import com.funeat.product.dto.SearchProductResultDto;
 import com.funeat.product.dto.SearchProductResultsResponse;
 import com.funeat.product.dto.SearchProductsResponse;
+import com.funeat.product.dto.CategoryDto;
 import com.funeat.recipe.dto.RecipeDto;
 import com.funeat.tag.dto.TagDto;
 import io.restassured.response.ExtractableResponse;
