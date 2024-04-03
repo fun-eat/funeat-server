@@ -1066,7 +1066,7 @@ class ReviewServiceTest extends ServiceTest {
                     .isInstanceOf(ReviewNotFoundException.class);
         }
     }
-  
+
     @Nested
     class getTopReviews_성공_테스트 {
 

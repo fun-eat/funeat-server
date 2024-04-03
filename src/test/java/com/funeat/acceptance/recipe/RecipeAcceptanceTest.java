@@ -70,7 +70,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import com.funeat.acceptance.common.AcceptanceTest;
 import com.funeat.member.domain.Member;
 import com.funeat.recipe.domain.Recipe;
-import com.funeat.recipe.dto.ProductRecipeDto;
+import com.funeat.recipe.dto.DetailProductRecipeDto;
 import com.funeat.recipe.dto.RankingRecipeDto;
 import com.funeat.recipe.dto.RecipeAuthorDto;
 import com.funeat.recipe.dto.RecipeCommentCondition;
@@ -743,7 +743,7 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
     private void 레시피_상세_정보_조회_결과를_검증한다(final ExtractableResponse<Response> response) {
         final var actual = response.as(RecipeDetailResponse.class);
         final var actualAuthor = response.jsonPath().getObject("author", RecipeAuthorDto.class);
-        final var actualProducts = response.jsonPath().getList("products", ProductRecipeDto.class);
+        final var actualProducts = response.jsonPath().getList("products", DetailProductRecipeDto.class);
 
         assertSoftly(soft -> {
             soft.assertThat(actual.getId()).isEqualTo(1L);
@@ -755,7 +755,7 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             soft.assertThat(actual.getFavorite()).isEqualTo(false);
             soft.assertThat(actualAuthor.getNickname()).isEqualTo("member1");
             soft.assertThat(actualAuthor.getProfileImage()).isEqualTo("www.member1.com");
-            soft.assertThat(actualProducts).extracting(ProductRecipeDto::getId)
+            soft.assertThat(actualProducts).extracting(DetailProductRecipeDto::getId)
                     .containsExactlyElementsOf(List.of(1L, 2L));
         });
     }
