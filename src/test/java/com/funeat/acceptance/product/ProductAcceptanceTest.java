@@ -91,7 +91,14 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.funeat.acceptance.common.AcceptanceTest;
 import com.funeat.product.domain.Category;
-import com.funeat.product.dto.*;
+import com.funeat.product.dto.CategoryDto;
+import com.funeat.product.dto.ProductInCategoryDto;
+import com.funeat.product.dto.ProductResponse;
+import com.funeat.product.dto.RankingProductDto;
+import com.funeat.product.dto.SearchProductDto;
+import com.funeat.product.dto.SearchProductResultDto;
+import com.funeat.product.dto.SearchProductResultsResponse;
+import com.funeat.product.dto.SearchProductsResponse;
 import com.funeat.recipe.dto.RecipeDto;
 import com.funeat.tag.dto.TagDto;
 import io.restassured.response.ExtractableResponse;

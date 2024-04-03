@@ -48,14 +48,12 @@ import com.funeat.review.dto.SortingReviewDto;
 import com.funeat.review.exception.ReviewException.NotAuthorOfReviewException;
 import com.funeat.review.exception.ReviewException.ReviewNotFoundException;
 import com.funeat.tag.domain.Tag;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
