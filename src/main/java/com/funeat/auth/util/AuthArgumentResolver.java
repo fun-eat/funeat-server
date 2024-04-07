@@ -1,9 +1,9 @@
 package com.funeat.auth.util;
 
 import com.funeat.auth.dto.LoginInfo;
-import java.util.Objects;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.util.Objects;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -13,6 +13,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
+
+    private static final LoginInfo GUEST = new LoginInfo(-1L);
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
@@ -24,8 +26,11 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         final HttpSession session = Objects.requireNonNull(request).getSession(false);
-        final String id = String.valueOf(session.getAttribute("member"));
+        if (Objects.isNull(session)) {
+            return GUEST;
+        }
 
+        final String id = String.valueOf(session.getAttribute("member"));
         return new LoginInfo(Long.valueOf(id));
     }
 }
