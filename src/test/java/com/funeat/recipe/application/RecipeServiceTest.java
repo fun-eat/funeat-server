@@ -39,7 +39,6 @@ import com.funeat.product.domain.Product;
 import com.funeat.product.exception.ProductException.ProductNotFoundException;
 import com.funeat.recipe.dto.RankingRecipeDto;
 import com.funeat.recipe.dto.RankingRecipesResponse;
-import com.funeat.recipe.dto.RecipeAuthorDto;
 import com.funeat.recipe.dto.RecipeCommentCondition;
 import com.funeat.recipe.dto.RecipeCommentCreateRequest;
 import com.funeat.recipe.dto.RecipeCommentResponse;
@@ -761,7 +760,6 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipe2 = 레시피_생성(member, 10L, now.minusDays(4L));
                 복수_꿀조합_저장(recipe1, recipe2);
 
-                final var author = RecipeAuthorDto.toDto(member);
                 final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), false);
                 final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), false);
                 final var rankingRecipesDtos = List.of(rankingRecipeDto2, rankingRecipeDto1);
@@ -787,7 +785,6 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipe2 = 레시피_생성(member, 4L, now.minusDays(1L));
                 복수_꿀조합_저장(recipe1, recipe2);
 
-                final var author = RecipeAuthorDto.toDto(member);
                 final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), false);
                 final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), false);
                 final var rankingRecipesDtos = List.of(rankingRecipeDto2, rankingRecipeDto1);
