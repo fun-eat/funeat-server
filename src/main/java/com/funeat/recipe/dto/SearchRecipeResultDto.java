@@ -5,7 +5,6 @@ import com.funeat.recipe.domain.Recipe;
 import com.funeat.recipe.domain.RecipeImage;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SearchRecipeResultDto {
 
@@ -13,12 +12,12 @@ public class SearchRecipeResultDto {
     private final String image;
     private final String title;
     private final RecipeAuthorDto author;
-    private final List<ProductRecipeDto> products;
+    private final List<DetailProductRecipeDto> products;
     private final Long favoriteCount;
     private final LocalDateTime createdAt;
 
     public SearchRecipeResultDto(final Long id, final String image, final String title, final RecipeAuthorDto author,
-                                 final List<ProductRecipeDto> products, final Long favoriteCount,
+                                 final List<DetailProductRecipeDto> products, final Long favoriteCount,
                                  final LocalDateTime createdAt) {
         this.id = id;
         this.image = image;
@@ -31,9 +30,9 @@ public class SearchRecipeResultDto {
 
     public static SearchRecipeResultDto toDto(final Recipe recipe, final List<RecipeImage> images,
                                               final List<Product> products) {
-        final List<ProductRecipeDto> productRecipes = products.stream()
-                .map(ProductRecipeDto::toDto)
-                .collect(Collectors.toList());
+        final List<DetailProductRecipeDto> productRecipes = products.stream()
+                .map(DetailProductRecipeDto::toDto)
+                .toList();
 
         if (images.isEmpty()) {
             return new SearchRecipeResultDto(recipe.getId(), null, recipe.getTitle(),
@@ -61,7 +60,7 @@ public class SearchRecipeResultDto {
         return author;
     }
 
-    public List<ProductRecipeDto> getProducts() {
+    public List<DetailProductRecipeDto> getProducts() {
         return products;
     }
 
