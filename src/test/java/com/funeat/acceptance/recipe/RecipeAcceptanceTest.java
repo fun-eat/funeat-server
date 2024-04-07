@@ -68,8 +68,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.funeat.acceptance.common.AcceptanceTest;
-import com.funeat.member.domain.Member;
-import com.funeat.recipe.domain.Recipe;
 import com.funeat.recipe.dto.DetailProductRecipeDto;
 import com.funeat.recipe.dto.RankingRecipeDto;
 import com.funeat.recipe.dto.RecipeAuthorDto;
@@ -84,7 +82,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -768,12 +765,6 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             soft.assertThat(response.jsonPath().getString("message"))
                     .isEqualTo(expectedMessage);
         });
-    }
-
-    private List<RankingRecipeDto> 예상_레시피_랭킹_변환(final List<Recipe> recipes, final Member member) {
-        return recipes.stream()
-                .map(it -> RankingRecipeDto.toDto(it, Collections.emptyList(), RecipeAuthorDto.toDto(member)))
-                .collect(Collectors.toList());
     }
 
     private void 레시피_랭킹_조회_결과를_검증한다(final ExtractableResponse<Response> response, final List<Long> recipeIds) {

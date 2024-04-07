@@ -10,12 +10,12 @@ public class RankingRecipeDto {
     private final Long id;
     private final String image;
     private final String title;
-    private final RecipeAuthorDto author;
-    private final Long favoriteCount;
+    private final String author;
+    private final Boolean favoriteCount;
     private final LocalDateTime createdAt;
 
-    public RankingRecipeDto(final Long id, final String image, final String title, final RecipeAuthorDto author,
-                            final Long favoriteCount, final LocalDateTime createdAt) {
+    public RankingRecipeDto(final Long id, final String image, final String title, final String author,
+                            final Boolean favoriteCount, final LocalDateTime createdAt) {
         this.id = id;
         this.image = image;
         this.title = title;
@@ -24,14 +24,13 @@ public class RankingRecipeDto {
         this.createdAt = createdAt;
     }
 
-    public static RankingRecipeDto toDto(final Recipe recipe, final List<RecipeImage> images,
-                                         final RecipeAuthorDto author) {
+    public static RankingRecipeDto toDto(final Recipe recipe, final List<RecipeImage> images, final Boolean favorite) {
         if (images.isEmpty()) {
-            return new RankingRecipeDto(recipe.getId(), null, recipe.getTitle(), author,
-                    recipe.getFavoriteCount(), recipe.getCreatedAt());
+            return new RankingRecipeDto(recipe.getId(), null, recipe.getTitle(),
+                    recipe.getMember().getNickname(), favorite, recipe.getCreatedAt());
         }
-        return new RankingRecipeDto(recipe.getId(), images.get(0).getImage(), recipe.getTitle(), author,
-                recipe.getFavoriteCount(), recipe.getCreatedAt());
+        return new RankingRecipeDto(recipe.getId(), images.get(0).getImage(), recipe.getTitle(),
+                recipe.getMember().getNickname(), favorite, recipe.getCreatedAt());
     }
 
     public Long getId() {
@@ -46,11 +45,11 @@ public class RankingRecipeDto {
         return title;
     }
 
-    public RecipeAuthorDto getAuthor() {
+    public String getAuthor() {
         return author;
     }
 
-    public Long getFavoriteCount() {
+    public Boolean getFavoriteCount() {
         return favoriteCount;
     }
 
