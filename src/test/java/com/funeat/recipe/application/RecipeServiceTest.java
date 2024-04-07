@@ -564,11 +564,11 @@ class RecipeServiceTest extends ServiceTest {
             @Test
             void 전체_꿀조합이_하나도_없어도_반환값은_있어야한다() {
                 // given
-                final var guestId = -1L;
+                final var loginId = -1L;
                 final var expected = RankingRecipesResponse.toResponse(Collections.emptyList());
 
                 // when
-                final var actual = recipeService.getTop4Recipes(guestId);
+                final var actual = recipeService.getTop4Recipes(loginId);
 
                 // then
                 assertThat(actual).usingRecursiveComparison()
@@ -578,7 +578,7 @@ class RecipeServiceTest extends ServiceTest {
             @Test
             void 랭킹_조건에_부합하는_꿀조합이_1개면_꿀조합이_1개_반환된다() {
                 // given
-                final var guestId = -1L;
+                final var loginId = -1L;
                 final var member = 멤버_멤버1_생성();
                 단일_멤버_저장(member);
 
@@ -586,13 +586,12 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipe = 레시피_생성(member, 2L, now);
                 단일_꿀조합_저장(recipe);
 
-                final var author = RecipeAuthorDto.toDto(member);
                 final var rankingRecipeDto = RankingRecipeDto.toDto(recipe, Collections.emptyList(), false);
                 final var rankingRecipesDtos = Collections.singletonList(rankingRecipeDto);
                 final var expected = RankingRecipesResponse.toResponse(rankingRecipesDtos);
 
                 // when
-                final var actual = recipeService.getTop4Recipes(guestId);
+                final var actual = recipeService.getTop4Recipes(loginId);
 
                 // then
                 assertThat(actual).usingRecursiveComparison()
@@ -602,7 +601,7 @@ class RecipeServiceTest extends ServiceTest {
             @Test
             void 랭킹_조건에_부합하는_꿀조합이_2개면_꿀조합이_2개_반환된다() {
                 // given
-                final var guestId = -1L;
+                final var loginId = -1L;
                 final var member = 멤버_멤버1_생성();
                 단일_멤버_저장(member);
 
@@ -611,14 +610,40 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipe2 = 레시피_생성(member, 2L, now);
                 복수_꿀조합_저장(recipe1, recipe2);
 
-                final var author = RecipeAuthorDto.toDto(member);
                 final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), false);
                 final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), false);
                 final var rankingRecipesDtos = List.of(rankingRecipeDto2, rankingRecipeDto1);
                 final var expected = RankingRecipesResponse.toResponse(rankingRecipesDtos);
 
                 // when
-                final var actual = recipeService.getTop4Recipes(guestId);
+                final var actual = recipeService.getTop4Recipes(loginId);
+
+                // then
+                assertThat(actual).usingRecursiveComparison()
+                        .isEqualTo(expected);
+            }
+
+            @Test
+            void 랭킹_조건에_부합하는_꿀조합이_3개면_꿀조합이_3개_반환된다() {
+                // given
+                final var loginId = -1L;
+                final var member = 멤버_멤버1_생성();
+                단일_멤버_저장(member);
+
+                final var now = LocalDateTime.now();
+                final var recipe1 = 레시피_생성(member, 2L, now.minusDays(2L));
+                final var recipe2 = 레시피_생성(member, 2L, now.minusDays(1L));
+                final var recipe3 = 레시피_생성(member, 2L, now);
+                복수_꿀조합_저장(recipe1, recipe2, recipe3);
+
+                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), false);
+                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), false);
+                final var rankingRecipeDto3 = RankingRecipeDto.toDto(recipe3, Collections.emptyList(), false);
+                final var rankingRecipesDtos = List.of(rankingRecipeDto3, rankingRecipeDto2, rankingRecipeDto1);
+                final var expected = RankingRecipesResponse.toResponse(rankingRecipesDtos);
+
+                // when
+                final var actual = recipeService.getTop4Recipes(loginId);
 
                 // then
                 assertThat(actual).usingRecursiveComparison()
@@ -628,7 +653,7 @@ class RecipeServiceTest extends ServiceTest {
             @Test
             void 전체_꿀조합_중_랭킹이_높은_상위_4개_꿀조합을_구할_수_있다() {
                 // given
-                final var guestId = -1L;
+                final var loginId = -1L;
                 final var member = 멤버_멤버1_생성();
                 단일_멤버_저장(member);
 
@@ -639,7 +664,6 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipe4 = 레시피_생성(member, 6L, now);
                 복수_꿀조합_저장(recipe1, recipe2, recipe3, recipe4);
 
-                final var author = RecipeAuthorDto.toDto(member);
                 final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), false);
                 final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), false);
                 final var rankingRecipeDto3 = RankingRecipeDto.toDto(recipe3, Collections.emptyList(), false);
@@ -648,7 +672,7 @@ class RecipeServiceTest extends ServiceTest {
                 final var expected = RankingRecipesResponse.toResponse(rankingRecipesDtos);
 
                 // when
-                final var actual = recipeService.getTop4Recipes(guestId);
+                final var actual = recipeService.getTop4Recipes(loginId);
 
                 // then
                 assertThat(actual).usingRecursiveComparison()
