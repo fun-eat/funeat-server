@@ -156,19 +156,21 @@ public class RecipeService {
         return MemberRecipesResponse.toResponse(page, dtos);
     }
 
-    public SortingRecipesResponse getSortingRecipes(final Pageable pageable) {
+    public SortingRecipesResponse getSortingRecipes(final Long memberId, final Pageable pageable) {
         final Page<Recipe> pages = recipeRepository.findAll(pageable);
 
         final PageDto page = PageDto.toDto(pages);
         final List<RecipeDto> recipes = pages.getContent().stream()
-                .map(recipe -> {
-                    final List<RecipeImage> images = recipeImageRepository.findByRecipe(recipe);
-                    final List<Product> products = productRecipeRepository.findProductByRecipe(recipe);
-                    return RecipeDto.toDto(recipe, images, products);
-                })
+                .map(recipe -> createRecipeDto(memberId, recipe))
                 .collect(Collectors.toList());
 
         return SortingRecipesResponse.toResponse(page, recipes);
+    }
+
+    private RecipeDto createRecipeDto(final Long memberId, final Recipe recipe) {
+        final List<RecipeImage> images = recipeImageRepository.findByRecipe(recipe);
+        final List<Product> products = productRecipeRepository.findProductByRecipe(recipe);
+        return RecipeDto.toDto(recipe, images, products);
     }
 
     @Transactional

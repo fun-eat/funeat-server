@@ -56,7 +56,8 @@ public interface RecipeController {
             description = "꿀조합 목록 조회 성공."
     )
     @GetMapping
-    ResponseEntity<SortingRecipesResponse> getSortingRecipes(@PageableDefault final Pageable pageable);
+    ResponseEntity<SortingRecipesResponse> getSortingRecipes(@AuthenticationPrincipal final LoginInfo loginInfo,
+                                                             @PageableDefault final Pageable pageable);
 
     @Operation(summary = "꿀조합 좋아요", description = "꿀조합에 좋아요 또는 취소를 한다.")
     @ApiResponse(

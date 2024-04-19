@@ -60,8 +60,9 @@ public class RecipeApiController implements RecipeController {
     }
 
     @GetMapping(value = "/api/recipes")
-    public ResponseEntity<SortingRecipesResponse> getSortingRecipes(@PageableDefault final Pageable pageable) {
-        final SortingRecipesResponse response = recipeService.getSortingRecipes(pageable);
+    public ResponseEntity<SortingRecipesResponse> getSortingRecipes(@AuthenticationPrincipal final LoginInfo loginInfo,
+                                                                    @PageableDefault final Pageable pageable) {
+        final SortingRecipesResponse response = recipeService.getSortingRecipes(loginInfo.getId(), pageable);
 
         return ResponseEntity.ok(response);
     }

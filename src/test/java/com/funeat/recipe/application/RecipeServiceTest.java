@@ -278,6 +278,7 @@ class RecipeServiceTest extends ServiceTest {
         @Test
         void 꿀조합을_좋아요가_많은_순으로_정렬할_수_있다() {
             // given
+            final var loginId = -1L;
             final var member1 = 멤버_멤버1_생성();
             final var member2 = 멤버_멤버2_생성();
             final var member3 = 멤버_멤버3_생성();
@@ -312,7 +313,7 @@ class RecipeServiceTest extends ServiceTest {
             final var page = 페이지요청_생성(0, 10, 좋아요수_내림차순);
 
             // when
-            final var actual = recipeService.getSortingRecipes(page).getRecipes();
+            final var actual = recipeService.getSortingRecipes(loginId, page).getRecipes();
             final var expected = List.of(
                     RecipeDto.toDto(recipe1_2, List.of(recipeImage1_2_1, recipeImage1_2_2),
                             List.of(product1, product3)),
@@ -328,6 +329,7 @@ class RecipeServiceTest extends ServiceTest {
         @Test
         void 꿀조합을_최신순으로_정렬할_수_있다() throws InterruptedException {
             // given
+            final var loginId = -1L;
             final var member1 = 멤버_멤버1_생성();
             final var member2 = 멤버_멤버2_생성();
             final var member3 = 멤버_멤버3_생성();
@@ -364,7 +366,7 @@ class RecipeServiceTest extends ServiceTest {
             final var page = 페이지요청_생성(0, 10, 최신순);
 
             // when
-            final var actual = recipeService.getSortingRecipes(page).getRecipes();
+            final var actual = recipeService.getSortingRecipes(loginId, page).getRecipes();
             final var expected = List.of(
                     RecipeDto.toDto(recipe1_3, List.of(), List.of()),
                     RecipeDto.toDto(recipe1_2, List.of(recipeImage1_2_1, recipeImage1_2_2),
@@ -380,6 +382,7 @@ class RecipeServiceTest extends ServiceTest {
         @Test
         void 꿀조합을_오래된순으로_정렬할_수_있다() {
             // given
+            final var loginId = -1L;
             final var member1 = 멤버_멤버1_생성();
             final var member2 = 멤버_멤버2_생성();
             final var member3 = 멤버_멤버3_생성();
@@ -414,7 +417,7 @@ class RecipeServiceTest extends ServiceTest {
             final var page = 페이지요청_생성(0, 10, 과거순);
 
             // when
-            final var actual = recipeService.getSortingRecipes(page).getRecipes();
+            final var actual = recipeService.getSortingRecipes(loginId, page).getRecipes();
             final var expected = List.of(
                     RecipeDto.toDto(recipe1_1, List.of(recipeImage1_1_1), List.of(product1, product2, product3)),
                     RecipeDto.toDto(recipe1_2, List.of(recipeImage1_2_1, recipeImage1_2_2),
