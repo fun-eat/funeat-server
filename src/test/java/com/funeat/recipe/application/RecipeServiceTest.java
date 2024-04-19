@@ -316,9 +316,9 @@ class RecipeServiceTest extends ServiceTest {
             final var actual = recipeService.getSortingRecipes(loginId, page).getRecipes();
             final var expected = List.of(
                     RecipeDto.toDto(recipe1_2, List.of(recipeImage1_2_1, recipeImage1_2_2),
-                            List.of(product1, product3)),
-                    RecipeDto.toDto(recipe1_3, List.of(), List.of()),
-                    RecipeDto.toDto(recipe1_1, List.of(recipeImage1_1_1), List.of(product1, product2, product3)));
+                            List.of(product1, product3), false),
+                    RecipeDto.toDto(recipe1_3, List.of(), List.of(), false),
+                    RecipeDto.toDto(recipe1_1, List.of(recipeImage1_1_1), List.of(product1, product2, product3), false));
 
             // then
             assertThat(actual)
@@ -368,10 +368,10 @@ class RecipeServiceTest extends ServiceTest {
             // when
             final var actual = recipeService.getSortingRecipes(loginId, page).getRecipes();
             final var expected = List.of(
-                    RecipeDto.toDto(recipe1_3, List.of(), List.of()),
+                    RecipeDto.toDto(recipe1_3, List.of(), List.of(), false),
                     RecipeDto.toDto(recipe1_2, List.of(recipeImage1_2_1, recipeImage1_2_2),
-                            List.of(product1, product3)),
-                    RecipeDto.toDto(recipe1_1, List.of(recipeImage1_1_1), List.of(product1, product2, product3)));
+                            List.of(product1, product3), false),
+                    RecipeDto.toDto(recipe1_1, List.of(recipeImage1_1_1), List.of(product1, product2, product3), false));
 
             // then
             assertThat(actual)
@@ -419,10 +419,10 @@ class RecipeServiceTest extends ServiceTest {
             // when
             final var actual = recipeService.getSortingRecipes(loginId, page).getRecipes();
             final var expected = List.of(
-                    RecipeDto.toDto(recipe1_1, List.of(recipeImage1_1_1), List.of(product1, product2, product3)),
+                    RecipeDto.toDto(recipe1_1, List.of(recipeImage1_1_1), List.of(product1, product2, product3), false),
                     RecipeDto.toDto(recipe1_2, List.of(recipeImage1_2_1, recipeImage1_2_2),
-                            List.of(product1, product3)),
-                    RecipeDto.toDto(recipe1_3, List.of(), List.of()));
+                            List.of(product1, product3), false),
+                    RecipeDto.toDto(recipe1_3, List.of(), List.of(), false));
 
             // then
             assertThat(actual)

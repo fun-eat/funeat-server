@@ -162,7 +162,7 @@ public class RecipeService {
         final PageDto page = PageDto.toDto(pages);
         final List<RecipeDto> recipes = pages.getContent().stream()
                 .map(recipe -> createRecipeDto(memberId, recipe))
-                .collect(Collectors.toList());
+                .toList();
 
         return SortingRecipesResponse.toResponse(page, recipes);
     }
@@ -170,7 +170,15 @@ public class RecipeService {
     private RecipeDto createRecipeDto(final Long memberId, final Recipe recipe) {
         final List<RecipeImage> images = recipeImageRepository.findByRecipe(recipe);
         final List<Product> products = productRecipeRepository.findProductByRecipe(recipe);
-        return RecipeDto.toDto(recipe, images, products);
+
+        if (memberId == GUEST_ID) {
+            return RecipeDto.toDto(recipe, images, products, false);
+        }
+
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND, memberId));
+        final Boolean favorite = recipeFavoriteRepository.existsByMemberAndRecipeAndFavoriteTrue(member, recipe);
+        return RecipeDto.toDto(recipe, images, products, favorite);
     }
 
     @Transactional
