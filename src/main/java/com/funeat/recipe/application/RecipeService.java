@@ -63,10 +63,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class RecipeService {
 
     private static final long RANKING_MINIMUM_FAVORITE_COUNT = 1L;
-    private static final int RANKING_SIZE = 3;
+    private static final int RANKING_SIZE = 4;
     private static final int DEFAULT_PAGE_SIZE = 10;
     private static final int RECIPE_COMMENT_PAGE_SIZE = 10;
     private static final int DEFAULT_CURSOR_PAGINATION_SIZE = 11;
+    private static final long GUEST_ID = -1L;
 
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
@@ -217,19 +218,29 @@ public class RecipeService {
         return recipeRepository.findAllByProductNameContaining(query, lastRecipeId, size);
     }
 
-    public RankingRecipesResponse getTop3Recipes() {
+    public RankingRecipesResponse getTop4Recipes(final Long memberId) {
         final List<Recipe> recipes = recipeRepository.findRecipesByFavoriteCountGreaterThanEqual(RANKING_MINIMUM_FAVORITE_COUNT);
 
         final List<RankingRecipeDto> dtos = recipes.stream()
                 .sorted(Comparator.comparing(Recipe::calculateRankingScore).reversed())
                 .limit(RANKING_SIZE)
-                .map(recipe -> {
-                    final List<RecipeImage> findRecipeImages = recipeImageRepository.findByRecipe(recipe);
-                    final RecipeAuthorDto author = RecipeAuthorDto.toDto(recipe.getMember());
-                    return RankingRecipeDto.toDto(recipe, findRecipeImages, author);
-                })
-                .collect(Collectors.toList());
+                .map(recipe -> createRankingRecipeDto(memberId, recipe))
+                .toList();
         return RankingRecipesResponse.toResponse(dtos);
+    }
+
+    private RankingRecipeDto createRankingRecipeDto(final Long memberId, final Recipe recipe) {
+        final List<RecipeImage> findRecipeImages = recipeImageRepository.findByRecipe(recipe);
+        final RecipeAuthorDto author = RecipeAuthorDto.toDto(recipe.getMember());
+
+        if (memberId == GUEST_ID) {
+            return RankingRecipeDto.toDto(recipe, findRecipeImages, author, false);
+        }
+
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND, memberId));
+        final boolean favorite = recipeFavoriteRepository.existsByMemberAndRecipeAndFavoriteTrue(member, recipe);
+        return RankingRecipeDto.toDto(recipe, findRecipeImages, author, favorite);
     }
 
     @Transactional

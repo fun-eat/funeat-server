@@ -11,27 +11,27 @@ public class RankingRecipeDto {
     private final String image;
     private final String title;
     private final RecipeAuthorDto author;
-    private final Long favoriteCount;
+    private final Boolean favorite;
     private final LocalDateTime createdAt;
 
     public RankingRecipeDto(final Long id, final String image, final String title, final RecipeAuthorDto author,
-                            final Long favoriteCount, final LocalDateTime createdAt) {
+                            final Boolean favorite, final LocalDateTime createdAt) {
         this.id = id;
         this.image = image;
         this.title = title;
         this.author = author;
-        this.favoriteCount = favoriteCount;
+        this.favorite = favorite;
         this.createdAt = createdAt;
     }
 
     public static RankingRecipeDto toDto(final Recipe recipe, final List<RecipeImage> images,
-                                         final RecipeAuthorDto author) {
+                                         final RecipeAuthorDto author, final Boolean favorite) {
         if (images.isEmpty()) {
-            return new RankingRecipeDto(recipe.getId(), null, recipe.getTitle(), author,
-                    recipe.getFavoriteCount(), recipe.getCreatedAt());
+            return new RankingRecipeDto(recipe.getId(), null, recipe.getTitle(), author, favorite,
+                    recipe.getCreatedAt());
         }
-        return new RankingRecipeDto(recipe.getId(), images.get(0).getImage(), recipe.getTitle(), author,
-                recipe.getFavoriteCount(), recipe.getCreatedAt());
+        return new RankingRecipeDto(recipe.getId(), images.get(0).getImage(), recipe.getTitle(), author, favorite,
+                recipe.getCreatedAt());
     }
 
     public Long getId() {
@@ -50,8 +50,8 @@ public class RankingRecipeDto {
         return author;
     }
 
-    public Long getFavoriteCount() {
-        return favoriteCount;
+    public Boolean getFavorite() {
+        return favorite;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -68,8 +68,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.funeat.acceptance.common.AcceptanceTest;
-import com.funeat.member.domain.Member;
-import com.funeat.recipe.domain.Recipe;
 import com.funeat.recipe.dto.DetailProductRecipeDto;
 import com.funeat.recipe.dto.RankingRecipeDto;
 import com.funeat.recipe.dto.RecipeAuthorDto;
@@ -84,7 +82,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -527,7 +524,7 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
     class getRankingRecipes_성공_테스트 {
 
         @Test
-        void 전체_꿀조합들_중에서_랭킹_TOP3를_조회할_수_있다() {
+        void 로그인을_하지_않고_전체_꿀조합들_중에서_랭킹_TOP4를_조회할_수_있다() {
             // given
             final var 카테고리 = 카테고리_간편식사_생성();
             단일_카테고리_저장(카테고리);
@@ -537,8 +534,9 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지2), 레시피추가요청_생성(상품));
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지3), 레시피추가요청_생성(상품));
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지4), 레시피추가요청_생성(상품));
+            여러명이_레시피_좋아요_요청(List.of(멤버1), 레시피1, 좋아요O);
             여러명이_레시피_좋아요_요청(List.of(멤버1, 멤버2), 레시피2, 좋아요O);
-            여러명이_레시피_좋아요_요청(List.of(멤버1), 레시피3, 좋아요O);
+            여러명이_레시피_좋아요_요청(List.of(멤버1, 멤버2), 레시피3, 좋아요O);
             여러명이_레시피_좋아요_요청(List.of(멤버1, 멤버2, 멤버3), 레시피4, 좋아요O);
 
             // when
@@ -546,7 +544,31 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            레시피_랭킹_조회_결과를_검증한다(응답, List.of(레시피4, 레시피2, 레시피3));
+            레시피_랭킹_조회_결과를_검증한다(응답, List.of(레시피4, 레시피2, 레시피3, 레시피1), List.of(false, false, false, false));
+        }
+
+        @Test
+        void 로그인_후_전체_꿀조합들_중에서_랭킹_TOP4를_조회할_수_있다() {
+            // given
+            final var 카테고리 = 카테고리_간편식사_생성();
+            단일_카테고리_저장(카테고리);
+            final var 상품 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점5점_생성(카테고리));
+
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지2), 레시피추가요청_생성(상품));
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지3), 레시피추가요청_생성(상품));
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지4), 레시피추가요청_생성(상품));
+            여러명이_레시피_좋아요_요청(List.of(멤버1), 레시피1, 좋아요O);
+            여러명이_레시피_좋아요_요청(List.of(멤버1, 멤버2), 레시피2, 좋아요O);
+            여러명이_레시피_좋아요_요청(List.of(멤버1, 멤버2), 레시피3, 좋아요O);
+            여러명이_레시피_좋아요_요청(List.of(멤버1, 멤버2, 멤버3), 레시피4, 좋아요O);
+
+            // when
+            final var 응답 = 레시피_랭킹_조회_요청(로그인_쿠키_획득(멤버2));
+
+            // then
+            STATUS_CODE를_검증한다(응답, 정상_처리);
+            레시피_랭킹_조회_결과를_검증한다(응답, List.of(레시피4, 레시피2, 레시피3, 레시피1), List.of(true, true, true, false));
         }
     }
 
@@ -770,18 +792,15 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
         });
     }
 
-    private List<RankingRecipeDto> 예상_레시피_랭킹_변환(final List<Recipe> recipes, final Member member) {
-        return recipes.stream()
-                .map(it -> RankingRecipeDto.toDto(it, Collections.emptyList(), RecipeAuthorDto.toDto(member)))
-                .collect(Collectors.toList());
-    }
-
-    private void 레시피_랭킹_조회_결과를_검증한다(final ExtractableResponse<Response> response, final List<Long> recipeIds) {
+    private void 레시피_랭킹_조회_결과를_검증한다(final ExtractableResponse<Response> response, final List<Long> recipeIds,
+                                    final List<Boolean> favorites) {
         final var actual = response.jsonPath()
                 .getList("recipes", RankingRecipeDto.class);
 
         assertThat(actual).extracting(RankingRecipeDto::getId)
                 .isEqualTo(recipeIds);
+        assertThat(actual).extracting(RankingRecipeDto::getFavorite)
+                .isEqualTo(favorites);
     }
 
     private void 레시피_검색_결과를_검증한다(final ExtractableResponse<Response> response, final boolean hasNext, final List<Long> recipeIds) {
