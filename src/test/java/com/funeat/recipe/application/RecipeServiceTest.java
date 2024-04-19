@@ -557,7 +557,7 @@ class RecipeServiceTest extends ServiceTest {
     }
 
     @Nested
-    class getTop3Recipes_성공_테스트 {
+    class getTop4Recipes_성공_테스트 {
 
         @Nested
         class 꿀조합_개수에_대한_테스트 {
