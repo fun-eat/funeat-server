@@ -1,5 +1,7 @@
 package com.funeat.product.presentation;
 
+import com.funeat.auth.dto.LoginInfo;
+import com.funeat.auth.util.AuthenticationPrincipal;
 import com.funeat.product.dto.ProductResponse;
 import com.funeat.product.dto.ProductsInCategoryResponse;
 import com.funeat.product.dto.RankingProductsResponse;
@@ -71,6 +73,7 @@ public interface ProductController {
             description = "해당 상품 꿀조합 목록 조회 성공."
     )
     @GetMapping
-    ResponseEntity<SortingRecipesResponse> getProductRecipes(@PathVariable final Long productId,
+    ResponseEntity<SortingRecipesResponse> getProductRecipes(@AuthenticationPrincipal final LoginInfo loginInfo,
+                                                             @PathVariable final Long productId,
                                                              @PageableDefault final Pageable pageable);
 }

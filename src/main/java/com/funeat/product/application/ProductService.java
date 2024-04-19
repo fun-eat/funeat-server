@@ -35,6 +35,7 @@ import com.funeat.tag.domain.Tag;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -174,7 +175,7 @@ public class ProductService {
         return productRepository.findAllWithReviewCountByNameContaining(query, lastProductId, size);
     }
 
-    public SortingRecipesResponse getProductRecipes(final Long productId, final Pageable pageable) {
+    public SortingRecipesResponse getProductRecipes(final Long memberId, final Long productId, final Pageable pageable) {
         final Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND, productId));
 
@@ -182,12 +183,15 @@ public class ProductService {
 
         final PageDto pageDto = PageDto.toDto(recipes);
         final List<RecipeDto> recipeDtos = recipes.stream()
-                .map(recipe -> {
-                    final List<RecipeImage> images = recipeImageRepository.findByRecipe(recipe);
-                    final List<Product> products = productRecipeRepository.findProductByRecipe(recipe);
-                    return RecipeDto.toDto(recipe, images, products);
-                })
-                .collect(Collectors.toList());
+                .map(recipe -> createRecipeDto(memberId, recipe))
+                .toList();
         return SortingRecipesResponse.toResponse(pageDto, recipeDtos);
+    }
+
+    @NotNull
+    private RecipeDto createRecipeDto(final Long memberId, final Recipe recipe) {
+        final List<RecipeImage> images = recipeImageRepository.findByRecipe(recipe);
+        final List<Product> products = productRecipeRepository.findProductByRecipe(recipe);
+        return RecipeDto.toDto(recipe, images, products);
     }
 }

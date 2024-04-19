@@ -1,5 +1,7 @@
 package com.funeat.product.presentation;
 
+import com.funeat.auth.dto.LoginInfo;
+import com.funeat.auth.util.AuthenticationPrincipal;
 import com.funeat.product.application.ProductService;
 import com.funeat.product.dto.ProductResponse;
 import com.funeat.product.dto.ProductSortCondition;
@@ -8,7 +10,6 @@ import com.funeat.product.dto.RankingProductsResponse;
 import com.funeat.product.dto.SearchProductResultsResponse;
 import com.funeat.product.dto.SearchProductsResponse;
 import com.funeat.recipe.dto.SortingRecipesResponse;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -64,9 +65,10 @@ public class ProductApiController implements ProductController {
     }
 
     @GetMapping("/products/{productId}/recipes")
-    public ResponseEntity<SortingRecipesResponse> getProductRecipes(@PathVariable final Long productId,
+    public ResponseEntity<SortingRecipesResponse> getProductRecipes(@AuthenticationPrincipal final LoginInfo loginInfo,
+                                                                    @PathVariable final Long productId,
                                                                     @PageableDefault final Pageable pageable) {
-        final SortingRecipesResponse response = productService.getProductRecipes(productId, pageable);
+        final SortingRecipesResponse response = productService.getProductRecipes(loginInfo.getId(), productId, pageable);
         return ResponseEntity.ok(response);
     }
 }
