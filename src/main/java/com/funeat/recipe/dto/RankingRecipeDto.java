@@ -11,16 +11,16 @@ public class RankingRecipeDto {
     private final String image;
     private final String title;
     private final String author;
-    private final Boolean favoriteCount;
+    private final Boolean favorite;
     private final LocalDateTime createdAt;
 
     public RankingRecipeDto(final Long id, final String image, final String title, final String author,
-                            final Boolean favoriteCount, final LocalDateTime createdAt) {
+                            final Boolean favorite, final LocalDateTime createdAt) {
         this.id = id;
         this.image = image;
         this.title = title;
         this.author = author;
-        this.favoriteCount = favoriteCount;
+        this.favorite = favorite;
         this.createdAt = createdAt;
     }
 
@@ -49,8 +49,8 @@ public class RankingRecipeDto {
         return author;
     }
 
-    public Boolean getFavoriteCount() {
-        return favoriteCount;
+    public Boolean getFavorite() {
+        return favorite;
     }
 
     public LocalDateTime getCreatedAt() {
