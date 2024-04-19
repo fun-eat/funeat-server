@@ -28,6 +28,7 @@ import com.funeat.recipe.domain.Recipe;
 import com.funeat.recipe.domain.RecipeImage;
 import com.funeat.recipe.dto.RankingRecipeDto;
 import com.funeat.recipe.dto.RankingRecipesResponse;
+import com.funeat.recipe.dto.RecipeAuthorDto;
 import com.funeat.recipe.dto.RecipeCommentCondition;
 import com.funeat.recipe.dto.RecipeCommentCreateRequest;
 import com.funeat.recipe.dto.RecipeCommentResponse;
@@ -230,15 +231,16 @@ public class RecipeService {
 
     private RankingRecipeDto createRankingRecipeDto(final Long memberId, final Recipe recipe) {
         final List<RecipeImage> findRecipeImages = recipeImageRepository.findByRecipe(recipe);
+        final RecipeAuthorDto author = RecipeAuthorDto.toDto(recipe.getMember());
 
         if (memberId == GUEST_ID) {
-            return RankingRecipeDto.toDto(recipe, findRecipeImages, false);
+            return RankingRecipeDto.toDto(recipe, findRecipeImages, author, false);
         }
 
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND, memberId));
         final boolean favorite = recipeFavoriteRepository.existsByMemberAndRecipeAndFavoriteTrue(member, recipe);
-        return RankingRecipeDto.toDto(recipe, findRecipeImages, favorite);
+        return RankingRecipeDto.toDto(recipe, findRecipeImages, author, favorite);
     }
 
     @Transactional

@@ -10,11 +10,11 @@ public class RankingRecipeDto {
     private final Long id;
     private final String image;
     private final String title;
-    private final String author;
+    private final RecipeAuthorDto author;
     private final Boolean favorite;
     private final LocalDateTime createdAt;
 
-    public RankingRecipeDto(final Long id, final String image, final String title, final String author,
+    public RankingRecipeDto(final Long id, final String image, final String title, final RecipeAuthorDto author,
                             final Boolean favorite, final LocalDateTime createdAt) {
         this.id = id;
         this.image = image;
@@ -24,13 +24,14 @@ public class RankingRecipeDto {
         this.createdAt = createdAt;
     }
 
-    public static RankingRecipeDto toDto(final Recipe recipe, final List<RecipeImage> images, final Boolean favorite) {
+    public static RankingRecipeDto toDto(final Recipe recipe, final List<RecipeImage> images,
+                                         final RecipeAuthorDto author, final Boolean favorite) {
         if (images.isEmpty()) {
-            return new RankingRecipeDto(recipe.getId(), null, recipe.getTitle(),
-                    recipe.getMember().getNickname(), favorite, recipe.getCreatedAt());
+            return new RankingRecipeDto(recipe.getId(), null, recipe.getTitle(), author, favorite,
+                    recipe.getCreatedAt());
         }
-        return new RankingRecipeDto(recipe.getId(), images.get(0).getImage(), recipe.getTitle(),
-                recipe.getMember().getNickname(), favorite, recipe.getCreatedAt());
+        return new RankingRecipeDto(recipe.getId(), images.get(0).getImage(), recipe.getTitle(), author, favorite,
+                recipe.getCreatedAt());
     }
 
     public Long getId() {
@@ -45,7 +46,7 @@ public class RankingRecipeDto {
         return title;
     }
 
-    public String getAuthor() {
+    public RecipeAuthorDto getAuthor() {
         return author;
     }
 

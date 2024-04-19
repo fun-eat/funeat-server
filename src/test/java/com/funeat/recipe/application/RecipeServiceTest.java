@@ -39,6 +39,7 @@ import com.funeat.product.domain.Product;
 import com.funeat.product.exception.ProductException.ProductNotFoundException;
 import com.funeat.recipe.dto.RankingRecipeDto;
 import com.funeat.recipe.dto.RankingRecipesResponse;
+import com.funeat.recipe.dto.RecipeAuthorDto;
 import com.funeat.recipe.dto.RecipeCommentCondition;
 import com.funeat.recipe.dto.RecipeCommentCreateRequest;
 import com.funeat.recipe.dto.RecipeCommentResponse;
@@ -586,7 +587,8 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipe = 레시피_생성(member, 2L, now);
                 단일_꿀조합_저장(recipe);
 
-                final var rankingRecipeDto = RankingRecipeDto.toDto(recipe, Collections.emptyList(), false);
+                final var author = RecipeAuthorDto.toDto(member);
+                final var rankingRecipeDto = RankingRecipeDto.toDto(recipe, Collections.emptyList(), author, false);
                 final var rankingRecipesDtos = Collections.singletonList(rankingRecipeDto);
                 final var expected = RankingRecipesResponse.toResponse(rankingRecipesDtos);
 
@@ -610,8 +612,9 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipe2 = 레시피_생성(member, 2L, now);
                 복수_꿀조합_저장(recipe1, recipe2);
 
-                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), false);
-                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), false);
+                final var author = RecipeAuthorDto.toDto(member);
+                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), author, false);
+                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), author, false);
                 final var rankingRecipesDtos = List.of(rankingRecipeDto2, rankingRecipeDto1);
                 final var expected = RankingRecipesResponse.toResponse(rankingRecipesDtos);
 
@@ -636,9 +639,10 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipe3 = 레시피_생성(member, 2L, now);
                 복수_꿀조합_저장(recipe1, recipe2, recipe3);
 
-                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), false);
-                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), false);
-                final var rankingRecipeDto3 = RankingRecipeDto.toDto(recipe3, Collections.emptyList(), false);
+                final var author = RecipeAuthorDto.toDto(member);
+                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), author, false);
+                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), author, false);
+                final var rankingRecipeDto3 = RankingRecipeDto.toDto(recipe3, Collections.emptyList(), author, false);
                 final var rankingRecipesDtos = List.of(rankingRecipeDto3, rankingRecipeDto2, rankingRecipeDto1);
                 final var expected = RankingRecipesResponse.toResponse(rankingRecipesDtos);
 
@@ -664,10 +668,11 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipe4 = 레시피_생성(member, 6L, now);
                 복수_꿀조합_저장(recipe1, recipe2, recipe3, recipe4);
 
-                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), false);
-                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), false);
-                final var rankingRecipeDto3 = RankingRecipeDto.toDto(recipe3, Collections.emptyList(), false);
-                final var rankingRecipeDto4 = RankingRecipeDto.toDto(recipe4, Collections.emptyList(), false);
+                final var author = RecipeAuthorDto.toDto(member);
+                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), author, false);
+                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), author, false);
+                final var rankingRecipeDto3 = RankingRecipeDto.toDto(recipe3, Collections.emptyList(), author, false);
+                final var rankingRecipeDto4 = RankingRecipeDto.toDto(recipe4, Collections.emptyList(), author, false);
                 final var rankingRecipesDtos = List.of(rankingRecipeDto4, rankingRecipeDto3, rankingRecipeDto2, rankingRecipeDto1);
                 final var expected = RankingRecipesResponse.toResponse(rankingRecipesDtos);
 
@@ -697,10 +702,11 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipe4 = 레시피_생성(member, 6L, now);
                 복수_꿀조합_저장(recipe1, recipe2, recipe3, recipe4);
 
-                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), false);
-                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), false);
-                final var rankingRecipeDto3 = RankingRecipeDto.toDto(recipe3, Collections.emptyList(), false);
-                final var rankingRecipeDto4 = RankingRecipeDto.toDto(recipe4, Collections.emptyList(), false);
+                final var author = RecipeAuthorDto.toDto(member);
+                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), author, false);
+                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), author, false);
+                final var rankingRecipeDto3 = RankingRecipeDto.toDto(recipe3, Collections.emptyList(), author, false);
+                final var rankingRecipeDto4 = RankingRecipeDto.toDto(recipe4, Collections.emptyList(), author, false);
                 final var rankingRecipesDtos = List.of(rankingRecipeDto4, rankingRecipeDto3, rankingRecipeDto2, rankingRecipeDto1);
                 final var expected = RankingRecipesResponse.toResponse(rankingRecipesDtos);
 
@@ -729,10 +735,11 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipeFavorite = 레시피_좋아요_생성(member, recipe1, true);
                 단일_꿀조합_좋아요_저장(recipeFavorite);
 
-                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), true);
-                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), false);
-                final var rankingRecipeDto3 = RankingRecipeDto.toDto(recipe3, Collections.emptyList(), false);
-                final var rankingRecipeDto4 = RankingRecipeDto.toDto(recipe4, Collections.emptyList(), false);
+                final var author = RecipeAuthorDto.toDto(member);
+                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), author, true);
+                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), author, false);
+                final var rankingRecipeDto3 = RankingRecipeDto.toDto(recipe3, Collections.emptyList(), author, false);
+                final var rankingRecipeDto4 = RankingRecipeDto.toDto(recipe4, Collections.emptyList(), author, false);
                 final var rankingRecipesDtos = List.of(rankingRecipeDto4, rankingRecipeDto3, rankingRecipeDto2, rankingRecipeDto1);
                 final var expected = RankingRecipesResponse.toResponse(rankingRecipesDtos);
 
@@ -760,8 +767,9 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipe2 = 레시피_생성(member, 10L, now.minusDays(4L));
                 복수_꿀조합_저장(recipe1, recipe2);
 
-                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), false);
-                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), false);
+                final var author = RecipeAuthorDto.toDto(member);
+                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), author, false);
+                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), author, false);
                 final var rankingRecipesDtos = List.of(rankingRecipeDto2, rankingRecipeDto1);
                 final var expected = RankingRecipesResponse.toResponse(rankingRecipesDtos);
 
@@ -785,8 +793,9 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipe2 = 레시피_생성(member, 4L, now.minusDays(1L));
                 복수_꿀조합_저장(recipe1, recipe2);
 
-                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), false);
-                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), false);
+                final var author = RecipeAuthorDto.toDto(member);
+                final var rankingRecipeDto1 = RankingRecipeDto.toDto(recipe1, Collections.emptyList(), author, false);
+                final var rankingRecipeDto2 = RankingRecipeDto.toDto(recipe2, Collections.emptyList(), author, false);
                 final var rankingRecipesDtos = List.of(rankingRecipeDto2, rankingRecipeDto1);
                 final var expected = RankingRecipesResponse.toResponse(rankingRecipesDtos);
 
