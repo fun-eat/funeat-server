@@ -472,7 +472,7 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
             페이지를_검증한다(응답, 예상_응답_페이지);
-            레시피_목록_조회_결과를_검증한다(응답, List.of(레시피2, 레시피1, 레시피3));
+            레시피_목록_조회_결과를_검증한다(응답, List.of(레시피2, 레시피1, 레시피3), List.of(false, false, false));
         }
 
         @Test
@@ -494,7 +494,7 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
             페이지를_검증한다(응답, 예상_응답_페이지);
-            레시피_목록_조회_결과를_검증한다(응답, List.of(레시피3, 레시피2, 레시피1));
+            레시피_목록_조회_결과를_검증한다(응답, List.of(레시피3, 레시피2, 레시피1), List.of(false, false, false));
         }
 
         @Test
@@ -516,7 +516,31 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             // then
             STATUS_CODE를_검증한다(response, 정상_처리);
             페이지를_검증한다(response, 예상_응답_페이지);
-            레시피_목록_조회_결과를_검증한다(response, List.of(레시피1, 레시피2, 레시피3));
+            레시피_목록_조회_결과를_검증한다(response, List.of(레시피1, 레시피2, 레시피3), List.of(false, false, false));
+        }
+
+        @Test
+        void 로그인_후_꿀조합을_좋아요가_많은_순으로_정렬할_수_있다() {
+            // given
+            final var 카테고리 = 카테고리_간편식사_생성();
+            단일_카테고리_저장(카테고리);
+            final var 상품 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점5점_생성(카테고리));
+
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지2), 레시피추가요청_생성(상품));
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지3), 레시피추가요청_생성(상품));
+            여러명이_레시피_좋아요_요청(List.of(멤버1), 레시피1, 좋아요O);
+            여러명이_레시피_좋아요_요청(List.of(멤버1, 멤버2), 레시피2, 좋아요O);
+
+            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(3L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
+
+            // when
+            final var 응답 = 레시피_목록_요청(로그인_쿠키_획득(멤버2), 좋아요수_내림차순, FIRST_PAGE);
+
+            // then
+            STATUS_CODE를_검증한다(응답, 정상_처리);
+            페이지를_검증한다(응답, 예상_응답_페이지);
+            레시피_목록_조회_결과를_검증한다(응답, List.of(레시피2, 레시피1, 레시피3), List.of(true, false, false));
         }
     }
 
@@ -755,11 +779,14 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    private void 레시피_목록_조회_결과를_검증한다(final ExtractableResponse<Response> response, final List<Long> recipeIds) {
+    private void 레시피_목록_조회_결과를_검증한다(final ExtractableResponse<Response> response, final List<Long> recipeIds,
+                                    final List<Boolean> favorites) {
         final var actual = response.jsonPath().getList("recipes", RecipeDto.class);
 
         assertThat(actual).extracting(RecipeDto::getId)
                 .containsExactlyElementsOf(recipeIds);
+        assertThat(actual).extracting(RecipeDto::getFavorite)
+                .containsExactlyElementsOf(favorites);
     }
 
     private void 레시피_상세_정보_조회_결과를_검증한다(final ExtractableResponse<Response> response) {
