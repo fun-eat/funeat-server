@@ -83,6 +83,15 @@ public class RecipeSteps {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 레시피_랭킹_조회_요청(final String loginCookie) {
+        return given()
+                .cookie("SESSION", loginCookie)
+                .when()
+                .get("/api/ranks/recipes")
+                .then()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> 레시피_검색_결과_조회_요청(final String query, final Long lastRecipeId) {
         return given()
                 .queryParam("query", query)
