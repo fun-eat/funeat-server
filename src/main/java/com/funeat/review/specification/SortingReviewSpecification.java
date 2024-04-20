@@ -87,7 +87,8 @@ public final class SortingReviewSpecification {
         if (LOCALDATETIME_TYPE_INCLUDE.contains(fieldName)) {
             final Path<LocalDateTime> createdAtPath = root.get(fieldName);
             final LocalDateTime lastReviewCreatedAt = lastReview.getCreatedAt();
-            return criteriaBuilder.equal(createdAtPath, lastReviewCreatedAt);
+            final int reformatNano = Math.round((float) lastReviewCreatedAt.getNano() / 1000) * 1000;
+            return criteriaBuilder.equal(createdAtPath, lastReviewCreatedAt.withNano(reformatNano));
         }
         if (LONG_TYPE_INCLUDE.contains(fieldName)) {
             final Path<Long> reviewPath = root.get(fieldName);
@@ -120,7 +121,8 @@ public final class SortingReviewSpecification {
         if (LOCALDATETIME_TYPE_INCLUDE.contains(fieldName)) {
             final Path<LocalDateTime> createdAtPath = root.get(fieldName);
             final LocalDateTime lastReviewCreatedAt = lastReview.getCreatedAt();
-            return criteriaBuilder.greaterThan(createdAtPath, lastReviewCreatedAt);
+            final int reformatNano = Math.round((float) lastReviewCreatedAt.getNano() / 1000) * 1000;
+            return criteriaBuilder.greaterThan(createdAtPath, lastReviewCreatedAt.withNano(reformatNano));
         }
         if (LONG_TYPE_INCLUDE.contains(fieldName)) {
             final Path<Long> reviewPath = root.get(fieldName);
@@ -149,7 +151,8 @@ public final class SortingReviewSpecification {
         if (LOCALDATETIME_TYPE_INCLUDE.contains(fieldName)) {
             final Path<LocalDateTime> createdAtPath = root.get(fieldName);
             final LocalDateTime lastReviewCreatedAt = lastReview.getCreatedAt();
-            return criteriaBuilder.lessThan(createdAtPath, lastReviewCreatedAt);
+            final int reformatNano = Math.round((float) lastReviewCreatedAt.getNano() / 1000) * 1000;
+            return criteriaBuilder.lessThan(createdAtPath, lastReviewCreatedAt.withNano(reformatNano));
         }
         if (LONG_TYPE_INCLUDE.contains(fieldName)) {
             final Path<Long> reviewPath = root.get(fieldName);

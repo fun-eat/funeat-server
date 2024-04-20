@@ -13,10 +13,9 @@ import com.funeat.recipe.dto.RecipeDetailResponse;
 import com.funeat.recipe.dto.RecipeFavoriteRequest;
 import com.funeat.recipe.dto.SearchRecipeResultsResponse;
 import com.funeat.recipe.dto.SortingRecipesResponse;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import jakarta.validation.Valid;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
@@ -61,8 +60,9 @@ public class RecipeApiController implements RecipeController {
     }
 
     @GetMapping(value = "/api/recipes")
-    public ResponseEntity<SortingRecipesResponse> getSortingRecipes(@PageableDefault final Pageable pageable) {
-        final SortingRecipesResponse response = recipeService.getSortingRecipes(pageable);
+    public ResponseEntity<SortingRecipesResponse> getSortingRecipes(@AuthenticationPrincipal final LoginInfo loginInfo,
+                                                                    @PageableDefault final Pageable pageable) {
+        final SortingRecipesResponse response = recipeService.getSortingRecipes(loginInfo.getId(), pageable);
 
         return ResponseEntity.ok(response);
     }
@@ -78,8 +78,8 @@ public class RecipeApiController implements RecipeController {
     }
 
     @GetMapping("/api/ranks/recipes")
-    public ResponseEntity<RankingRecipesResponse> getRankingRecipes() {
-        final RankingRecipesResponse response = recipeService.getTop3Recipes();
+    public ResponseEntity<RankingRecipesResponse> getRankingRecipes(@AuthenticationPrincipal final LoginInfo loginInfo) {
+        final RankingRecipesResponse response = recipeService.getTop4Recipes(loginInfo.getId());
 
         return ResponseEntity.ok(response);
     }

@@ -2,7 +2,7 @@ package com.funeat.recipe.dto;
 
 import com.funeat.product.domain.Product;
 
-public class ProductRecipeDto {
+public class DetailProductRecipeDto {
 
     private final Long id;
     private final String name;
@@ -10,8 +10,8 @@ public class ProductRecipeDto {
     private final String image;
     private final Double averageRating;
 
-    private ProductRecipeDto(final Long id, final String name, final Long price, final String image,
-                             final Double averageRating) {
+    private DetailProductRecipeDto(final Long id, final String name, final Long price, final String image,
+                                   final Double averageRating) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -19,8 +19,8 @@ public class ProductRecipeDto {
         this.averageRating = averageRating;
     }
 
-    public static ProductRecipeDto toDto(final Product product) {
-        return new ProductRecipeDto(product.getId(), product.getName(), product.getPrice(), product.getImage(),
+    public static DetailProductRecipeDto toDto(final Product product) {
+        return new DetailProductRecipeDto(product.getId(), product.getName(), product.getPrice(), product.getImage(),
                 product.getAverageRating());
     }
 

@@ -21,9 +21,10 @@ public class ProductSteps {
 
     public static ExtractableResponse<Response> 상품_상세_조회_요청(final Long productId) {
         return given()
+                .log().all()
                 .when()
                 .get("/api/products/{product_id}", productId)
-                .then()
+                .then().log().all()
                 .extract();
     }
 

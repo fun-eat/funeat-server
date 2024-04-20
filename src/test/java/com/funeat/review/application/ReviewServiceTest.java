@@ -386,9 +386,7 @@ class ReviewServiceTest extends ServiceTest {
             final var productId = 단일_상품_저장(product);
 
             final var review1 = 리뷰_이미지test3_평점3점_재구매O_생성(member, product, 351L);
-            Thread.sleep(100);
             final var review2 = 리뷰_이미지test4_평점4점_재구매O_생성(member, product, 24L);
-            Thread.sleep(100);
             final var review3 = 리뷰_이미지test3_평점3점_재구매X_생성(member, product, 130L);
             복수_리뷰_저장(review1, review2, review3);
 
@@ -1066,7 +1064,7 @@ class ReviewServiceTest extends ServiceTest {
                     .isInstanceOf(ReviewNotFoundException.class);
         }
     }
-  
+
     @Nested
     class getTopReviews_성공_테스트 {
 

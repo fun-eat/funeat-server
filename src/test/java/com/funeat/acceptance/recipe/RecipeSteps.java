@@ -54,6 +54,17 @@ public class RecipeSteps {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 레시피_목록_요청(final String loginCookie, final String sort, final Long page) {
+        return given()
+                .queryParam("sort", sort)
+                .queryParam("page", page)
+                .cookie("SESSION", loginCookie)
+                .when()
+                .get("/api/recipes")
+                .then()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> 레시피_좋아요_요청(final String loginCookie, final Long recipeId,
                                                            final RecipeFavoriteRequest request) {
         return given()
@@ -77,6 +88,15 @@ public class RecipeSteps {
 
     public static ExtractableResponse<Response> 레시피_랭킹_조회_요청() {
         return given()
+                .when()
+                .get("/api/ranks/recipes")
+                .then()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 레시피_랭킹_조회_요청(final String loginCookie) {
+        return given()
+                .cookie("SESSION", loginCookie)
                 .when()
                 .get("/api/ranks/recipes")
                 .then()

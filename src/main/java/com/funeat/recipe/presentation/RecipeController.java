@@ -56,7 +56,8 @@ public interface RecipeController {
             description = "꿀조합 목록 조회 성공."
     )
     @GetMapping
-    ResponseEntity<SortingRecipesResponse> getSortingRecipes(@PageableDefault final Pageable pageable);
+    ResponseEntity<SortingRecipesResponse> getSortingRecipes(@AuthenticationPrincipal final LoginInfo loginInfo,
+                                                             @PageableDefault final Pageable pageable);
 
     @Operation(summary = "꿀조합 좋아요", description = "꿀조합에 좋아요 또는 취소를 한다.")
     @ApiResponse(
@@ -68,13 +69,13 @@ public interface RecipeController {
                                     @PathVariable final Long recipeId,
                                     @RequestBody final RecipeFavoriteRequest request);
 
-    @Operation(summary = "꿀조합 랭킹 조회", description = "전체 꿀조합들 중에서 랭킹 TOP3를 조회한다.")
+    @Operation(summary = "꿀조합 랭킹 조회", description = "전체 꿀조합들 중에서 랭킹 TOP4를 조회한다.")
     @ApiResponse(
             responseCode = "200",
             description = "꿀조합 랭킹 조회 성공."
     )
     @GetMapping
-    ResponseEntity<RankingRecipesResponse> getRankingRecipes();
+    ResponseEntity<RankingRecipesResponse> getRankingRecipes(@AuthenticationPrincipal final LoginInfo loginInfo);
 
     @Operation(summary = "꿀조합 검색 결과 조회", description = "검색어가 포함된 상품이 있는 꿀조합 목록을 조회한다.")
     @ApiResponse(

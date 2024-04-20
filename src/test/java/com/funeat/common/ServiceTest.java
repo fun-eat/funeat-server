@@ -7,6 +7,7 @@ import com.funeat.banner.persistence.BannerRepository;
 import com.funeat.comment.persistence.CommentRepository;
 import com.funeat.member.application.TestMemberService;
 import com.funeat.member.domain.Member;
+import com.funeat.member.domain.favorite.RecipeFavorite;
 import com.funeat.member.domain.favorite.ReviewFavorite;
 import com.funeat.member.persistence.MemberRepository;
 import com.funeat.member.persistence.RecipeFavoriteRepository;
@@ -204,6 +205,10 @@ public abstract class ServiceTest {
         final var productRecipes = List.of(productRecipeImageToSave);
 
         productRecipeRepository.saveAll(productRecipes);
+    }
+
+    protected void 단일_꿀조합_좋아요_저장(final RecipeFavorite recipeFavorite) {
+        recipeFavoriteRepository.save(recipeFavorite);
     }
 
     protected void 복수_배너_저장(final Banner... bannerToSave) {
