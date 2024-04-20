@@ -156,19 +156,29 @@ public class RecipeService {
         return MemberRecipesResponse.toResponse(page, dtos);
     }
 
-    public SortingRecipesResponse getSortingRecipes(final Pageable pageable) {
+    public SortingRecipesResponse getSortingRecipes(final Long memberId, final Pageable pageable) {
         final Page<Recipe> pages = recipeRepository.findAll(pageable);
 
         final PageDto page = PageDto.toDto(pages);
         final List<RecipeDto> recipes = pages.getContent().stream()
-                .map(recipe -> {
-                    final List<RecipeImage> images = recipeImageRepository.findByRecipe(recipe);
-                    final List<Product> products = productRecipeRepository.findProductByRecipe(recipe);
-                    return RecipeDto.toDto(recipe, images, products);
-                })
-                .collect(Collectors.toList());
+                .map(recipe -> createRecipeDto(memberId, recipe))
+                .toList();
 
         return SortingRecipesResponse.toResponse(page, recipes);
+    }
+
+    private RecipeDto createRecipeDto(final Long memberId, final Recipe recipe) {
+        final List<RecipeImage> images = recipeImageRepository.findByRecipe(recipe);
+        final List<Product> products = productRecipeRepository.findProductByRecipe(recipe);
+
+        if (memberId == GUEST_ID) {
+            return RecipeDto.toDto(recipe, images, products, false);
+        }
+
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND, memberId));
+        final Boolean favorite = recipeFavoriteRepository.existsByMemberAndRecipeAndFavoriteTrue(member, recipe);
+        return RecipeDto.toDto(recipe, images, products, favorite);
     }
 
     @Transactional

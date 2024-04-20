@@ -1,9 +1,14 @@
 package com.funeat.product.application;
 
+import static com.funeat.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.funeat.product.exception.CategoryErrorCode.CATEGORY_NOT_FOUND;
 import static com.funeat.product.exception.ProductErrorCode.PRODUCT_NOT_FOUND;
 
 import com.funeat.common.dto.PageDto;
+import com.funeat.member.domain.Member;
+import com.funeat.member.exception.MemberException.MemberNotFoundException;
+import com.funeat.member.persistence.MemberRepository;
+import com.funeat.member.persistence.RecipeFavoriteRepository;
 import com.funeat.product.domain.Category;
 import com.funeat.product.domain.Product;
 import com.funeat.product.dto.ProductInCategoryDto;
@@ -51,6 +56,7 @@ public class ProductService {
     private static final int RANKING_SIZE = 3;
     private static final int DEFAULT_PAGE_SIZE = 10;
     private static final int DEFAULT_CURSOR_PAGINATION_SIZE = 11;
+    private static final long GUEST_ID = -1L;
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
@@ -59,12 +65,15 @@ public class ProductService {
     private final ProductRecipeRepository productRecipeRepository;
     private final RecipeImageRepository recipeImageRepository;
     private final RecipeRepository recipeRepository;
+    private final MemberRepository memberRepository;
+    private final RecipeFavoriteRepository recipeFavoriteRepository;
 
     public ProductService(final CategoryRepository categoryRepository, final ProductRepository productRepository,
                           final ReviewTagRepository reviewTagRepository, final ReviewRepository reviewRepository,
                           final ProductRecipeRepository productRecipeRepository,
                           final RecipeImageRepository recipeImageRepository,
-                          final RecipeRepository recipeRepository) {
+                          final RecipeRepository recipeRepository, final MemberRepository memberRepository,
+                          final RecipeFavoriteRepository recipeFavoriteRepository) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.reviewTagRepository = reviewTagRepository;
@@ -72,6 +81,8 @@ public class ProductService {
         this.productRecipeRepository = productRecipeRepository;
         this.recipeImageRepository = recipeImageRepository;
         this.recipeRepository = recipeRepository;
+        this.memberRepository = memberRepository;
+        this.recipeFavoriteRepository = recipeFavoriteRepository;
     }
 
     public ProductsInCategoryResponse getAllProductsInCategory(final Long categoryId, final Long lastProductId,
@@ -174,7 +185,7 @@ public class ProductService {
         return productRepository.findAllWithReviewCountByNameContaining(query, lastProductId, size);
     }
 
-    public SortingRecipesResponse getProductRecipes(final Long productId, final Pageable pageable) {
+    public SortingRecipesResponse getProductRecipes(final Long memberId, final Long productId, final Pageable pageable) {
         final Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND, productId));
 
@@ -182,12 +193,22 @@ public class ProductService {
 
         final PageDto pageDto = PageDto.toDto(recipes);
         final List<RecipeDto> recipeDtos = recipes.stream()
-                .map(recipe -> {
-                    final List<RecipeImage> images = recipeImageRepository.findByRecipe(recipe);
-                    final List<Product> products = productRecipeRepository.findProductByRecipe(recipe);
-                    return RecipeDto.toDto(recipe, images, products);
-                })
-                .collect(Collectors.toList());
+                .map(recipe -> createRecipeDto(memberId, recipe))
+                .toList();
         return SortingRecipesResponse.toResponse(pageDto, recipeDtos);
+    }
+
+    private RecipeDto createRecipeDto(final Long memberId, final Recipe recipe) {
+        final List<RecipeImage> images = recipeImageRepository.findByRecipe(recipe);
+        final List<Product> products = productRecipeRepository.findProductByRecipe(recipe);
+
+        if (memberId == GUEST_ID) {
+            return RecipeDto.toDto(recipe, images, products, false);
+        }
+
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND, memberId));
+        final Boolean favorite = recipeFavoriteRepository.existsByMemberAndRecipeAndFavoriteTrue(member, recipe);
+        return RecipeDto.toDto(recipe, images, products, favorite);
     }
 }
