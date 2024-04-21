@@ -43,8 +43,10 @@ public class ReviewRepositoryImpl implements ReviewCustomRepository {
 
         // left join
         final Join<Review, ReviewFavorite> leftJoinReviewFavorite = root.join("reviewFavorites", JoinType.LEFT);
-        final Predicate condition = cb.equal(leftJoinReviewFavorite.get("member"), loginMember);
-        leftJoinReviewFavorite.on(condition);
+        if (loginMember.isMember()) {
+            final Predicate condition = cb.equal(leftJoinReviewFavorite.get("member"), loginMember);
+            leftJoinReviewFavorite.on(condition);
+        }
 
         // select - from - where - order by
         cq.select(getConstruct(root, cb, joinMember, leftJoinReviewFavorite))
