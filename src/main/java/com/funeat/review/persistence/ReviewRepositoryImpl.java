@@ -43,6 +43,7 @@ public class ReviewRepositoryImpl implements ReviewCustomRepository {
 
         // left join
         final Join<Review, ReviewFavorite> leftJoinReviewFavorite = root.join("reviewFavorites", JoinType.LEFT);
+        leftJoinReviewFavorite.on(cb.disjunction()); // 비로그인 좋아요 기본값은 false
         if (loginMember.isMember()) {
             final Predicate condition = cb.equal(leftJoinReviewFavorite.get("member"), loginMember);
             leftJoinReviewFavorite.on(condition);
