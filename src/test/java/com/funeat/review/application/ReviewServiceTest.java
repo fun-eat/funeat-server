@@ -466,7 +466,7 @@ class ReviewServiceTest extends ServiceTest {
     class sortingReviews_로그인_사용자_실패_테스트 {
 
         @Test
-        void 로그인_사용자가_존재하지_않는_상품에_있는_리뷰들을_정렬하면_예외가_발생한다() {
+        void 존재하지_않는_상품에_있는_리뷰들을_정렬하면_예외가_발생한다() {
             // given
             final var member = 멤버_멤버1_생성();
             final var memberId = 단일_멤버_저장(member);
@@ -621,7 +621,7 @@ class ReviewServiceTest extends ServiceTest {
     class sortingReviews_비로그인_사용자_실패_테스트 {
 
         @Test
-        void 비로그인_사용자가_존재하지_않는_상품에_있는_리뷰들을_정렬하면_예외가_발생한다() {
+        void 존재하지_않는_상품에_있는_리뷰들을_정렬하면_예외가_발생한다() {
             // given
             final var member = 멤버_비로그인_생성();
             final var memberId = -1L;
