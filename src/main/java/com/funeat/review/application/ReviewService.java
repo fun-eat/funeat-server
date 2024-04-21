@@ -157,7 +157,7 @@ public class ReviewService {
     public SortingReviewsResponse sortingReviews(final Long productId, final Long memberId,
                                                  final SortingReviewRequest request) {
         final Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND, memberId));
+                .orElse(Member.createGuest());
         final Product findProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND, productId));
 
