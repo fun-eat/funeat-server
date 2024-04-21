@@ -43,6 +43,10 @@ public class Member {
         this.platformId = platformId;
     }
 
+    public static Member createGuest() {
+        return new Member("Guest", "", "-1");
+    }
+
     public Long getId() {
         return id;
     }
