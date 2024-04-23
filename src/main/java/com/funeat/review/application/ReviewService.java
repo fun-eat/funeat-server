@@ -60,7 +60,7 @@ public class ReviewService {
     private static final int START_INDEX = 0;
     private static final int ONE = 1;
     private static final String EMPTY_URL = "";
-    private static final int RANKING_SIZE = 3;
+    private static final int RANKING_SIZE = 2;
     private static final long RANKING_MINIMUM_FAVORITE_COUNT = 1L;
     private static final int REVIEW_PAGE_SIZE = 10;
 
@@ -156,12 +156,12 @@ public class ReviewService {
 
     public SortingReviewsResponse sortingReviews(final Long productId, final Long memberId,
                                                  final SortingReviewRequest request) {
-        final Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND, memberId));
+        final Member guestOrFindMember = memberRepository.findById(memberId)
+                .orElse(Member.createGuest());
         final Product findProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND, productId));
 
-        final List<SortingReviewDto> sortingReviews = getSortingReviews(findMember, findProduct, request);
+        final List<SortingReviewDto> sortingReviews = getSortingReviews(guestOrFindMember, findProduct, request);
         final int resultSize = getResultSize(sortingReviews);
 
         final List<SortingReviewDto> resizeSortingReviews = sortingReviews.subList(START_INDEX, resultSize);
@@ -170,14 +170,13 @@ public class ReviewService {
         return SortingReviewsResponse.toResponse(resizeSortingReviews, hasNext);
     }
 
-    private List<SortingReviewDto> getSortingReviews(final Member member, final Product product,
-                                                    final SortingReviewRequest request) {
+    private List<SortingReviewDto> getSortingReviews(final Member guestOrFindMember, final Product product,
+                                                     final SortingReviewRequest request) {
         final Long lastReviewId = request.getLastReviewId();
         final String sortOption = request.getSort();
 
         final Specification<Review> specification = getSortingSpecification(product, sortOption, lastReviewId);
-        final List<SortingReviewDtoWithoutTag> sortingReviewDtoWithoutTags = reviewRepository.getSortingReview(member,
-                specification, sortOption);
+        final List<SortingReviewDtoWithoutTag> sortingReviewDtoWithoutTags = reviewRepository.getSortingReview(guestOrFindMember, specification, sortOption);
 
         return addTagsToSortingReviews(sortingReviewDtoWithoutTags);
     }

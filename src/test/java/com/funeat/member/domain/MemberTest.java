@@ -1,5 +1,6 @@
 package com.funeat.member.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -64,6 +65,28 @@ public class MemberTest {
             // when & then
             assertThatThrownBy(() -> member.modifyProfile(expectedNickname, null))
                     .isInstanceOf(MemberUpdateException.class);
+        }
+    }
+
+    @Nested
+    class isGuest_성공_테스트 {
+
+        @Test
+        void 비로그인_사용자는_비로그인_사용자로_식별할_수_있다() {
+            // given
+            final var member = Member.createGuest();
+
+            // when & then
+            assertThat(member.isGuest()).isTrue();
+        }
+
+        @Test
+        void 로그인_사용자는_비로그인_사용자로_식별할_수_없다() {
+            // given
+            final var member = new Member("test", "http://www.before.com", "1");
+
+            // when & then
+            assertThat(member.isGuest()).isFalse();
         }
     }
 }
