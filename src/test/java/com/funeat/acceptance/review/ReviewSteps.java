@@ -56,6 +56,18 @@ public class ReviewSteps {
         }
     }
 
+    public static ExtractableResponse<Response> 정렬된_리뷰_목록_조회_요청(final Long productId, final Long lastReviewId,
+                                                                    final String sort, final Long page) {
+        return given()
+                .queryParam("sort", sort)
+                .queryParam("page", page)
+                .queryParam("lastReviewId", lastReviewId).log().all()
+                .when()
+                .get("/api/products/{product_id}/reviews", productId)
+                .then()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> 정렬된_리뷰_목록_조회_요청(final String loginCookie, final Long productId,
                                                                 final Long lastReviewId,
                                                                 final String sort, final Long page) {

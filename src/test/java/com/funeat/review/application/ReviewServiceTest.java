@@ -5,6 +5,7 @@ import static com.funeat.fixture.CategoryFixture.카테고리_즉석조리_생�
 import static com.funeat.fixture.ImageFixture.이미지_생성;
 import static com.funeat.fixture.MemberFixture.멤버_멤버1_생성;
 import static com.funeat.fixture.MemberFixture.멤버_멤버2_생성;
+import static com.funeat.fixture.MemberFixture.멤버_비로그인_생성;
 import static com.funeat.fixture.PageFixture.최신순;
 import static com.funeat.fixture.PageFixture.페이지요청_생성;
 import static com.funeat.fixture.ProductFixture.상품_삼각김밥_가격1000원_평점2점_생성;
@@ -343,7 +344,7 @@ class ReviewServiceTest extends ServiceTest {
     }
 
     @Nested
-    class sortingReviews_성공_테스트 {
+    class sortingReviews_로그인_사용자_성공_테스트 {
 
         @Test
         void 좋아요_기준으로_내림차순_정렬을_할_수_있다() {
@@ -374,7 +375,7 @@ class ReviewServiceTest extends ServiceTest {
         }
 
         @Test
-        void 최신순으로_정렬을_할_수_있다() throws InterruptedException {
+        void 최신순으로_정렬을_할_수_있다() {
             // given
             final var member = 멤버_멤버1_생성();
             final var memberId = 단일_멤버_저장(member);
@@ -462,19 +463,19 @@ class ReviewServiceTest extends ServiceTest {
     }
 
     @Nested
-    class sortingReviews_실패_테스트 {
+    class sortingReviews_로그인_사용자_실패_테스트 {
 
         @Test
-        void 존재하지_않는_멤버가_상품에_있는_리뷰들을_정렬하면_예외가_발생한다() {
+        void 존재하지_않는_상품에_있는_리뷰들을_정렬하면_예외가_발생한다() {
             // given
             final var member = 멤버_멤버1_생성();
-            final var wrongMemberId = 단일_멤버_저장(member) + 3L;
+            final var memberId = 단일_멤버_저장(member);
 
             final var category = 카테고리_즉석조리_생성();
             단일_카테고리_저장(category);
 
             final var product = 상품_삼각김밥_가격1000원_평점3점_생성(category);
-            final var productId = 단일_상품_저장(product);
+            final var wrongProductId = 단일_상품_저장(product) + 1L;
 
             final var review1 = 리뷰_이미지test3_평점3점_재구매O_생성(member, product, 351L);
             final var review2 = 리뷰_이미지test4_평점4점_재구매O_생성(member, product, 24L);
@@ -484,15 +485,146 @@ class ReviewServiceTest extends ServiceTest {
             final var request = 리뷰정렬요청_평점_내림차순_생성(1L);
 
             // when & then
-            assertThatThrownBy(() -> reviewService.sortingReviews(productId, wrongMemberId, request))
-                    .isInstanceOf(MemberNotFoundException.class);
+            assertThatThrownBy(() -> reviewService.sortingReviews(wrongProductId, memberId, request))
+                    .isInstanceOf(ProductNotFoundException.class);
+        }
+    }
+
+    @Nested
+    class sortingReviews_비로그인_사용자_성공_테스트 {
+
+        @Test
+        void 좋아요_기준으로_내림차순_정렬을_할_수_있다() {
+            // given
+            final var guestMemberId = -1L;
+
+            final var reviewMember = 멤버_멤버1_생성();
+            단일_멤버_저장(reviewMember);
+
+            final var category = 카테고리_즉석조리_생성();
+            단일_카테고리_저장(category);
+            final var product = 상품_삼각김밥_가격1000원_평점3점_생성(category);
+            final var productId = 단일_상품_저장(product);
+
+            final var review1 = 리뷰_이미지test3_평점3점_재구매O_생성(reviewMember, product, 351L);
+            final var review2 = 리뷰_이미지test4_평점4점_재구매O_생성(reviewMember, product, 24L);
+            final var review3 = 리뷰_이미지test3_평점3점_재구매X_생성(reviewMember, product, 130L);
+            복수_리뷰_저장(review1, review2, review3);
+
+            final var request = 리뷰정렬요청_좋아요수_내림차순_생성(0L);
+
+            final var expected = List.of(review1.getId(), review3.getId(), review2.getId());
+
+            // when
+            final var actual = reviewService.sortingReviews(productId, guestMemberId, request).getReviews();
+
+            // then
+            assertThat(actual).extracting(SortingReviewDto::getId)
+                    .containsExactlyElementsOf(expected);
         }
 
         @Test
-        void 멤버가_존재하지_않는_상품에_있는_리뷰들을_정렬하면_예외가_발생한다() {
+        void 최신순으로_정렬을_할_수_있다() {
             // given
-            final var member = 멤버_멤버1_생성();
-            final var memberId = 단일_멤버_저장(member);
+            final var guestMemberId = -1L;
+
+            final var reviewMember = 멤버_멤버1_생성();
+            단일_멤버_저장(reviewMember);
+
+            final var category = 카테고리_즉석조리_생성();
+            단일_카테고리_저장(category);
+
+            final var product = 상품_삼각김밥_가격1000원_평점3점_생성(category);
+            final var productId = 단일_상품_저장(product);
+
+            final var review1 = 리뷰_이미지test3_평점3점_재구매O_생성(reviewMember, product, 351L);
+            final var review2 = 리뷰_이미지test4_평점4점_재구매O_생성(reviewMember, product, 24L);
+            final var review3 = 리뷰_이미지test3_평점3점_재구매X_생성(reviewMember, product, 130L);
+            복수_리뷰_저장(review1, review2, review3);
+
+            final var request = 리뷰정렬요청_최신순_생성(3L);
+
+            final var expected = List.of(review2.getId(), review1.getId());
+
+            // when
+            final var actual = reviewService.sortingReviews(productId, guestMemberId, request).getReviews();
+
+            // then
+            assertThat(actual).extracting(SortingReviewDto::getId)
+                    .containsExactlyElementsOf(expected);
+        }
+
+        @Test
+        void 평점_기준으로_오름차순_정렬을_할_수_있다() {
+            // given
+            final var guestMemberId = -1L;
+
+            final var reviewMember = 멤버_멤버1_생성();
+            단일_멤버_저장(reviewMember);
+
+            final var category = 카테고리_즉석조리_생성();
+            단일_카테고리_저장(category);
+
+            final var product = 상품_삼각김밥_가격1000원_평점3점_생성(category);
+            final var productId = 단일_상품_저장(product);
+
+            final var review1 = 리뷰_이미지test2_평점2점_재구매O_생성(reviewMember, product, 351L);
+            final var review2 = 리뷰_이미지test4_평점4점_재구매O_생성(reviewMember, product, 24L);
+            final var review3 = 리뷰_이미지test3_평점3점_재구매X_생성(reviewMember, product, 130L);
+            복수_리뷰_저장(review1, review2, review3);
+
+            final var request = 리뷰정렬요청_평점_오름차순_생성(0L);
+
+            final var expected = List.of(review1.getId(), review3.getId(), review2.getId());
+
+            // when
+            final var actual = reviewService.sortingReviews(productId, guestMemberId, request).getReviews();
+
+            // then
+            assertThat(actual).extracting(SortingReviewDto::getId)
+                    .containsExactlyElementsOf(expected);
+        }
+
+        @Test
+        void 평점_기준으로_내림차순_정렬을_할_수_있다() {
+            // given
+            final var guestMemberId = -1L;
+
+            final var reviewMember = 멤버_멤버1_생성();
+            단일_멤버_저장(reviewMember);
+
+            final var category = 카테고리_즉석조리_생성();
+            단일_카테고리_저장(category);
+
+            final var product = 상품_삼각김밥_가격1000원_평점3점_생성(category);
+            final var productId = 단일_상품_저장(product);
+
+            final var review1 = 리뷰_이미지test4_평점4점_재구매O_생성(reviewMember, product, 5L);
+            final var review2 = 리뷰_이미지test2_평점2점_재구매O_생성(reviewMember, product, 24L);
+            final var review3 = 리뷰_이미지test3_평점3점_재구매X_생성(reviewMember, product, 13L);
+            복수_리뷰_저장(review1, review2, review3);
+
+            final var request = 리뷰정렬요청_평점_내림차순_생성(1L);
+
+            final var expected = List.of(review3.getId(), review2.getId());
+
+            // when
+            final var actual = reviewService.sortingReviews(productId, guestMemberId, request).getReviews();
+
+            // then
+            assertThat(actual).extracting(SortingReviewDto::getId)
+                    .containsExactlyElementsOf(expected);
+        }
+    }
+
+    @Nested
+    class sortingReviews_비로그인_사용자_실패_테스트 {
+
+        @Test
+        void 존재하지_않는_상품에_있는_리뷰들을_정렬하면_예외가_발생한다() {
+            // given
+            final var member = 멤버_비로그인_생성();
+            final var memberId = -1L;
 
             final var category = 카테고리_즉석조리_생성();
             단일_카테고리_저장(category);

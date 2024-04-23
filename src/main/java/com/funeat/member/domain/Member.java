@@ -43,6 +43,10 @@ public class Member {
         this.platformId = platformId;
     }
 
+    public static Member createGuest() {
+        return new Member("Guest", "", "-1");
+    }
+
     public Long getId() {
         return id;
     }
@@ -80,5 +84,9 @@ public class Member {
             throw new MemberUpdateException(MEMBER_UPDATE_ERROR);
         }
         this.nickname = nickname;
+    }
+
+    public boolean isGuest() {
+        return platformId.equals("-1");
     }
 }
