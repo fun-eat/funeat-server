@@ -60,7 +60,7 @@ public class ReviewService {
     private static final int START_INDEX = 0;
     private static final int ONE = 1;
     private static final String EMPTY_URL = "";
-    private static final int RANKING_SIZE = 3;
+    private static final int RANKING_SIZE = 2;
     private static final long RANKING_MINIMUM_FAVORITE_COUNT = 1L;
     private static final int REVIEW_PAGE_SIZE = 10;
 

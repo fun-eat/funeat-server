@@ -737,7 +737,7 @@ class ReviewAcceptanceTest extends AcceptanceTest {
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            리뷰_랭킹_조회_결과를_검증한다(응답, List.of(리뷰2, 리뷰3, 리뷰4));
+            리뷰_랭킹_조회_결과를_검증한다(응답, List.of(리뷰2, 리뷰3));
         }
     }
 

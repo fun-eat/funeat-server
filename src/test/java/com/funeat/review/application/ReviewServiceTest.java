@@ -1217,7 +1217,7 @@ class ReviewServiceTest extends ServiceTest {
             }
 
             @Test
-            void 전체_리뷰가_1개_이상_3개_미만이라도_리뷰가_나와야한다() {
+            void 전체_리뷰가_1개라도_리뷰가_나와야한다() {
                 // given
                 final var category = 카테고리_간편식사_생성();
                 단일_카테고리_저장(category);
@@ -1229,13 +1229,11 @@ class ReviewServiceTest extends ServiceTest {
                 단일_멤버_저장(member);
 
                 final var now = LocalDateTime.now();
-                final var review1 = 리뷰_이미지test5_평점5점_재구매X_생성(member, product, 2L, now.minusDays(1L));
-                final var review2 = 리뷰_이미지test5_평점5점_재구매X_생성(member, product, 2L, now);
-                복수_리뷰_저장(review1, review2);
+                final var review = 리뷰_이미지test5_평점5점_재구매X_생성(member, product, 2L, now.minusDays(1L));
+                단일_리뷰_저장(review);
 
-                final var rankingReviewDto1 = RankingReviewDto.toDto(review1);
-                final var rankingReviewDto2 = RankingReviewDto.toDto(review2);
-                final var rankingReviewDtos = List.of(rankingReviewDto2, rankingReviewDto1);
+                final var rankingReviewDto = RankingReviewDto.toDto(review);
+                final var rankingReviewDtos = List.of(rankingReviewDto);
                 final var expected = RankingReviewsResponse.toResponse(rankingReviewDtos);
 
                 // when
@@ -1247,7 +1245,7 @@ class ReviewServiceTest extends ServiceTest {
             }
 
             @Test
-            void 전체_리뷰_중_랭킹이_높은_상위_3개_리뷰를_구할_수_있다() {
+            void 전체_리뷰_중_랭킹이_높은_상위_2개_리뷰를_구할_수_있다() {
                 // given
                 final var category = 카테고리_간편식사_생성();
                 단일_카테고리_저장(category);
@@ -1262,14 +1260,12 @@ class ReviewServiceTest extends ServiceTest {
                 final var review1 = 리뷰_이미지test5_평점5점_재구매X_생성(member, product, 4L, now.minusDays(3L));
                 final var review2 = 리뷰_이미지test5_평점5점_재구매X_생성(member, product, 6L, now.minusDays(2L));
                 final var review3 = 리뷰_이미지test5_평점5점_재구매X_생성(member, product, 4L, now);
-                final var review4 = 리뷰_이미지test5_평점5점_재구매X_생성(member, product, 5L, now);
-                복수_리뷰_저장(review1, review2, review3, review4);
+                복수_리뷰_저장(review1, review2, review3);
 
                 final var rankingReviewDto1 = RankingReviewDto.toDto(review1);
                 final var rankingReviewDto2 = RankingReviewDto.toDto(review2);
                 final var rankingReviewDto3 = RankingReviewDto.toDto(review3);
-                final var rankingReviewDto4 = RankingReviewDto.toDto(review4);
-                final var rankingReviewDtos = List.of(rankingReviewDto4, rankingReviewDto3, rankingReviewDto2);
+                final var rankingReviewDtos = List.of(rankingReviewDto3, rankingReviewDto2);
                 final var expected = RankingReviewsResponse.toResponse(rankingReviewDtos);
 
                 // when
