@@ -86,7 +86,7 @@ public class Member {
         this.nickname = nickname;
     }
 
-    public boolean isMember() {
-        return !platformId.equals("-1");
+    public boolean isGuest() {
+        return platformId.equals("-1");
     }
 }

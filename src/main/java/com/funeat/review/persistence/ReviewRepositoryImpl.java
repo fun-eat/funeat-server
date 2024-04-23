@@ -26,7 +26,7 @@ public class ReviewRepositoryImpl implements ReviewCustomRepository {
     private EntityManager em;
 
     @Override
-    public List<SortingReviewDtoWithoutTag> getSortingReview(final Member loginMember,
+    public List<SortingReviewDtoWithoutTag> getSortingReview(final Member guestOrLoginMember,
                                                              final Specification<Review> specification,
                                                              final String sortOption) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -44,8 +44,8 @@ public class ReviewRepositoryImpl implements ReviewCustomRepository {
         // left join
         final Join<Review, ReviewFavorite> leftJoinReviewFavorite = root.join("reviewFavorites", JoinType.LEFT);
         leftJoinReviewFavorite.on(cb.disjunction()); // 비로그인 좋아요 기본값은 false
-        if (loginMember.isMember()) {
-            final Predicate condition = cb.equal(leftJoinReviewFavorite.get("member"), loginMember);
+        if (!guestOrLoginMember.isGuest()) { // 로그인 좋아요는 사용자의 좋아요 유무에 따라 결정
+            final Predicate condition = cb.equal(leftJoinReviewFavorite.get("member"), guestOrLoginMember);
             leftJoinReviewFavorite.on(condition);
         }
 
