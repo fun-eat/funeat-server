@@ -76,12 +76,24 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 사용자_정보를_확인하다() {
-            // given & when
+            // given
+            final var 카테고리 = 카테고리_즉석조리_생성();
+            단일_카테고리_저장(카테고리);
+            final var 상품 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점3점_생성(카테고리));
+            final var 태그 = 단일_태그_저장(태그_맛있어요_TASTE_생성());
+            리뷰_작성_요청(로그인_쿠키_획득(멤버1), 상품, 사진_명세_요청(이미지1), 리뷰추가요청_재구매O_생성(점수_4점, List.of(태그)));
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지2), 레시피추가요청_생성(상품));
+
+            final var reviewCount = 1L;
+            final var recipeCount = 2L;
+
+            // when
             final var 응답 = 사용자_정보_조회_요청(로그인_쿠키_획득(멤버1));
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            사용자_정보_조회를_검증하다(응답, 멤버_멤버1_생성());
+            사용자_정보_조회를_검증하다(응답, 멤버_멤버1_생성(), reviewCount, recipeCount);
         }
     }
 
@@ -406,19 +418,28 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         });
     }
 
-    private void 사용자_정보_조회를_검증하다(final ExtractableResponse<Response> response, final Member member) {
-        final var expected = MemberProfileResponse.toResponse(member);
+    private void 사용자_정보_조회를_검증하다(final ExtractableResponse<Response> response, final Member member,
+                                 final Long reviewCount, final Long recipeCount) {
+        final var expected = MemberProfileResponse.toResponse(member, reviewCount, recipeCount);
         final var expectedNickname = expected.getNickname();
         final var expectedProfileImage = expected.getProfileImage();
+        final var expectedReviewCount = expected.getReviewCount();
+        final var expectedRecipeCount = expected.getRecipeCount();
 
         final var actualNickname = response.jsonPath().getString("nickname");
         final var actualProfileImage = response.jsonPath().getString("profileImage");
+        final var actualReviewCount = response.jsonPath().getLong("reviewCount");
+        final var actualRecipeCount = response.jsonPath().getLong("recipeCount");
 
         assertSoftly(soft -> {
             soft.assertThat(actualNickname)
                     .isEqualTo(expectedNickname);
             soft.assertThat(actualProfileImage)
                     .isEqualTo(expectedProfileImage);
+            soft.assertThat(actualReviewCount)
+                    .isEqualTo(expectedReviewCount);
+            soft.assertThat(actualRecipeCount)
+                    .isEqualTo(expectedRecipeCount);
         });
     }
 
