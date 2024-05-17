@@ -13,6 +13,9 @@ import com.funeat.member.exception.MemberErrorCode;
 import com.funeat.member.exception.MemberException.MemberNotFoundException;
 import com.funeat.member.persistence.MemberRepository;
 import java.util.Objects;
+
+import com.funeat.recipe.persistence.RecipeRepository;
+import com.funeat.review.persistence.ReviewRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,10 +25,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final ReviewRepository reviewRepository;
+    private final RecipeRepository recipeRepository;
     private final ImageUploader imageUploader;
 
-    public MemberService(final MemberRepository memberRepository, final ImageUploader imageUploader) {
+    public MemberService(final MemberRepository memberRepository, final ReviewRepository reviewRepository,
+                         final RecipeRepository recipeRepository, final ImageUploader imageUploader) {
         this.memberRepository = memberRepository;
+        this.reviewRepository = reviewRepository;
+        this.recipeRepository = recipeRepository;
         this.imageUploader = imageUploader;
     }
 
@@ -49,7 +57,10 @@ public class MemberService {
         final Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND, memberId));
 
-        return MemberProfileResponse.toResponse(findMember);
+        final Long reviewCount = reviewRepository.countByMember(findMember);
+        final Long recipeCount = recipeRepository.countByMember(findMember);
+
+        return MemberProfileResponse.toResponse(findMember, reviewCount, recipeCount);
     }
 
     @Transactional

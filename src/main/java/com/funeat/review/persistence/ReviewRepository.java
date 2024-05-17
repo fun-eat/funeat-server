@@ -18,6 +18,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewCus
 
     Long countByProduct(final Product product);
 
+    Long countByMember(final Member member);
+
     Page<Review> findReviewsByMember(final Member findMember, final Pageable pageable);
 
     @Lock(PESSIMISTIC_WRITE)
