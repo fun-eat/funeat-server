@@ -224,15 +224,8 @@ class RecipeServiceTest extends ServiceTest {
             // then
             final var expectedRecipes = List.of(recipe1_2, recipe1_1);
             final var expectedRecipesDtos = expectedRecipes.stream()
-                    .map(recipe -> {
-                        final var findRecipeImages = recipeImageRepository.findByRecipe(recipe);
-                        final var productsByRecipe = productRecipeRepository.findProductByRecipe(recipe);
-                        final var memberRecipeProductDtos = productsByRecipe.stream()
-                                .map(MemberRecipeProductDto::toDto)
-                                .collect(Collectors.toList());
-                        return MemberRecipeDto.toDto(recipe, findRecipeImages, memberRecipeProductDtos);
-                    })
-                    .collect(Collectors.toList());
+                    .map(recipe -> MemberRecipeDto.toDto(recipe, recipeImageRepository.findByRecipe(recipe)))
+                    .toList();
             final var expectedPage = new PageDto(2L, 1L, true, true, 0L, 10L);
 
             해당멤버의_꿀조합과_페이징_결과를_검증한다(actual, expectedRecipesDtos, expectedPage);
