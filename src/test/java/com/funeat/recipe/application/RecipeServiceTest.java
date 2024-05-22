@@ -30,7 +30,6 @@ import com.funeat.common.ServiceTest;
 import com.funeat.common.dto.PageDto;
 import com.funeat.member.domain.Member;
 import com.funeat.member.dto.MemberRecipeDto;
-import com.funeat.member.dto.MemberRecipeProductDto;
 import com.funeat.member.dto.MemberRecipesResponse;
 import com.funeat.member.exception.MemberException.MemberNotFoundException;
 import com.funeat.product.domain.Category;
