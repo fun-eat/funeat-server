@@ -11,36 +11,35 @@ public class MemberRecipeDto {
     private final Long id;
     private final String title;
     private final String content;
+    private final MemberProfileResponse author;
     private final LocalDateTime createdAt;
     private final String image;
-    private final Long favoriteCount;
-    private final List<MemberRecipeProductDto> products;
 
-    private MemberRecipeDto(final Long id, final String title, final String content, final LocalDateTime createdAt,
-                            final Long favoriteCount, final List<MemberRecipeProductDto> products) {
-        this(id, title, content, createdAt, null, favoriteCount, products);
+    private MemberRecipeDto(final Long id, final String title, final String content, final MemberProfileResponse author,
+                            final LocalDateTime createdAt) {
+        this(id, title, content, author, createdAt, null);
     }
 
     @JsonCreator
-    private MemberRecipeDto(final Long id, final String title, final String content, final LocalDateTime createdAt,
-                            final String image, final Long favoriteCount, final List<MemberRecipeProductDto> products) {
+    private MemberRecipeDto(final Long id, final String title, final String content, final MemberProfileResponse author,
+                            final LocalDateTime createdAt, final String image) {
         this.id = id;
         this.title = title;
         this.content = content;
+        this.author = author;
         this.createdAt = createdAt;
         this.image = image;
-        this.favoriteCount = favoriteCount;
-        this.products = products;
     }
 
-    public static MemberRecipeDto toDto(final Recipe recipe, final List<RecipeImage> findRecipeImages,
-                                        final List<MemberRecipeProductDto> memberRecipeProductDtos) {
+    public static MemberRecipeDto toDto(final Recipe recipe, final List<RecipeImage> findRecipeImages) {
+        final MemberProfileResponse author = MemberProfileResponse.toResponse(recipe.getMember());
+
         if (findRecipeImages.isEmpty()) {
-            return new MemberRecipeDto(recipe.getId(), recipe.getTitle(), recipe.getContent(), recipe.getCreatedAt(),
-                    recipe.getFavoriteCount(), memberRecipeProductDtos);
+            return new MemberRecipeDto(recipe.getId(), recipe.getTitle(), recipe.getContent(),author,
+                    recipe.getCreatedAt());
         }
-        return new MemberRecipeDto(recipe.getId(), recipe.getTitle(), recipe.getContent(), recipe.getCreatedAt(),
-                findRecipeImages.get(0).getImage(), recipe.getFavoriteCount(), memberRecipeProductDtos);
+        return new MemberRecipeDto(recipe.getId(), recipe.getTitle(), recipe.getContent(), author,
+                recipe.getCreatedAt(), findRecipeImages.get(0).getImage());
     }
 
     public Long getId() {
@@ -55,19 +54,15 @@ public class MemberRecipeDto {
         return content;
     }
 
+    public MemberProfileResponse getAuthor() {
+        return author;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
     public String getImage() {
         return image;
-    }
-
-    public Long getFavoriteCount() {
-        return favoriteCount;
-    }
-
-    public List<MemberRecipeProductDto> getProducts() {
-        return products;
     }
 }
