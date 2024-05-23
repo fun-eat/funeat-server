@@ -231,10 +231,16 @@ public class ReviewService {
         final PageDto pageDto = PageDto.toDto(sortedReviewPages);
 
         final List<MemberReviewDto> dtos = sortedReviewPages.stream()
-                .map(MemberReviewDto::toDto)
-                .collect(Collectors.toList());
+                .map(this::transformMemberReviewDtoWithReviewAndTag)
+                .toList();
 
         return MemberReviewsResponse.toResponse(pageDto, dtos);
+    }
+
+    private MemberReviewDto transformMemberReviewDtoWithReviewAndTag(final Review review) {
+        final List<Tag> tags = tagRepository.findTagsByReviewId(review.getId());
+
+        return MemberReviewDto.toDto(review, tags);
     }
 
     @Transactional
