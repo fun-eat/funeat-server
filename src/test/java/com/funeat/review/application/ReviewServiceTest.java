@@ -680,8 +680,8 @@ class ReviewServiceTest extends ServiceTest {
             // then
             final var expectedReviews = List.of(review3_1, review2_1, review1_1);
             final var expectedReviewDtos = expectedReviews.stream()
-                    .map(MemberReviewDto::toDto)
-                    .collect(Collectors.toList());
+                    .map(review -> MemberReviewDto.toDto(review, Collections.emptyList()))
+                    .toList();
             final var expectedPage = new PageDto(3L, 1L, true, true, 0L, 10L);
 
             assertThat(result.getReviews()).usingRecursiveComparison()
