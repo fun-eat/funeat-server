@@ -90,7 +90,7 @@ class MemberServiceTest extends ServiceTest {
             final var member = 멤버_멤버1_생성();
             final var memberId = 단일_멤버_저장(member);
 
-            final var expected = MemberProfileResponse.toResponse(member);
+            final var expected = MemberProfileResponse.toResponse(member, 0L, 0L);
 
             // when
             final var actual = memberService.getMemberProfile(memberId);

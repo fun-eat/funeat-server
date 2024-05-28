@@ -47,4 +47,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     Optional<Recipe> findByIdForUpdate(final Long id);
 
     List<Recipe> findRecipesByFavoriteCountGreaterThanEqual(final Long favoriteCount);
+
+    Long countByMember(final Member member);
 }
