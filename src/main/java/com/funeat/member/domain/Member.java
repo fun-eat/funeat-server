@@ -2,6 +2,7 @@ package com.funeat.member.domain;
 
 import static com.funeat.member.exception.MemberErrorCode.MEMBER_UPDATE_ERROR;
 
+import com.funeat.member.domain.bookmark.RecipeBookmark;
 import com.funeat.member.domain.favorite.RecipeFavorite;
 import com.funeat.member.domain.favorite.ReviewFavorite;
 import com.funeat.member.exception.MemberException.MemberUpdateException;
@@ -33,6 +34,9 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<RecipeFavorite> recipeFavorites;
+
+    @OneToMany(mappedBy = "member")
+    private List<RecipeBookmark> recipeBookmarks;
 
     protected Member() {
     }
@@ -69,6 +73,10 @@ public class Member {
 
     public List<RecipeFavorite> getRecipeFavorites() {
         return recipeFavorites;
+    }
+
+    public List<RecipeBookmark> getRecipeBookmarks() {
+        return recipeBookmarks;
     }
 
     public void modifyProfile(final String nickname, final String profileImage) {
