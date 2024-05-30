@@ -22,10 +22,8 @@ public class LoginSteps {
         return given()
                 .param("code", String.valueOf(memberId))
                 .when()
-                .log().all()
                 .get("/api/login/oauth2/code/kakao")
                 .then()
-                .log().all()
                 .extract();
     }
 
@@ -42,10 +40,8 @@ public class LoginSteps {
         return RestAssured.given()
                 .queryParam("code", String.valueOf(memberId))
                 .when()
-                .log().all()
                 .get("/api/login/oauth2/code/kakao")
                 .then()
-                .log().all()
                 .extract()
                 .response()
                 .getCookie("SESSION");
