@@ -27,4 +27,10 @@ public class MemberException extends GlobalException {
             super(errorCode.getStatus(), new ErrorCode<>(errorCode.getCode(), errorCode.getMessage(), memberId));
         }
     }
+
+    public static class MemberDuplicateBookmarkException extends MemberException {
+        public MemberDuplicateBookmarkException(final MemberErrorCode errorCode, final Long memberId) {
+            super(errorCode.getStatus(), new ErrorCode<>(errorCode.getCode(), errorCode.getMessage(), memberId));
+        }
+    }
 }

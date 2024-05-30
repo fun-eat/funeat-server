@@ -83,8 +83,7 @@ public class RecipeApiController implements RecipeController {
     public ResponseEntity<Void> bookmarkRecipe(@AuthenticationPrincipal final LoginInfo loginInfo,
                                                @PathVariable final Long recipeId,
                                                @RequestBody @Valid final RecipeBookmarkRequest request) {
-        // TODO: 서비스 테스트 추가
-        // TODO: 서비스 로직에 북마크 기능 추가
+        recipeService.bookmarkRecipe(loginInfo.getId(), recipeId, request);
 
         return ResponseEntity.noContent().build();
     }
