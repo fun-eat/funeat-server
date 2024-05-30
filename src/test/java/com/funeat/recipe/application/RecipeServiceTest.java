@@ -18,6 +18,7 @@ import static com.funeat.fixture.ProductFixture.상품_삼각김밥_가격2000�
 import static com.funeat.fixture.ProductFixture.상품_삼각김밥_가격3000원_평점4점_생성;
 import static com.funeat.fixture.RecipeFixture.레시피_생성;
 import static com.funeat.fixture.RecipeFixture.레시피_좋아요_생성;
+import static com.funeat.fixture.RecipeFixture.레시피북마크요청_생성;
 import static com.funeat.fixture.RecipeFixture.레시피이미지_생성;
 import static com.funeat.fixture.RecipeFixture.레시피좋아요요청_생성;
 import static com.funeat.fixture.RecipeFixture.레시피추가요청_생성;
@@ -665,6 +666,124 @@ class RecipeServiceTest extends ServiceTest {
             // when & then
             final var favoriteRequest = 레시피좋아요요청_생성(true);
             assertThatThrownBy(() -> recipeService.likeRecipe(memberId, wrongRecipeId, favoriteRequest))
+                    .isInstanceOf(RecipeNotFoundException.class);
+        }
+    }
+
+    @Nested
+    class bookmarkRecipe_성공_테스트 {
+
+        @Test
+        void 꿀조합에_북마크를_할_수_있다() {
+            // given
+            final var category = 카테고리_간편식사_생성();
+            단일_카테고리_저장(category);
+
+            final var product1 = 상품_삼각김밥_가격1000원_평점2점_생성(category);
+            final var product2 = 상품_삼각김밥_가격3000원_평점4점_생성(category);
+            final var product3 = 상품_삼각김밥_가격2000원_평점3점_생성(category);
+            복수_상품_저장(product1, product2, product3);
+            final var productIds = 상품_아이디_변환(product1, product2, product3);
+
+            final var author = 멤버_멤버1_생성();
+            final var authorId = 단일_멤버_저장(author);
+            final var member = 멤버_멤버2_생성();
+            final var memberId = 단일_멤버_저장(member);
+
+            final var images = 여러_이미지_생성(3);
+
+            final var createRequest = 레시피추가요청_생성(productIds);
+            final var recipeId = recipeService.create(authorId, images, createRequest);
+
+            // when
+            final var bookmarkRequest = 레시피북마크요청_생성(true);
+            recipeService.bookmarkRecipe(memberId, recipeId, bookmarkRequest);
+
+            final var actualRecipe = recipeRepository.findById(recipeId).get();
+            final var actualRecipeBookmark = recipeBookmarkRepository.findByMemberAndRecipe(member, actualRecipe).get();
+
+            // then
+            assertThat(actualRecipeBookmark.getBookmark()).isTrue();
+        }
+
+        @Test
+        void 꿀조합에_북마크를_취소할_수_있다() {
+            // given
+            final var category = 카테고리_간편식사_생성();
+            단일_카테고리_저장(category);
+
+            final var product1 = 상품_삼각김밥_가격1000원_평점2점_생성(category);
+            final var product2 = 상품_삼각김밥_가격3000원_평점4점_생성(category);
+            final var product3 = 상품_삼각김밥_가격2000원_평점3점_생성(category);
+            복수_상품_저장(product1, product2, product3);
+            final var productIds = 상품_아이디_변환(product1, product2, product3);
+
+            final var author = 멤버_멤버1_생성();
+            final var authorId = 단일_멤버_저장(author);
+            final var member = 멤버_멤버2_생성();
+            final var memberId = 단일_멤버_저장(member);
+
+            final var images = 여러_이미지_생성(3);
+
+            final var createRequest = 레시피추가요청_생성(productIds);
+            final var recipeId = recipeService.create(authorId, images, createRequest);
+
+            final var bookmarkRequest = 레시피북마크요청_생성(true);
+            recipeService.bookmarkRecipe(memberId, recipeId, bookmarkRequest);
+
+            // when
+            final var cancelBookmarkRequest = 레시피북마크요청_생성(false);
+            recipeService.bookmarkRecipe(memberId, recipeId, cancelBookmarkRequest);
+
+            final var actualRecipe = recipeRepository.findById(recipeId).get();
+            final var actualRecipeBookmark = recipeBookmarkRepository.findByMemberAndRecipe(member, actualRecipe).get();
+
+            // then
+            assertThat(actualRecipeBookmark.getBookmark()).isFalse();
+        }
+    }
+
+    @Nested
+    class bookmarkRecipe_실패_테스트 {
+
+        @Test
+        void 존재하지_않는_멤버가_레시피에_북마크를_하면_예외가_발생한다() {
+            // given
+            final var category = 카테고리_간편식사_생성();
+            단일_카테고리_저장(category);
+
+            final var product1 = 상품_삼각김밥_가격1000원_평점2점_생성(category);
+            final var product2 = 상품_삼각김밥_가격3000원_평점4점_생성(category);
+            final var product3 = 상품_삼각김밥_가격2000원_평점3점_생성(category);
+            복수_상품_저장(product1, product2, product3);
+            final var productIds = 상품_아이디_변환(product1, product2, product3);
+
+            final var author = 멤버_멤버1_생성();
+            final var authorId = 단일_멤버_저장(author);
+            final var wrongMemberId = authorId + 1L;
+
+            final var images = 여러_이미지_생성(3);
+
+            final var createRequest = 레시피추가요청_생성(productIds);
+            final var recipeId = recipeService.create(authorId, images, createRequest);
+
+            // when & then
+            final var bookmarkRequest = 레시피북마크요청_생성(true);
+            assertThatThrownBy(() -> recipeService.bookmarkRecipe(wrongMemberId, recipeId, bookmarkRequest))
+                    .isInstanceOf(MemberNotFoundException.class);
+        }
+
+        @Test
+        void 멤버가_존재하지_않는_레시피에_북마크를_하면_예외가_발생한다() {
+            // given
+            final var member = 멤버_멤버1_생성();
+            final var memberId = 단일_멤버_저장(member);
+
+            final var wrongRecipeId = 999L;
+
+            // when & then
+            final var bookmarkRequest = 레시피북마크요청_생성(true);
+            assertThatThrownBy(() -> recipeService.bookmarkRecipe(memberId, wrongRecipeId, bookmarkRequest))
                     .isInstanceOf(RecipeNotFoundException.class);
         }
     }

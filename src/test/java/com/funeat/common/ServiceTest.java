@@ -10,6 +10,7 @@ import com.funeat.member.domain.Member;
 import com.funeat.member.domain.favorite.RecipeFavorite;
 import com.funeat.member.domain.favorite.ReviewFavorite;
 import com.funeat.member.persistence.MemberRepository;
+import com.funeat.member.persistence.RecipeBookmarkRepository;
 import com.funeat.member.persistence.RecipeFavoriteRepository;
 import com.funeat.member.persistence.ReviewFavoriteRepository;
 import com.funeat.product.application.CategoryService;
@@ -56,6 +57,9 @@ public abstract class ServiceTest {
 
     @Autowired
     protected ReviewFavoriteRepository reviewFavoriteRepository;
+
+    @Autowired
+    protected RecipeBookmarkRepository recipeBookmarkRepository;
 
     @Autowired
     protected CategoryRepository categoryRepository;

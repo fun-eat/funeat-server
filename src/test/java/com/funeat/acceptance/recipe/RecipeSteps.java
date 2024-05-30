@@ -1,9 +1,6 @@
 package com.funeat.acceptance.recipe;
 
-import static com.funeat.acceptance.auth.LoginSteps.로그인_쿠키_획득;
-import static com.funeat.fixture.RecipeFixture.레시피좋아요요청_생성;
-import static io.restassured.RestAssured.given;
-
+import com.funeat.recipe.dto.RecipeBookmarkRequest;
 import com.funeat.recipe.dto.RecipeCommentCondition;
 import com.funeat.recipe.dto.RecipeCommentCreateRequest;
 import com.funeat.recipe.dto.RecipeCreateRequest;
@@ -11,8 +8,13 @@ import com.funeat.recipe.dto.RecipeFavoriteRequest;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.MultiPartSpecification;
+
 import java.util.List;
 import java.util.Objects;
+
+import static com.funeat.acceptance.auth.LoginSteps.로그인_쿠키_획득;
+import static com.funeat.fixture.RecipeFixture.레시피좋아요요청_생성;
+import static io.restassured.RestAssured.given;
 
 @SuppressWarnings("NonAsciiCharacters")
 public class RecipeSteps {
@@ -84,6 +86,18 @@ public class RecipeSteps {
         for (final var memberId : memberIds) {
             레시피_좋아요_요청(로그인_쿠키_획득(memberId), recipeId, request);
         }
+    }
+
+    public static ExtractableResponse<Response> 레시피_북마크_요청(final String loginCookie, final Long recipeId,
+                                                           final RecipeBookmarkRequest request) {
+        return given()
+                .cookie("SESSION", loginCookie)
+                .contentType("application/json")
+                .body(request)
+                .when()
+                .patch("/api/recipes/{recipeId}/bookmark", recipeId)
+                .then()
+                .extract();
     }
 
     public static ExtractableResponse<Response> 레시피_랭킹_조회_요청() {

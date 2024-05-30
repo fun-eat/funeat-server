@@ -1,5 +1,6 @@
 package com.funeat.recipe.application;
 
+import static com.funeat.member.exception.MemberErrorCode.MEMBER_DUPLICATE_BOOKMARK;
 import static com.funeat.member.exception.MemberErrorCode.MEMBER_DUPLICATE_FAVORITE;
 import static com.funeat.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.funeat.product.exception.ProductErrorCode.PRODUCT_NOT_FOUND;
@@ -11,12 +12,15 @@ import com.funeat.comment.specification.CommentSpecification;
 import com.funeat.common.ImageUploader;
 import com.funeat.common.dto.PageDto;
 import com.funeat.member.domain.Member;
+import com.funeat.member.domain.bookmark.RecipeBookmark;
 import com.funeat.member.domain.favorite.RecipeFavorite;
 import com.funeat.member.dto.MemberRecipeDto;
 import com.funeat.member.dto.MemberRecipesResponse;
+import com.funeat.member.exception.MemberException.MemberDuplicateBookmarkException;
 import com.funeat.member.exception.MemberException.MemberDuplicateFavoriteException;
 import com.funeat.member.exception.MemberException.MemberNotFoundException;
 import com.funeat.member.persistence.MemberRepository;
+import com.funeat.member.persistence.RecipeBookmarkRepository;
 import com.funeat.member.persistence.RecipeFavoriteRepository;
 import com.funeat.product.domain.Product;
 import com.funeat.product.domain.ProductRecipe;
@@ -28,6 +32,7 @@ import com.funeat.recipe.domain.RecipeImage;
 import com.funeat.recipe.dto.RankingRecipeDto;
 import com.funeat.recipe.dto.RankingRecipesResponse;
 import com.funeat.recipe.dto.RecipeAuthorDto;
+import com.funeat.recipe.dto.RecipeBookmarkRequest;
 import com.funeat.recipe.dto.RecipeCommentCondition;
 import com.funeat.recipe.dto.RecipeCommentCreateRequest;
 import com.funeat.recipe.dto.RecipeCommentResponse;
@@ -74,6 +79,7 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final RecipeImageRepository recipeImageRepository;
     private final RecipeFavoriteRepository recipeFavoriteRepository;
+    private final RecipeBookmarkRepository recipeBookmarkRepository;
     private final CommentRepository commentRepository;
     private final ImageUploader imageUploader;
 
@@ -81,6 +87,7 @@ public class RecipeService {
                          final ProductRecipeRepository productRecipeRepository, final RecipeRepository recipeRepository,
                          final RecipeImageRepository recipeImageRepository,
                          final RecipeFavoriteRepository recipeFavoriteRepository,
+                         final RecipeBookmarkRepository recipeBookmarkRepository,
                          final CommentRepository commentRepository, final ImageUploader imageUploader) {
         this.memberRepository = memberRepository;
         this.productRepository = productRepository;
@@ -88,6 +95,7 @@ public class RecipeService {
         this.recipeRepository = recipeRepository;
         this.recipeImageRepository = recipeImageRepository;
         this.recipeFavoriteRepository = recipeFavoriteRepository;
+        this.recipeBookmarkRepository = recipeBookmarkRepository;
         this.commentRepository = commentRepository;
         this.imageUploader = imageUploader;
     }
@@ -193,6 +201,29 @@ public class RecipeService {
             return recipeFavoriteRepository.save(recipeFavorite);
         } catch (final DataIntegrityViolationException e) {
             throw new MemberDuplicateFavoriteException(MEMBER_DUPLICATE_FAVORITE, member.getId());
+        }
+    }
+
+    @Transactional
+    public void bookmarkRecipe(final Long memberId, final Long recipeId, final RecipeBookmarkRequest request) {
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND, memberId));
+        final Recipe recipe = recipeRepository.findByIdForUpdate(recipeId)
+                .orElseThrow(() -> new RecipeNotFoundException(RECIPE_NOT_FOUND, recipeId));
+
+        final RecipeBookmark recipeBookmark = recipeBookmarkRepository.findByMemberAndRecipe(member, recipe)
+                .orElseGet(() -> createAndSaveRecipeBookmark(member, recipe, request.bookmark()));
+
+        recipeBookmark.updateBookmark(request.bookmark());
+    }
+
+    private RecipeBookmark createAndSaveRecipeBookmark(final Member member, final Recipe recipe,
+                                                       final Boolean bookmark) {
+        try {
+            final RecipeBookmark recipeBookmark = RecipeBookmark.create(member, recipe, bookmark);
+            return recipeBookmarkRepository.save(recipeBookmark);
+        } catch (final DataIntegrityViolationException e) {
+            throw new MemberDuplicateBookmarkException(MEMBER_DUPLICATE_BOOKMARK, member.getId());
         }
     }
 

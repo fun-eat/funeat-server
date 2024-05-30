@@ -4,6 +4,7 @@ import com.funeat.member.domain.Member;
 import com.funeat.member.domain.favorite.RecipeFavorite;
 import com.funeat.recipe.domain.Recipe;
 import com.funeat.recipe.domain.RecipeImage;
+import com.funeat.recipe.dto.RecipeBookmarkRequest;
 import com.funeat.recipe.dto.RecipeCreateRequest;
 import com.funeat.recipe.dto.RecipeFavoriteRequest;
 import java.time.LocalDateTime;
@@ -64,6 +65,10 @@ public class RecipeFixture {
 
     public static RecipeFavoriteRequest 레시피좋아요요청_생성(final Boolean favorite) {
         return new RecipeFavoriteRequest(favorite);
+    }
+
+    public static RecipeBookmarkRequest 레시피북마크요청_생성(final Boolean favorite) {
+        return new RecipeBookmarkRequest(favorite);
     }
 
     public static RecipeImage 레시피이미지_생성(final Recipe recipe) {
