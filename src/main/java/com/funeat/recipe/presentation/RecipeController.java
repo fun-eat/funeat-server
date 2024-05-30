@@ -3,6 +3,7 @@ package com.funeat.recipe.presentation;
 import com.funeat.auth.dto.LoginInfo;
 import com.funeat.auth.util.AuthenticationPrincipal;
 import com.funeat.recipe.dto.RankingRecipesResponse;
+import com.funeat.recipe.dto.RecipeBookmarkRequest;
 import com.funeat.recipe.dto.RecipeCommentCondition;
 import com.funeat.recipe.dto.RecipeCommentCreateRequest;
 import com.funeat.recipe.dto.RecipeCommentsResponse;
@@ -14,7 +15,6 @@ import com.funeat.recipe.dto.SortingRecipesResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Tag(name = "07.Recipe", description = "꿀조합 관련 API 입니다.")
 public interface RecipeController {
@@ -68,6 +70,16 @@ public interface RecipeController {
     ResponseEntity<Void> likeRecipe(@AuthenticationPrincipal final LoginInfo loginInfo,
                                     @PathVariable final Long recipeId,
                                     @RequestBody final RecipeFavoriteRequest request);
+
+    @Operation(summary = "꿀조합 저장", description = "꿀조합을 저장 또는 취소를 한다.")
+    @ApiResponse(
+            responseCode = "204",
+            description = "꿀조합 저장(또는 저장 취소) 성공."
+    )
+    @PatchMapping
+    ResponseEntity<Void> bookmarkRecipe(@AuthenticationPrincipal final LoginInfo loginInfo,
+                                        @PathVariable final Long recipeId,
+                                        @RequestBody final RecipeBookmarkRequest request);
 
     @Operation(summary = "꿀조합 랭킹 조회", description = "전체 꿀조합들 중에서 랭킹 TOP4를 조회한다.")
     @ApiResponse(
