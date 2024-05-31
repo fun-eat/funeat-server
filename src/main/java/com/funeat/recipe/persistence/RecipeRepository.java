@@ -22,7 +22,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     Page<Recipe> findRecipesByMember(final Member member, final Pageable pageable);
 
-
     @Query("SELECT DISTINCT r FROM Recipe r "
             + "LEFT JOIN ProductRecipe pr ON pr.recipe.id = r.id "
             + "WHERE pr.product.name LIKE CONCAT('%', :name, '%')"
@@ -52,5 +51,5 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     Long countByMember(final Member member);
 
     @Query("SELECT r FROM Recipe r JOIN RecipeBookmark rb ON r.id = rb.recipe.id WHERE rb.member = :member AND rb.bookmark = true")
-    Page<Recipe> findBookmarkedRecipesByMember(@Param("member") Member member, Pageable pageable);
+    Page<Recipe> findBookmarkedRecipesByMember(@Param("member") final Member member, final Pageable pageable);
 }

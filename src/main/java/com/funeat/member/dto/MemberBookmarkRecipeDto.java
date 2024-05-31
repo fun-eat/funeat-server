@@ -24,10 +24,8 @@ public record MemberBookmarkRecipeDto(
         this(id, title, null, content, favorite, author, products, createdAt);
     }
 
-    public static MemberBookmarkRecipeDto toDto(final Recipe recipe,
-                                                final List<RecipeImage> findRecipeImages,
-                                                final List<Product> recipeInProducts,
-                                                final Boolean isFavorite) {
+    public static MemberBookmarkRecipeDto toDto(final Recipe recipe, final List<RecipeImage> findRecipeImages,
+                                                final List<Product> recipeInProducts, final Boolean isFavorite) {
         final MemberResponse author = MemberResponse.toResponse(recipe.getMember());
         final MemberBookmarkRecipeProductsDto products = MemberBookmarkRecipeProductsDto.toDto(recipeInProducts);
 
