@@ -85,8 +85,8 @@ public class MemberApiController implements MemberController {
     @GetMapping("/recipes/bookmark")
     public ResponseEntity<MemberBookmarkRecipesResponse> getMemberBookmarkRecipe(@AuthenticationPrincipal final LoginInfo loginInfo,
                                                                                  @PageableDefault final Pageable pageable) {
-        // final MemberBookmarkRecipesResponse response = recipeService.findBookmarkRecipeByMember(loginInfo.getId(), pageable);
+        final MemberBookmarkRecipesResponse response = recipeService.findBookmarkRecipeByMember(loginInfo.getId(), pageable);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(response);
     }
 }

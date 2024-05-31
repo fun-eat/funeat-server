@@ -14,6 +14,8 @@ import com.funeat.common.dto.PageDto;
 import com.funeat.member.domain.Member;
 import com.funeat.member.domain.bookmark.RecipeBookmark;
 import com.funeat.member.domain.favorite.RecipeFavorite;
+import com.funeat.member.dto.MemberBookmarkRecipeDto;
+import com.funeat.member.dto.MemberBookmarkRecipesResponse;
 import com.funeat.member.dto.MemberRecipeDto;
 import com.funeat.member.dto.MemberRecipesResponse;
 import com.funeat.member.exception.MemberException.MemberDuplicateBookmarkException;
@@ -225,6 +227,23 @@ public class RecipeService {
         } catch (final DataIntegrityViolationException e) {
             throw new MemberDuplicateBookmarkException(MEMBER_DUPLICATE_BOOKMARK, member.getId());
         }
+    }
+
+    public MemberBookmarkRecipesResponse findBookmarkRecipeByMember(final Long memberId, final Pageable pageable) {
+        final Member findMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND, memberId));
+
+        final Page<Recipe> sortedBookmarkRecipePages = recipeRepository.findBookmarkedRecipesByMember(findMember, pageable);
+
+        final PageDto page = PageDto.toDto(sortedBookmarkRecipePages);
+        final List<MemberBookmarkRecipeDto> dtos = sortedBookmarkRecipePages.stream()
+                .map(recipe -> MemberBookmarkRecipeDto.toDto(recipe,
+                        recipeImageRepository.findByRecipe(recipe),
+                        productRecipeRepository.findProductByRecipe(recipe),
+                        recipeFavoriteRepository.existsByMemberAndRecipeAndFavoriteTrue(findMember, recipe)))
+                .toList();
+
+        return MemberBookmarkRecipesResponse.toResponse(page, dtos);
     }
 
     public SearchRecipeResultsResponse getSearchResults(final String query, final Long lastRecipeId) {

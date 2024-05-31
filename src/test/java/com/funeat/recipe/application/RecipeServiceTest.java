@@ -22,6 +22,7 @@ import static com.funeat.fixture.RecipeFixture.레시피북마크요청_생성;
 import static com.funeat.fixture.RecipeFixture.레시피이미지_생성;
 import static com.funeat.fixture.RecipeFixture.레시피좋아요요청_생성;
 import static com.funeat.fixture.RecipeFixture.레시피추가요청_생성;
+import static com.funeat.fixture.RecipeFixture.북마크O;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -30,6 +31,8 @@ import com.funeat.comment.domain.Comment;
 import com.funeat.common.ServiceTest;
 import com.funeat.common.dto.PageDto;
 import com.funeat.member.domain.Member;
+import com.funeat.member.dto.MemberBookmarkRecipeDto;
+import com.funeat.member.dto.MemberBookmarkRecipesResponse;
 import com.funeat.member.dto.MemberRecipeDto;
 import com.funeat.member.dto.MemberRecipesResponse;
 import com.funeat.member.exception.MemberException.MemberNotFoundException;
@@ -789,6 +792,86 @@ class RecipeServiceTest extends ServiceTest {
     }
 
     @Nested
+    class findBookmarkRecipeByMember_성공_테스트 {
+
+        @Test
+        void 사용자가_저장한_꿀조합을_조회한다() {
+            // given
+            final var member1 = 멤버_멤버1_생성();
+            단일_멤버_저장(member1);
+
+            final var category = 카테고리_즉석조리_생성();
+            단일_카테고리_저장(category);
+
+            final var product1 = 상품_삼각김밥_가격1000원_평점5점_생성(category);
+            final var product2 = 상품_삼각김밥_가격2000원_평점3점_생성(category);
+            복수_상품_저장(product1, product2);
+
+            final var recipe1 = 레시피_생성(member1);
+            final var recipe2 = 레시피_생성(member1);
+            복수_꿀조합_저장(recipe1, recipe2);
+
+            final var productRecipe1 = 레시피_안에_들어가는_상품_생성(product1, recipe1);
+            final var productRecipe2 = 레시피_안에_들어가는_상품_생성(product2, recipe2);
+            복수_꿀조합_상품_저장(productRecipe1, productRecipe2);
+
+            final var request = 레시피북마크요청_생성(북마크O);
+            recipeService.bookmarkRecipe(member1.getId(), recipe2.getId(), request);
+
+            final var page = 페이지요청_생성(0, 10, 최신순);
+
+            // when
+            final var actual = recipeService.findBookmarkRecipeByMember(member1.getId(), page);
+
+            // then
+            final var expectedRecipes = List.of(recipe2);
+            final var expectedRecipesDtos = expectedRecipes.stream()
+                    .map(recipe -> MemberBookmarkRecipeDto.toDto(
+                            recipe,
+                            Collections.emptyList(),
+                            List.of(product2),
+                            false))
+                    .toList();
+            final var expectedPage = new PageDto(1L, 1L, true, true, 0L, 10L);
+
+            해당멤버가_저장한_꿀조합과_페이징_결과를_검증한다(actual, expectedRecipesDtos, expectedPage);
+        }
+
+        @Test
+        void 사용자가_저장한_꿀조합이_없을때_꿀조합은_빈상태로_조회된다() {
+            // given
+            final var member1 = 멤버_멤버1_생성();
+            단일_멤버_저장(member1);
+
+            final var page = 페이지요청_생성(0, 10, 최신순);
+
+            // when
+            final var actual = recipeService.findBookmarkRecipeByMember(member1.getId(), page);
+
+            // then
+            final var expectedRecipes = Collections.emptyList();
+            final var expectedPage = new PageDto(0L, 0L, true, true, 0L, 10L);
+
+            해당멤버가_저장한_꿀조합과_페이징_결과를_검증한다(actual, expectedRecipes, expectedPage);
+        }
+    }
+
+    @Nested
+    class findBookmarkRecipeByMember_실패_테스트 {
+
+        @Test
+        void 존재하지_않는_멤버가_해당_멤버의_저장한_레시피를_조회하면_예외가_발생한다() {
+            // given
+            final var notExistMemberId = 99999L;
+            final var page = 페이지요청_생성(0, 10, 최신순);
+
+            // when & then
+            assertThatThrownBy(() -> recipeService.findBookmarkRecipeByMember(notExistMemberId, page))
+                    .isInstanceOf(MemberNotFoundException.class);
+        }
+    }
+
+    @Nested
     class getTop4Recipes_성공_테스트 {
 
         @Nested
@@ -1231,6 +1314,16 @@ class RecipeServiceTest extends ServiceTest {
             assertThat(actual.getRecipes()).usingRecursiveComparison()
                     .isEqualTo(expectedRecipesDtos);
             assertThat(actual.getPage()).usingRecursiveComparison()
+                    .isEqualTo(expectedPage);
+        });
+    }
+
+    private <T> void 해당멤버가_저장한_꿀조합과_페이징_결과를_검증한다(final MemberBookmarkRecipesResponse actual,
+                                             final List<T> expectedBookmarkRecipesDtos, final PageDto expectedPage) {
+        assertSoftly(soft -> {
+            assertThat(actual.recipes()).usingRecursiveComparison()
+                    .isEqualTo(expectedBookmarkRecipesDtos);
+            assertThat(actual.page()).usingRecursiveComparison()
                     .isEqualTo(expectedPage);
         });
     }
