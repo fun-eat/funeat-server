@@ -62,6 +62,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.funeat.acceptance.common.AcceptanceTest;
 import com.funeat.member.domain.Member;
+import com.funeat.member.dto.MemberBookmarkRecipeDto;
 import com.funeat.member.dto.MemberProfileResponse;
 import com.funeat.member.dto.MemberRecipeDto;
 import com.funeat.member.dto.MemberReviewDto;
@@ -573,7 +574,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         final var actual = response.jsonPath()
                 .getList("recipes", MemberBookmarkRecipeDto.class);
 
-        assertThat(actual).extracting(MemberBookmarkRecipeDto::getId)
+        assertThat(actual).extracting(MemberBookmarkRecipeDto::id)
                 .containsExactlyElementsOf(recipeIds);
     }
 }

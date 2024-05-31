@@ -2,6 +2,7 @@ package com.funeat.member.presentation;
 
 import com.funeat.auth.dto.LoginInfo;
 import com.funeat.auth.util.AuthenticationPrincipal;
+import com.funeat.member.dto.MemberBookmarkRecipesResponse;
 import com.funeat.member.dto.MemberProfileResponse;
 import com.funeat.member.dto.MemberRecipesResponse;
 import com.funeat.member.dto.MemberRequest;
@@ -73,5 +74,6 @@ public interface MemberController {
             description = "저장한 꿀조합 조회 성공."
     )
     @GetMapping
-    ResponseEntit<MemberBookmarkRecipesResponse> getMemberBookmarkRecipe(@AuthenticationPrincipal final LoginInfo loginInfo);
+    ResponseEntity<MemberBookmarkRecipesResponse> getMemberBookmarkRecipe(@AuthenticationPrincipal final LoginInfo loginInfo,
+                                                                          @PageableDefault final Pageable pageable);
 }
