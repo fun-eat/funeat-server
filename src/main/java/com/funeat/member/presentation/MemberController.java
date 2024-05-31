@@ -66,4 +66,12 @@ public interface MemberController {
     @DeleteMapping
     ResponseEntity<Void> deleteReview(@PathVariable final Long reviewId,
                                       @AuthenticationPrincipal final LoginInfo loginInfo);
+
+    @Operation(summary = "사용자가 저장한 꿀조합 조회 (북마크)", description = "자신이 저장한 꿀조합을 조회한다.")
+    @ApiResponse(
+            responseCode = "200",
+            description = "저장한 꿀조합 조회 성공."
+    )
+    @GetMapping
+    ResponseEntit<MemberBookmarkRecipesResponse> getMemberBookmarkRecipe(@AuthenticationPrincipal final LoginInfo loginInfo);
 }

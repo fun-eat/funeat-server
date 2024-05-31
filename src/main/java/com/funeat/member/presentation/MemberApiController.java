@@ -80,4 +80,11 @@ public class MemberApiController implements MemberController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/recipes/bookmark")
+    public ResponseEntity<MemberBookmarkRecipesResponse> getMemberBookmarkRecipe(@AuthenticationPrincipal final LoginInfo loginInfo) {
+        final MemberBookmarkRecipesResponse response = recipeService.findBookmarkRecipeByMember(loginInfo.getId());
+
+        return ResponseEntity.ok().build(response);
+    }
 }
