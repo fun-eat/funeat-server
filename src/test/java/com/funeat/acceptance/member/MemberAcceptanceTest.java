@@ -464,7 +464,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
             레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피1, 레시피북마크요청_생성(북마크X));
 
-            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(2L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
+            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(1L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
 
             // when
             final var 응답 = 사용자_북마크한_꿀조합_조회_요청(로그인_쿠키_획득(멤버1), FIRST_PAGE);
@@ -483,6 +483,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
             final var 상품 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점5점_생성(카테고리));
 
             레시피_작성_요청(로그인_쿠키_획득(멤버1), null, 레시피추가요청_생성(상품));
+            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피1, 레시피북마크요청_생성(북마크O));
 
             final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(1L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
 
