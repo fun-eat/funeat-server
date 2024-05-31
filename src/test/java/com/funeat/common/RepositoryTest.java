@@ -3,9 +3,11 @@ package com.funeat.common;
 import com.funeat.banner.domain.Banner;
 import com.funeat.banner.persistence.BannerRepository;
 import com.funeat.member.domain.Member;
+import com.funeat.member.domain.bookmark.RecipeBookmark;
 import com.funeat.member.domain.favorite.RecipeFavorite;
 import com.funeat.member.domain.favorite.ReviewFavorite;
 import com.funeat.member.persistence.MemberRepository;
+import com.funeat.member.persistence.RecipeBookmarkRepository;
 import com.funeat.member.persistence.RecipeFavoriteRepository;
 import com.funeat.member.persistence.ReviewFavoriteRepository;
 import com.funeat.product.domain.Category;
@@ -44,6 +46,9 @@ public abstract class RepositoryTest {
 
     @Autowired
     protected RecipeFavoriteRepository recipeFavoriteRepository;
+
+    @Autowired
+    protected RecipeBookmarkRepository recipeBookmarkRepository;
 
     @Autowired
     protected ReviewFavoriteRepository reviewFavoriteRepository;
@@ -191,6 +196,12 @@ public abstract class RepositoryTest {
 
     protected void 레시피_좋아요_저장(final RecipeFavorite recipeFavorite) {
         recipeFavoriteRepository.save(recipeFavorite);
+    }
+
+    protected void 복수_레시피_북마크_저장(final RecipeBookmark... recipeBookmarksToSave) {
+        final var recipeBookmarks = List.of(recipeBookmarksToSave);
+
+        recipeBookmarkRepository.saveAll(recipeBookmarks);
     }
 
     protected void 복수_배너_저장(final Banner... bannerToSave) {

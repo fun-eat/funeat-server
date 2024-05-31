@@ -1,6 +1,7 @@
 package com.funeat.fixture;
 
 import com.funeat.member.domain.Member;
+import com.funeat.member.domain.bookmark.RecipeBookmark;
 import com.funeat.member.domain.favorite.RecipeFavorite;
 import com.funeat.recipe.domain.Recipe;
 import com.funeat.recipe.domain.RecipeImage;
@@ -51,6 +52,10 @@ public class RecipeFixture {
 
     public static RecipeFavorite 레시피_좋아요_생성(final Member member, final Recipe recipe, final Boolean favorite) {
         return new RecipeFavorite(member, recipe, favorite);
+    }
+
+    public static RecipeBookmark 레시피_북마크_생성(final Member member, final Recipe recipe, final Boolean bookmark) {
+        return new RecipeBookmark(member, recipe, bookmark);
     }
 
     public static RecipeCreateRequest 레시피추가요청_생성(final String title, final List<Long> productIds, final String content) {
