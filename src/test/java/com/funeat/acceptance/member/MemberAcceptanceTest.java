@@ -13,8 +13,10 @@ import static com.funeat.acceptance.common.CommonSteps.페이지를_검증한다
 import static com.funeat.acceptance.member.MemberSteps.리뷰_삭제_요청;
 import static com.funeat.acceptance.member.MemberSteps.사용자_꿀조합_조회_요청;
 import static com.funeat.acceptance.member.MemberSteps.사용자_리뷰_조회_요청;
+import static com.funeat.acceptance.member.MemberSteps.사용자_북마크한_꿀조합_조회_요청;
 import static com.funeat.acceptance.member.MemberSteps.사용자_정보_수정_요청;
 import static com.funeat.acceptance.member.MemberSteps.사용자_정보_조회_요청;
+import static com.funeat.acceptance.recipe.RecipeSteps.레시피_북마크_요청;
 import static com.funeat.acceptance.recipe.RecipeSteps.레시피_작성_요청;
 import static com.funeat.acceptance.review.ReviewSteps.리뷰_작성_요청;
 import static com.funeat.auth.exception.AuthErrorCode.LOGIN_MEMBER_NOT_FOUND;
@@ -40,7 +42,11 @@ import static com.funeat.fixture.ProductFixture.상품_삼각김밥_가격1000�
 import static com.funeat.fixture.RecipeFixture.레시피;
 import static com.funeat.fixture.RecipeFixture.레시피1;
 import static com.funeat.fixture.RecipeFixture.레시피2;
+import static com.funeat.fixture.RecipeFixture.레시피3;
+import static com.funeat.fixture.RecipeFixture.레시피북마크요청_생성;
 import static com.funeat.fixture.RecipeFixture.레시피추가요청_생성;
+import static com.funeat.fixture.RecipeFixture.북마크O;
+import static com.funeat.fixture.RecipeFixture.북마크X;
 import static com.funeat.fixture.ReviewFixture.리뷰1;
 import static com.funeat.fixture.ReviewFixture.리뷰2;
 import static com.funeat.fixture.ReviewFixture.리뷰추가요청_재구매O_생성;
@@ -394,6 +400,118 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         }
     }
 
+    @Nested
+    class getMemberBookmarkRecipe_성공_테스트 {
+
+        @Test
+        void 사용자가_저장한_꿀조합이_없을때_꿀조합은_빈상태로_조회된다() {
+            // given
+            final var 카테고리 = 카테고리_즉석조리_생성();
+            단일_카테고리_저장(카테고리);
+            final var 상품 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점5점_생성(카테고리));
+
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
+
+            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(0L), 총_페이지(0L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
+
+            // when
+            final var 응답 = 사용자_북마크한_꿀조합_조회_요청(로그인_쿠키_획득(멤버1), FIRST_PAGE);
+
+            // then
+            STATUS_CODE를_검증한다(응답, 정상_처리);
+            페이지를_검증한다(응답, 예상_응답_페이지);
+            사용자_북마크한_꿀조합_조회_결과를_검증한다(응답, Collections.emptyList());
+        }
+
+        @Test
+        void 사용자가_저장한_꿀조합을_조회하다() {
+            // given
+            final var 카테고리 = 카테고리_즉석조리_생성();
+            단일_카테고리_저장(카테고리);
+            final var 상품 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점5점_생성(카테고리));
+
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지2), 레시피추가요청_생성(상품));
+            레시피_작성_요청(로그인_쿠키_획득(멤버2), 여러개_사진_명세_요청(이미지3), 레시피추가요청_생성(상품));
+
+            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피1, 레시피북마크요청_생성(북마크O));
+            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피3, 레시피북마크요청_생성(북마크O));
+
+            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(2L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
+
+            // when
+            final var 응답 = 사용자_북마크한_꿀조합_조회_요청(로그인_쿠키_획득(멤버1), FIRST_PAGE);
+
+            // then
+            STATUS_CODE를_검증한다(응답, 정상_처리);
+            페이지를_검증한다(응답, 예상_응답_페이지);
+            사용자_북마크한_꿀조합_조회_결과를_검증한다(응답, List.of(레시피3, 레시피1));
+        }
+
+        @Test
+        void 사용자가_꿀조합_저장을_취소했으면_해당_꿀조합은_보이지_않아야_한다() {
+            // given
+            final var 카테고리 = 카테고리_즉석조리_생성();
+            단일_카테고리_저장(카테고리);
+            final var 상품 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점5점_생성(카테고리));
+
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
+            레시피_작성_요청(로그인_쿠키_획득(멤버2), 여러개_사진_명세_요청(이미지2), 레시피추가요청_생성(상품));
+
+            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피1, 레시피북마크요청_생성(북마크O));
+            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피2, 레시피북마크요청_생성(북마크O));
+
+            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피1, 레시피북마크요청_생성(북마크X));
+
+            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(2L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
+
+            // when
+            final var 응답 = 사용자_북마크한_꿀조합_조회_요청(로그인_쿠키_획득(멤버1), FIRST_PAGE);
+
+            // then
+            STATUS_CODE를_검증한다(응답, 정상_처리);
+            페이지를_검증한다(응답, 예상_응답_페이지);
+            사용자_북마크한_꿀조합_조회_결과를_검증한다(응답, List.of(레시피2));
+        }
+
+        @Test
+        void 사용자가_저장한_꿀조합에_이미지가_없을때_저장된_꿀조합은_이미지없이_조회된다() {
+            // given
+            final var 카테고리 = 카테고리_즉석조리_생성();
+            단일_카테고리_저장(카테고리);
+            final var 상품 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점5점_생성(카테고리));
+
+            레시피_작성_요청(로그인_쿠키_획득(멤버1), null, 레시피추가요청_생성(상품));
+
+            final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(1L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
+
+            // when
+            final var 응답 = 사용자_북마크한_꿀조합_조회_요청(로그인_쿠키_획득(멤버1), FIRST_PAGE);
+
+            // then
+            STATUS_CODE를_검증한다(응답, 정상_처리);
+            페이지를_검증한다(응답, 예상_응답_페이지);
+            사용자_북마크한_꿀조합_조회_결과를_검증한다(응답, List.of(레시피));
+            조회한_꿀조합의_이미지가_없는지_확인한다(응답);
+        }
+    }
+
+    @Nested
+    class getMemberBookmarkRecipe_실패_테스트 {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void 로그인하지_않은_사용자가_저장한_꿀조합을_조회할때_예외가_발생한다(final String cookie) {
+            // given & when
+            final var 응답 = 사용자_북마크한_꿀조합_조회_요청(cookie, FIRST_PAGE);
+
+            // then
+            STATUS_CODE를_검증한다(응답, 인증되지_않음);
+            RESPONSE_CODE와_MESSAGE를_검증한다(응답, LOGIN_MEMBER_NOT_FOUND.getCode(),
+                    LOGIN_MEMBER_NOT_FOUND.getMessage());
+        }
+    }
+
     private void 사용자_리뷰_조회_결과를_검증한다(final ExtractableResponse<Response> response, final int expectedReviewSize) {
         final var actual = response.jsonPath().getList("reviews", MemberReviewDto.class);
 
@@ -448,5 +566,14 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .getString("image");
 
         assertThat(actual).isNull();
+    }
+
+    private void 사용자_북마크한_꿀조합_조회_결과를_검증한다(final ExtractableResponse<Response> response,
+                                          final List<Long> recipeIds) {
+        final var actual = response.jsonPath()
+                .getList("recipes", MemberBookmarkRecipeDto.class);
+
+        assertThat(actual).extracting(MemberBookmarkRecipeDto::getId)
+                .containsExactlyElementsOf(recipeIds);
     }
 }

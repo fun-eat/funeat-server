@@ -29,6 +29,8 @@ public class RecipeFixture {
 
     public static final boolean 좋아요O = true;
     public static final boolean 좋아요X = false;
+    public static final boolean 북마크O = true;
+    public static final boolean 북마크X = false;
 
     public static final String 레시피_제목 = "The most delicious recipes";
     public static final String 레시피_본문 = "More rice, more rice, more rice.. Done!!";
