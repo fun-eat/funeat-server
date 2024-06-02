@@ -34,12 +34,13 @@ import com.funeat.recipe.dto.RecipeDto;
 import com.funeat.recipe.dto.SortingRecipesResponse;
 import com.funeat.recipe.persistence.RecipeImageRepository;
 import com.funeat.recipe.persistence.RecipeRepository;
-import com.funeat.review.persistence.ReviewRepository;
 import com.funeat.review.persistence.ReviewTagRepository;
 import com.funeat.tag.domain.Tag;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -61,7 +62,6 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final ReviewTagRepository reviewTagRepository;
-    private final ReviewRepository reviewRepository;
     private final ProductRecipeRepository productRecipeRepository;
     private final RecipeImageRepository recipeImageRepository;
     private final RecipeRepository recipeRepository;
@@ -69,15 +69,13 @@ public class ProductService {
     private final RecipeFavoriteRepository recipeFavoriteRepository;
 
     public ProductService(final CategoryRepository categoryRepository, final ProductRepository productRepository,
-                          final ReviewTagRepository reviewTagRepository, final ReviewRepository reviewRepository,
+                          final ReviewTagRepository reviewTagRepository,
                           final ProductRecipeRepository productRecipeRepository,
-                          final RecipeImageRepository recipeImageRepository,
-                          final RecipeRepository recipeRepository, final MemberRepository memberRepository,
-                          final RecipeFavoriteRepository recipeFavoriteRepository) {
+                          final RecipeImageRepository recipeImageRepository, final RecipeRepository recipeRepository,
+                          final MemberRepository memberRepository, final RecipeFavoriteRepository recipeFavoriteRepository) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.reviewTagRepository = reviewTagRepository;
-        this.reviewRepository = reviewRepository;
         this.productRecipeRepository = productRecipeRepository;
         this.recipeImageRepository = recipeImageRepository;
         this.recipeRepository = recipeRepository;
@@ -210,5 +208,26 @@ public class ProductService {
                 .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND, memberId));
         final Boolean favorite = recipeFavoriteRepository.existsByMemberAndRecipeAndFavoriteTrue(member, recipe);
         return RecipeDto.toDto(recipe, images, products, favorite);
+    }
+
+    public SearchProductsResponse getSearchResultsByTag(final Long tagId, final Long lastProductId) {
+        final List<Product> findProducts = findAllByTag(tagId, lastProductId);
+        final int resultSize = getResultSize(findProducts);
+        final List<Product> products = findProducts.subList(0, resultSize);
+
+        final boolean hasNext = hasNextPage(findProducts);
+        final List<SearchProductDto> productDtos = products.stream()
+                .map(SearchProductDto::toDto)
+                .toList();
+
+        return SearchProductsResponse.toResponse(hasNext, productDtos);
+    }
+
+    private List<Product> findAllByTag(Long tagId, Long lastProductId) {
+        final PageRequest size = PageRequest.ofSize(DEFAULT_CURSOR_PAGINATION_SIZE);
+        if (lastProductId == 0) {
+            return productRepository.searchProductsByTopTagsFirst(tagId, size);
+        }
+        return productRepository.searchProductsByTopTags(tagId, lastProductId, size);
     }
 }

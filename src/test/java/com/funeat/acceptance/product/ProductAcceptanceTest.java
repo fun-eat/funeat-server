@@ -8,12 +8,7 @@ import static com.funeat.acceptance.common.CommonSteps.여러개_사진_명세_�
 import static com.funeat.acceptance.common.CommonSteps.정상_처리;
 import static com.funeat.acceptance.common.CommonSteps.찾을수_없음;
 import static com.funeat.acceptance.common.CommonSteps.페이지를_검증한다;
-import static com.funeat.acceptance.product.ProductSteps.상품_검색_결과_조회_요청;
-import static com.funeat.acceptance.product.ProductSteps.상품_랭킹_조회_요청;
-import static com.funeat.acceptance.product.ProductSteps.상품_레시피_목록_요청;
-import static com.funeat.acceptance.product.ProductSteps.상품_상세_조회_요청;
-import static com.funeat.acceptance.product.ProductSteps.상품_자동_완성_검색_요청;
-import static com.funeat.acceptance.product.ProductSteps.카테고리별_상품_목록_조회_요청;
+import static com.funeat.acceptance.product.ProductSteps.*;
 import static com.funeat.acceptance.recipe.RecipeSteps.레시피_작성_요청;
 import static com.funeat.acceptance.recipe.RecipeSteps.여러명이_레시피_좋아요_요청;
 import static com.funeat.acceptance.review.ReviewSteps.리뷰_작성_요청;
@@ -654,6 +649,32 @@ class ProductAcceptanceTest extends AcceptanceTest {
             STATUS_CODE를_검증한다(응답, 정상_처리);
             페이지를_검증한다(응답, 예상_응답_페이지);
             상품_레시피_목록_조회_결과를_검증한다(응답, List.of(레시피1, 레시피2, 레시피3));
+        }
+    }
+
+    @Nested
+    class getSearchResultsByTag_성공_테스트 {
+
+        @Test
+        void 상품_상세_정보를_조회한다() {
+            // given
+            final var 카테고리 = 카테고리_간편식사_생성();
+            단일_카테고리_저장(카테고리);
+            final var 상품 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점3점_생성(카테고리));
+            final var 상품2 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점3점_생성(카테고리));
+            final var 태그1 = 단일_태그_저장(태그_맛있어요_TASTE_생성());
+            final var 태그2 = 단일_태그_저장(태그_단짠단짠_TASTE_생성());
+
+            리뷰_작성_요청(로그인_쿠키_획득(멤버1), 상품, 사진_명세_요청(이미지1), 리뷰추가요청_재구매X_생성(점수_4점, List.of(태그1, 태그2)));
+            리뷰_작성_요청(로그인_쿠키_획득(멤버1), 상품, 사진_명세_요청(이미지2), 리뷰추가요청_재구매X_생성(점수_4점, List.of(태그2)));
+            리뷰_작성_요청(로그인_쿠키_획득(멤버1), 상품2, 사진_명세_요청(이미지3), 리뷰추가요청_재구매X_생성(점수_1점, List.of(태그2)));
+
+            // when
+            final var 응답 = 태그_상품_검색_결과_조회_요청(태그2, 0L);
+
+            // then
+            STATUS_CODE를_검증한다(응답, 정상_처리);
+            상품_검색_결과를_검증한다(응답, false, List.of(상품2, 상품1));
         }
     }
 

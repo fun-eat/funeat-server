@@ -8,9 +8,12 @@ import static com.funeat.fixture.PageFixture.평점_오름차순;
 import com.funeat.member.domain.Member;
 import com.funeat.product.domain.Product;
 import com.funeat.review.domain.Review;
+import com.funeat.review.domain.ReviewTag;
 import com.funeat.review.dto.ReviewCreateRequest;
 import com.funeat.review.dto.ReviewFavoriteRequest;
 import com.funeat.review.dto.SortingReviewRequest;
+import com.funeat.tag.domain.Tag;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -120,5 +123,12 @@ public class ReviewFixture {
 
     public static SortingReviewRequest 리뷰정렬요청_존재하지않는정렬_생성() {
         return new SortingReviewRequest("test,test", 1L);
+    }
+
+    public static class ReviewTagFixture {
+
+        public static ReviewTag 리뷰태그_생성(final Review review, final Tag tag) {
+            return ReviewTag.createReviewTag(review, tag);
+        }
     }
 }

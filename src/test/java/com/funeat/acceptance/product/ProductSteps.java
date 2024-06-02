@@ -66,4 +66,15 @@ public class ProductSteps {
                 .then()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 태그_상품_검색_결과_조회_요청(final Long tagId, final Long lastProductId) {
+        return given()
+                .log().all()
+                .queryParam("tagId", tagId)
+                .queryParam("lastProductId", lastProductId)
+                .when()
+                .get("/api/search/tags/results")
+                .then().log().all()
+                .extract();
+    }
 }
