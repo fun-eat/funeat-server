@@ -18,7 +18,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     @Override
     public List<Product> searchProductsByTopTagsFirst(final Long tagId, final Pageable pageable) {
-        String jpql = "SELECT DISTINCT p FROM Product p " +
+        final String jpql = "SELECT DISTINCT p FROM Product p " +
                 "WHERE p.id IN ( " +
                 "   SELECT p2.id FROM Product p2 " +
                 "   JOIN p2.reviews r2 " +
@@ -35,7 +35,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 ") " +
                 "ORDER BY p.id DESC";
 
-        TypedQuery<Product> query = entityManager.createQuery(jpql, Product.class);
+        final TypedQuery<Product> query = entityManager.createQuery(jpql, Product.class);
         query.setParameter("tagId", tagId);
         query.setFirstResult((int) pageable.getOffset());
         query.setMaxResults(pageable.getPageSize());
@@ -44,8 +44,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     @Override
-    public List<Product> searchProductsByTopTags(Long tagId, Long lastProductId, Pageable pageable) {
-        String jpql = "SELECT DISTINCT p FROM Product p " +
+    public List<Product> searchProductsByTopTags(final Long tagId, final Long lastProductId, final Pageable pageable) {
+        final String jpql = "SELECT DISTINCT p FROM Product p " +
                 "WHERE p.id < :lastProductId AND p.id IN ( " +
                 "   SELECT p2.id FROM Product p2 " +
                 "   JOIN p2.reviews r2 " +
@@ -62,7 +62,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 ") " +
                 "ORDER BY p.id DESC";
 
-        TypedQuery<Product> query = entityManager.createQuery(jpql, Product.class);
+        final TypedQuery<Product> query = entityManager.createQuery(jpql, Product.class);
         query.setParameter("tagId", tagId);
         query.setParameter("lastProductId", lastProductId);
         query.setFirstResult((int) pageable.getOffset());

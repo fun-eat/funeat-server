@@ -5,7 +5,6 @@ import com.funeat.product.domain.Product;
 import com.funeat.product.dto.ProductReviewCountDto;
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -55,19 +54,4 @@ public interface ProductRepository extends BaseRepository<Product, Long>, Produc
             + "ORDER BY (CASE WHEN p.name LIKE CONCAT(:name, '%') THEN 1 ELSE 2 END), p.id DESC")
     List<ProductReviewCountDto> findAllWithReviewCountByNameContaining(@Param("name") final String name,
                                                                        final Long lastId, final Pageable pageable);
-
-    @Query("SELECT DISTINCT p FROM Product p "
-            + "JOIN Review r on r.product.id = p.id "
-            + "LEFT JOIN ReviewTag rt on rt.review.id = r.id "
-            + "WHERE rt.tag.id = :tagId "
-            + "ORDER BY p.id DESC")
-    List<Product> findAllByTagFirst(@Param("tagId") Long tagId, Pageable pageable);
-
-    @Query("SELECT DISTINCT p FROM Product p "
-            + "JOIN Review r on r.product.id = p.id "
-            + "LEFT JOIN ReviewTag rt on rt.review.id = r.id "
-            + "WHERE rt.tag.id = :tagId "
-            + "AND p.id < :lastId "
-            + "ORDER BY p.id DESC")
-    List<Product> findAllByTag(@Param("tagId") final Long tagId, @Param("lastId") final Long lastId, final Pageable pageable);
 }

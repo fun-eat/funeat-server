@@ -74,7 +74,7 @@ public class ProductSteps {
                 .queryParam("lastProductId", lastProductId)
                 .when()
                 .get("/api/search/tags/results")
-                .then().log().all()
+                .then()
                 .extract();
     }
 }
