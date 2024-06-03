@@ -18,6 +18,7 @@ import static com.funeat.fixture.ReviewFixture.리뷰_이미지test5_평점5점_
 import static com.funeat.fixture.TagFixture.태그_맛있어요_TASTE_생성;
 import static com.funeat.fixture.TagFixture.태그_단짠단짠_TASTE_생성;
 import static com.funeat.fixture.TagFixture.태그_갓성비_PRICE_생성;
+import static com.funeat.fixture.TagFixture.태그_간식_ETC_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -289,6 +290,61 @@ class ProductRepositoryTest extends RepositoryTest {
             // then
             assertThat(actual).usingRecursiveComparison()
                     .isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class findAllByTagFirst_실패_테스트 {
+
+        @Test
+        void 간식_태그는_4위이므로_검색되지_말아야한다() {
+            // given
+            final var category = 카테고리_간편식사_생성();
+            단일_카테고리_저장(category);
+
+            final var 태그_맛있어요 = 태그_맛있어요_TASTE_생성();
+            final var 태그_단짠단짠 = 태그_맛있어요_TASTE_생성();
+            final var 태그_갓성비 = 태그_맛있어요_TASTE_생성();
+            final var 태그_간식 = 태그_간식_ETC_생성();
+
+            final var 태그1 = 단일_태그_저장(태그_맛있어요);
+            final var 태그2 = 단일_태그_저장(태그_단짠단짠);
+            final var 태그3 = 단일_태그_저장(태그_갓성비);
+            final var 태그4 = 단일_태그_저장(태그_간식);
+
+            final var product1 = 상품_애플망고_가격3000원_평점5점_생성(category);
+            final var product2 = 상품_망고빙수_가격5000원_평점4점_생성(category);
+            final var product3 = 상품_망고빙수_가격5000원_평점4점_생성(category);
+            final var product4 = 상품_망고빙수_가격5000원_평점4점_생성(category);
+            복수_상품_저장(product1, product2, product3, product4);
+
+            final var member1 = 멤버_멤버1_생성();
+            final var member2 = 멤버_멤버2_생성();
+            복수_멤버_저장(member1, member2);
+
+            final var review1_1 = 리뷰_이미지test1_평점1점_재구매X_생성(member1, product1, 0L);
+            final var review1_2 = 리뷰_이미지test5_평점5점_재구매O_생성(member2, product1, 0L);
+            final var review2_1 = 리뷰_이미지test3_평점3점_재구매O_생성(member1, product2, 0L);
+            복수_리뷰_저장(review1_1, review1_2, review2_1);
+
+            복수_리뷰_태그_저장(
+                    리뷰태그_생성(review1_1, 태그_맛있어요),
+                    리뷰태그_생성(review1_1, 태그_맛있어요),
+                    리뷰태그_생성(review1_1, 태그_단짠단짠),
+                    리뷰태그_생성(review1_1, 태그_단짠단짠),
+                    리뷰태그_생성(review1_1, 태그_갓성비),
+                    리뷰태그_생성(review1_1, 태그_갓성비),
+                    리뷰태그_생성(review1_1, 태그_간식),
+                    리뷰태그_생성(review1_1, 태그_맛있어요),
+                    리뷰태그_생성(review1_2, 태그_단짠단짠),
+                    리뷰태그_생성(review2_1, 태그_맛있어요)
+            );
+
+            // when
+            final var actual = productRepository.searchProductsByTopTagsFirst(태그4, PageRequest.of(0, 10));
+
+            // then
+            assertThat(actual).isEmpty();
         }
     }
 }
