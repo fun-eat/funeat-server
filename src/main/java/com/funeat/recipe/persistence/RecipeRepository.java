@@ -49,4 +49,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     List<Recipe> findRecipesByFavoriteCountGreaterThanEqual(final Long favoriteCount);
 
     Long countByMember(final Member member);
+
+    @Query("SELECT r FROM Recipe r JOIN RecipeBookmark rb ON r.id = rb.recipe.id WHERE rb.member = :member AND rb.bookmark = true")
+    Page<Recipe> findBookmarkedRecipesByMember(@Param("member") final Member member, final Pageable pageable);
 }

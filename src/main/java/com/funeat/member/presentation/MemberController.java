@@ -2,6 +2,7 @@ package com.funeat.member.presentation;
 
 import com.funeat.auth.dto.LoginInfo;
 import com.funeat.auth.util.AuthenticationPrincipal;
+import com.funeat.member.dto.MemberBookmarkRecipesResponse;
 import com.funeat.member.dto.MemberProfileResponse;
 import com.funeat.member.dto.MemberRecipesResponse;
 import com.funeat.member.dto.MemberRequest;
@@ -66,4 +67,13 @@ public interface MemberController {
     @DeleteMapping
     ResponseEntity<Void> deleteReview(@PathVariable final Long reviewId,
                                       @AuthenticationPrincipal final LoginInfo loginInfo);
+
+    @Operation(summary = "사용자가 저장한 꿀조합 조회 (북마크)", description = "자신이 저장한 꿀조합을 조회한다.")
+    @ApiResponse(
+            responseCode = "200",
+            description = "저장한 꿀조합 조회 성공."
+    )
+    @GetMapping
+    ResponseEntity<MemberBookmarkRecipesResponse> getMemberBookmarkRecipe(@AuthenticationPrincipal final LoginInfo loginInfo,
+                                                                          @PageableDefault final Pageable pageable);
 }

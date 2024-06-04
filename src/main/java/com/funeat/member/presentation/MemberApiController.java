@@ -4,6 +4,7 @@ import com.funeat.auth.dto.LoginInfo;
 import com.funeat.auth.util.AuthenticationPrincipal;
 import com.funeat.common.logging.Logging;
 import com.funeat.member.application.MemberService;
+import com.funeat.member.dto.MemberBookmarkRecipesResponse;
 import com.funeat.member.dto.MemberProfileResponse;
 import com.funeat.member.dto.MemberRecipesResponse;
 import com.funeat.member.dto.MemberRequest;
@@ -79,5 +80,13 @@ public class MemberApiController implements MemberController {
         reviewService.deleteReview(reviewId, loginInfo.getId());
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/recipes/bookmark")
+    public ResponseEntity<MemberBookmarkRecipesResponse> getMemberBookmarkRecipe(@AuthenticationPrincipal final LoginInfo loginInfo,
+                                                                                 @PageableDefault final Pageable pageable) {
+        final MemberBookmarkRecipesResponse response = recipeService.findBookmarkRecipeByMember(loginInfo.getId(), pageable);
+
+        return ResponseEntity.ok().body(response);
     }
 }

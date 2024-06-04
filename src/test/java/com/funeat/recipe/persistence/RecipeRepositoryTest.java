@@ -15,8 +15,11 @@ import static com.funeat.fixture.ProductFixture.상품_삼각김밥_가격1000�
 import static com.funeat.fixture.ProductFixture.상품_삼각김밥_가격2000원_평점1점_생성;
 import static com.funeat.fixture.ProductFixture.상품_삼각김밥_가격2000원_평점3점_생성;
 import static com.funeat.fixture.ProductFixture.상품_애플망고_가격3000원_평점5점_생성;
+import static com.funeat.fixture.RecipeFixture.레시피_북마크_생성;
 import static com.funeat.fixture.RecipeFixture.레시피_생성;
 import static com.funeat.fixture.RecipeFixture.레시피이미지_생성;
+import static com.funeat.fixture.RecipeFixture.북마크O;
+import static com.funeat.fixture.RecipeFixture.북마크X;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.funeat.common.RepositoryTest;
@@ -341,6 +344,58 @@ class RecipeRepositoryTest extends RepositoryTest {
 
             // when
             final var actual = recipeRepository.findRecipesByFavoriteCountGreaterThanEqual(1L);
+
+            // then
+            assertThat(actual).usingRecursiveComparison()
+                    .isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class findBookmarkedRecipesByMember_성공_테스트 {
+
+        @Test
+        void 특정_멤버가_저장한_모든_꿀조합을_조회한다() {
+            // given
+            final var member = 멤버_멤버1_생성();
+            단일_멤버_저장(member);
+
+            final var recipe1 = 레시피_생성(member, 1L);
+            final var recipe2 = 레시피_생성(member, 10L);
+            final var recipe3 = 레시피_생성(member, 100L);
+            복수_꿀조합_저장(recipe1, recipe2, recipe3);
+
+            final var bookmarkRecipe1 = 레시피_북마크_생성(member, recipe1, 북마크X);
+            final var bookmarkRecipe2 = 레시피_북마크_생성(member, recipe2, 북마크O);
+            final var bookmarkRecipe3 = 레시피_북마크_생성(member, recipe3, 북마크O);
+            복수_레시피_북마크_저장(bookmarkRecipe1, bookmarkRecipe2, bookmarkRecipe3);
+
+            final var expected = List.of(recipe3, recipe2);
+            final var page = 페이지요청_생성(0, 10, 최신순);
+
+            // when
+            final var actual = recipeRepository.findBookmarkedRecipesByMember(member, page).getContent();
+
+            // then
+            assertThat(actual).usingRecursiveComparison()
+                    .isEqualTo(expected);
+        }
+
+        @Test
+        void 특정_멤버가_저장한_꿀조합이_없으면_빈_리스트를_반환한다() {
+            // given
+            final var member = 멤버_멤버1_생성();
+            단일_멤버_저장(member);
+
+            final var recipe1 = 레시피_생성(member, 0L);
+            final var recipe2 = 레시피_생성(member, 0L);
+            복수_꿀조합_저장(recipe1, recipe2);
+
+            final var expected = Collections.emptyList();
+            final var page = 페이지요청_생성(0, 10, 최신순);
+
+            // when
+            final var actual = recipeRepository.findBookmarkedRecipesByMember(member, page).getContent();
 
             // then
             assertThat(actual).usingRecursiveComparison()

@@ -71,4 +71,14 @@ public class MemberSteps {
                 .then()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 사용자_북마크한_꿀조합_조회_요청(final String loginCookie, final Long page) {
+        return given()
+                .when()
+                .cookie("SESSION", loginCookie)
+                .queryParam("page", page)
+                .get("/api/members/recipes/bookmark")
+                .then()
+                .extract();
+    }
 }
