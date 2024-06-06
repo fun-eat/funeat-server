@@ -10,7 +10,6 @@ import static com.funeat.acceptance.common.CommonSteps.정상_생성;
 import static com.funeat.acceptance.common.CommonSteps.정상_처리;
 import static com.funeat.acceptance.common.CommonSteps.정상_처리_NO_CONTENT;
 import static com.funeat.acceptance.common.CommonSteps.찾을수_없음;
-import static com.funeat.acceptance.product.ProductSteps.상품_상세_조회_요청;
 import static com.funeat.acceptance.review.ReviewSteps.리뷰_랭킹_조회_요청;
 import static com.funeat.acceptance.review.ReviewSteps.리뷰_상세_조회_요청;
 import static com.funeat.acceptance.review.ReviewSteps.리뷰_작성_요청;
@@ -852,7 +851,7 @@ class ReviewAcceptanceTest extends AcceptanceTest {
         final var actual = response.jsonPath()
                 .getList("reviews", RankingReviewDto.class);
 
-        assertThat(actual).extracting(RankingReviewDto::getReviewId)
+        assertThat(actual).extracting(RankingReviewDto::getId)
                 .containsExactlyElementsOf(reviewIds);
     }
 
