@@ -6,6 +6,7 @@ import static com.funeat.fixture.PageFixture.평점_내림차순;
 import static com.funeat.fixture.PageFixture.평점_오름차순;
 
 import com.funeat.member.domain.Member;
+import com.funeat.member.domain.favorite.ReviewFavorite;
 import com.funeat.product.domain.Product;
 import com.funeat.review.domain.Review;
 import com.funeat.review.dto.ReviewCreateRequest;
@@ -100,6 +101,10 @@ public class ReviewFixture {
 
     public static ReviewFavoriteRequest 리뷰좋아요요청_생성(final Boolean favorite) {
         return new ReviewFavoriteRequest(favorite);
+    }
+
+    public static ReviewFavorite 리뷰_좋아요_생성(final Member member, final Review review, final Boolean favorite) {
+        return ReviewFavorite.create(member, review, favorite);
     }
 
     public static SortingReviewRequest 리뷰정렬요청_좋아요수_내림차순_생성(final Long lastReviewId) {

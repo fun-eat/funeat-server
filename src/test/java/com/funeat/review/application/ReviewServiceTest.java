@@ -23,6 +23,7 @@ import static com.funeat.fixture.ReviewFixture.리뷰_이미지test3_평점3점_
 import static com.funeat.fixture.ReviewFixture.리뷰_이미지test4_평점4점_재구매O_생성;
 import static com.funeat.fixture.ReviewFixture.리뷰_이미지test5_평점5점_재구매X_생성;
 import static com.funeat.fixture.ReviewFixture.리뷰_이미지없음_평점1점_재구매O_생성;
+import static com.funeat.fixture.ReviewFixture.리뷰_좋아요_생성;
 import static com.funeat.fixture.ReviewFixture.리뷰정렬요청_좋아요수_내림차순_생성;
 import static com.funeat.fixture.ReviewFixture.리뷰정렬요청_최신순_생성;
 import static com.funeat.fixture.ReviewFixture.리뷰정렬요청_평점_내림차순_생성;
@@ -1335,6 +1336,70 @@ class ReviewServiceTest extends ServiceTest {
                 final var rankingReviewDto1 = RankingReviewDto.toDto(review1, false);
                 final var rankingReviewDto2 = RankingReviewDto.toDto(review2, false);
                 final var rankingReviewDtos = List.of(rankingReviewDto2, rankingReviewDto1);
+                final var expected = RankingReviewsResponse.toResponse(rankingReviewDtos);
+
+                // when
+                final var actual = reviewService.getTopReviews(loginId);
+
+                // then
+                assertThat(actual).usingRecursiveComparison()
+                        .isEqualTo(expected);
+            }
+        }
+
+        @Nested
+        class 로그인_여부_응답_테스트 {
+
+            @Test
+            void 로그인_안한_경우_리뷰_좋아요는_false로_반환한다() {
+                // given
+                final var loginId = -1L;
+                final var category = 카테고리_간편식사_생성();
+                단일_카테고리_저장(category);
+
+                final var product = 상품_삼각김밥_가격1000원_평점4점_생성(category);
+                단일_상품_저장(product);
+
+                final var member = 멤버_멤버1_생성();
+                단일_멤버_저장(member);
+
+                final var now = LocalDateTime.now();
+                final var review = 리뷰_이미지test5_평점5점_재구매X_생성(member, product, 1L, now.minusDays(1L));
+                단일_리뷰_저장(review);
+
+                final var rankingReviewDto = RankingReviewDto.toDto(review, false);
+                final var rankingReviewDtos = List.of(rankingReviewDto);
+                final var expected = RankingReviewsResponse.toResponse(rankingReviewDtos);
+
+                // when
+                final var actual = reviewService.getTopReviews(loginId);
+
+                // then
+                assertThat(actual).usingRecursiveComparison()
+                        .isEqualTo(expected);
+            }
+
+            @Test
+            void 로그인_한_경우_리뷰_좋아요는_로그인한_사용자에_따라_반환한다() {
+                // given
+                final var member = 멤버_멤버1_생성();
+                단일_멤버_저장(member);
+                final var loginId = member.getId();
+                final var category = 카테고리_간편식사_생성();
+                단일_카테고리_저장(category);
+
+                final var product = 상품_삼각김밥_가격1000원_평점4점_생성(category);
+                단일_상품_저장(product);
+
+                final var now = LocalDateTime.now();
+                final var review = 리뷰_이미지test5_평점5점_재구매X_생성(member, product, 1L, now.minusDays(1L));
+                단일_리뷰_저장(review);
+
+                final var reviewFavorite = 리뷰_좋아요_생성(member, review, true);
+                단일_리뷰_좋아요_저장(reviewFavorite);
+
+                final var rankingReviewDto = RankingReviewDto.toDto(review, true);
+                final var rankingReviewDtos = List.of(rankingReviewDto);
                 final var expected = RankingReviewsResponse.toResponse(rankingReviewDtos);
 
                 // when
