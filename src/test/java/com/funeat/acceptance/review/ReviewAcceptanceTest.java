@@ -878,9 +878,9 @@ class ReviewAcceptanceTest extends AcceptanceTest {
         final var actual = response.jsonPath()
                 .getList("reviews", RankingReviewDto.class);
 
-        assertThat(actual).extracting(RankingReviewDto::getId)
+        assertThat(actual).extracting(RankingReviewDto::id)
                 .containsExactlyElementsOf(reviewIds);
-        assertThat(actual).extracting(RankingReviewDto::isFavorite)
+        assertThat(actual).extracting(RankingReviewDto::favorite)
                 .isEqualTo(favorites);
     }
 
