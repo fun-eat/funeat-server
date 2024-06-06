@@ -6,16 +6,24 @@ public class SearchProductDto {
 
     private final Long id;
     private final String name;
+    private final Long price;
+    private final String image;
+    private final Double averageRating;
     private final String categoryType;
 
-    public SearchProductDto(final Long id, final String name, final String categoryType) {
+    public SearchProductDto(final Long id, final String name, final Long price, final String image,
+                            final Double averageRating, final String categoryType) {
         this.id = id;
         this.name = name;
+        this.price = price;
+        this.image = image;
+        this.averageRating = averageRating;
         this.categoryType = categoryType;
     }
 
     public static SearchProductDto toDto(final Product product) {
-        return new SearchProductDto(product.getId(), product.getName(), product.getCategory().getType().getName());
+        return new SearchProductDto(product.getId(), product.getName(), product.getPrice(), product.getImage(),
+                product.getAverageRating(), product.getCategory().getType().getName());
     }
 
     public Long getId() {
@@ -24,6 +32,18 @@ public class SearchProductDto {
 
     public String getName() {
         return name;
+    }
+
+    public Long getPrice() {
+        return price;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public Double getAverageRating() {
+        return averageRating;
     }
 
     public String getCategoryType() {
