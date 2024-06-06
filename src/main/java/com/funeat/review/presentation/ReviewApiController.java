@@ -11,9 +11,9 @@ import com.funeat.review.dto.ReviewDetailResponse;
 import com.funeat.review.dto.ReviewFavoriteRequest;
 import com.funeat.review.dto.SortingReviewRequest;
 import com.funeat.review.dto.SortingReviewsResponse;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.Optional;
-import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,8 +68,8 @@ public class ReviewApiController implements ReviewController {
     }
 
     @GetMapping("/api/ranks/reviews")
-    public ResponseEntity<RankingReviewsResponse> getRankingReviews() {
-        final RankingReviewsResponse response = reviewService.getTopReviews();
+    public ResponseEntity<RankingReviewsResponse> getRankingReviews(@AuthenticationPrincipal final LoginInfo loginInfo) {
+        final RankingReviewsResponse response = reviewService.getTopReviews(loginInfo.getId());
 
         return ResponseEntity.ok(response);
     }
