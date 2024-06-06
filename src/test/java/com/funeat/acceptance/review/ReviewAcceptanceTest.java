@@ -714,7 +714,7 @@ class ReviewAcceptanceTest extends AcceptanceTest {
     class getRankingReviews_성공_테스트 {
 
         @Test
-        void 리뷰_랭킹을_조회하다() {
+        void 로그인을_하지_않고_리뷰_랭킹을_조회한다() {
             // given
             final var 카테고리 = 카테고리_즉석조리_생성();
             단일_카테고리_저장(카테고리);
@@ -736,7 +736,33 @@ class ReviewAcceptanceTest extends AcceptanceTest {
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
-            리뷰_랭킹_조회_결과를_검증한다(응답, List.of(리뷰2, 리뷰3));
+            리뷰_랭킹_조회_결과를_검증한다(응답, List.of(리뷰2, 리뷰3), List.of(false, false));
+        }
+
+        @Test
+        void 로그인_후_리뷰_랭킹을_조회한다() {
+            // given
+            final var 카테고리 = 카테고리_즉석조리_생성();
+            단일_카테고리_저장(카테고리);
+            final var 상품1 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점3점_생성(카테고리));
+            final var 상품2 = 단일_상품_저장(상품_삼각김밥_가격2000원_평점3점_생성(카테고리));
+            final var 태그 = 단일_태그_저장(태그_맛있어요_TASTE_생성());
+
+            리뷰_작성_요청(로그인_쿠키_획득(멤버1), 상품1, 사진_명세_요청(이미지1), 리뷰추가요청_재구매O_생성(점수_3점, List.of(태그)));
+            리뷰_작성_요청(로그인_쿠키_획득(멤버2), 상품1, 사진_명세_요청(이미지2), 리뷰추가요청_재구매O_생성(점수_4점, List.of(태그)));
+            리뷰_작성_요청(로그인_쿠키_획득(멤버3), 상품1, 사진_명세_요청(이미지3), 리뷰추가요청_재구매O_생성(점수_3점, List.of(태그)));
+            리뷰_작성_요청(로그인_쿠키_획득(멤버1), 상품2, 사진_명세_요청(이미지4), 리뷰추가요청_재구매O_생성(점수_5점, List.of(태그)));
+            리뷰_작성_요청(로그인_쿠키_획득(멤버2), 상품2, 사진_명세_요청(이미지5), 리뷰추가요청_재구매O_생성(점수_1점, List.of(태그)));
+            여러명이_리뷰_좋아요_요청(List.of(멤버1, 멤버2, 멤버3), 상품1, 리뷰2, 좋아요O);
+            여러명이_리뷰_좋아요_요청(List.of(멤버1, 멤버2), 상품1, 리뷰3, 좋아요O);
+            여러명이_리뷰_좋아요_요청(List.of(멤버1), 상품1, 리뷰4, 좋아요O);
+
+            // when
+            final var 응답 = 리뷰_랭킹_조회_요청(로그인_쿠키_획득(멤버2));
+
+            // then
+            STATUS_CODE를_검증한다(응답, 정상_처리);
+            리뷰_랭킹_조회_결과를_검증한다(응답, List.of(리뷰2, 리뷰3), List.of(true, true));
         }
     }
 
@@ -847,12 +873,15 @@ class ReviewAcceptanceTest extends AcceptanceTest {
                 .containsExactlyElementsOf(reviewIds);
     }
 
-    private void 리뷰_랭킹_조회_결과를_검증한다(final ExtractableResponse<Response> response, final List<Long> reviewIds) {
+    private void 리뷰_랭킹_조회_결과를_검증한다(final ExtractableResponse<Response> response, final List<Long> reviewIds,
+                                   final List<Boolean> favorites) {
         final var actual = response.jsonPath()
                 .getList("reviews", RankingReviewDto.class);
 
         assertThat(actual).extracting(RankingReviewDto::getId)
                 .containsExactlyElementsOf(reviewIds);
+        assertThat(actual).extracting(RankingReviewDto::isFavorite)
+                .isEqualTo(favorites);
     }
 
     private void 좋아요를_제일_많이_받은_리뷰_결과를_검증한다(final ExtractableResponse<Response> response, final Long reviewId) {
