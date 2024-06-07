@@ -14,9 +14,9 @@ public record RankingReviewDto(
         String content,
         String image,
         Long rating,
-        boolean rebuy,
+        Boolean rebuy,
         Long favoriteCount,
-        boolean favorite,
+        Boolean favorite,
         List<TagDto> tags
 ) {
 
