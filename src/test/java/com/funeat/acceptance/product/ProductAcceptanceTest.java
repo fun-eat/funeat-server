@@ -104,10 +104,8 @@ import com.funeat.recipe.dto.RecipeDto;
 import com.funeat.tag.dto.TagDto;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -451,8 +449,8 @@ class ProductAcceptanceTest extends AcceptanceTest {
 
             // when
             final var 응답1 = 상품_자동_완성_검색_요청("망고", 0L);
-            final var result = 응답1.as(SearchProductsResponse.class).getProducts();
-            final var lastId = result.get(result.size() - 1).getId();
+            final var result = 응답1.as(SearchProductsResponse.class).products();
+            final var lastId = result.get(result.size() - 1).id();
             final var 응답2 = 상품_자동_완성_검색_요청("망고", lastId);
 
             // then
@@ -736,7 +734,7 @@ class ProductAcceptanceTest extends AcceptanceTest {
                 .getList("products", SearchProductDto.class);
 
         assertThat(actualHasNext).isEqualTo(hasNext);
-        assertThat(actualProducts).extracting(SearchProductDto::getId)
+        assertThat(actualProducts).extracting(SearchProductDto::id)
                 .isEqualTo(productIds);
     }
 
