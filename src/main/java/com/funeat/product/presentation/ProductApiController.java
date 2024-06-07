@@ -71,4 +71,11 @@ public class ProductApiController implements ProductController {
         final SortingRecipesResponse response = productService.getProductRecipes(loginInfo.getId(), productId, pageable);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/search/tags/results")
+    public ResponseEntity<SearchProductsResponse> getSearchResultByTag(@RequestParam final Long tagId,
+                                                                       @RequestParam final Long lastProductId) {
+        final SearchProductsResponse response = productService.getSearchResultsByTag(tagId, lastProductId);
+        return ResponseEntity.ok(response);
+    }
 }

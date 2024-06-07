@@ -76,4 +76,13 @@ public interface ProductController {
     ResponseEntity<SortingRecipesResponse> getProductRecipes(@AuthenticationPrincipal final LoginInfo loginInfo,
                                                              @PathVariable final Long productId,
                                                              @PageableDefault final Pageable pageable);
+
+    @Operation(summary = "해당 태그 상품 목록 조회", description = "해당 태그가 포함된 상품 목록을 조회한다.")
+    @ApiResponse(
+            responseCode = "200",
+            description = "해당 태그 상품 목록 조회 성공."
+    )
+    @GetMapping("/search/tags/results")
+    public ResponseEntity<SearchProductsResponse> getSearchResultByTag(@RequestParam final Long tagId,
+                                                                       @RequestParam final Long lastProductId);
 }
