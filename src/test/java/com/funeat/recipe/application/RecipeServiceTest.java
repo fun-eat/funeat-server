@@ -7,6 +7,7 @@ import static com.funeat.fixture.MemberFixture.멤버_멤버1_생성;
 import static com.funeat.fixture.MemberFixture.멤버_멤버2_생성;
 import static com.funeat.fixture.MemberFixture.멤버_멤버3_생성;
 import static com.funeat.fixture.PageFixture.과거순;
+import static com.funeat.fixture.PageFixture.아이디_내림차순;
 import static com.funeat.fixture.PageFixture.좋아요수_내림차순;
 import static com.funeat.fixture.PageFixture.최신순;
 import static com.funeat.fixture.PageFixture.페이지요청_생성;
@@ -219,7 +220,7 @@ class RecipeServiceTest extends ServiceTest {
             final var recipeImage1_2 = 레시피이미지_생성(recipe1_2);
             복수_꿀조합_이미지_저장(recipeImage1_1, recipeImage1_2);
 
-            final var page = 페이지요청_생성(0, 10, 최신순);
+            final var page = 페이지요청_생성(0, 10, 최신순, 아이디_내림차순);
 
             // when
             final var actual = recipeService.findRecipeByMember(member1.getId(), page);
@@ -240,7 +241,7 @@ class RecipeServiceTest extends ServiceTest {
             final var member1 = 멤버_멤버1_생성();
             단일_멤버_저장(member1);
 
-            final var page = 페이지요청_생성(0, 10, 최신순);
+            final var page = 페이지요청_생성(0, 10, 최신순, 아이디_내림차순);
 
             // when
             final var actual = recipeService.findRecipeByMember(member1.getId(), page);
@@ -260,7 +261,7 @@ class RecipeServiceTest extends ServiceTest {
         void 존재하지_않는_멤버가_해당_멤버의_레시피를_조회하면_예외가_발생한다() {
             // given
             final var notExistMemberId = 99999L;
-            final var page = 페이지요청_생성(0, 10, 최신순);
+            final var page = 페이지요청_생성(0, 10, 최신순, 아이디_내림차순);
 
             // when & then
             assertThatThrownBy(() -> recipeService.findRecipeByMember(notExistMemberId, page))
@@ -327,7 +328,7 @@ class RecipeServiceTest extends ServiceTest {
             }
 
             @Test
-            void 꿀조합을_최신순으로_정렬할_수_있다() throws InterruptedException {
+            void 꿀조합을_최신순으로_정렬할_수_있다() {
                 // given
                 final var loginId = -1L;
                 final var member1 = 멤버_멤버1_생성();
@@ -344,9 +345,7 @@ class RecipeServiceTest extends ServiceTest {
                 복수_상품_저장(product1, product2, product3);
 
                 final var recipe1_1 = 레시피_생성(member1, 1L);
-                Thread.sleep(100);
                 final var recipe1_2 = 레시피_생성(member1, 3L);
-                Thread.sleep(100);
                 final var recipe1_3 = 레시피_생성(member1, 2L);
                 복수_꿀조합_저장(recipe1_1, recipe1_2, recipe1_3);
 
@@ -363,7 +362,7 @@ class RecipeServiceTest extends ServiceTest {
                 final var recipeImage1_2_2 = 레시피이미지_생성(recipe1_2);
                 복수_꿀조합_이미지_저장(recipeImage1_1_1, recipeImage1_2_1);
 
-                final var page = 페이지요청_생성(0, 10, 최신순);
+                final var page = 페이지요청_생성(0, 10, 최신순, 아이디_내림차순);
 
                 // when
                 final var actual = recipeService.getSortingRecipes(loginId, page).getRecipes();
@@ -818,7 +817,7 @@ class RecipeServiceTest extends ServiceTest {
             final var request = 레시피북마크요청_생성(북마크O);
             recipeService.bookmarkRecipe(member1.getId(), recipe2.getId(), request);
 
-            final var page = 페이지요청_생성(0, 10, 최신순);
+            final var page = 페이지요청_생성(0, 10, 최신순, 아이디_내림차순);
 
             // when
             final var actual = recipeService.findBookmarkRecipeByMember(member1.getId(), page);
@@ -843,7 +842,7 @@ class RecipeServiceTest extends ServiceTest {
             final var member1 = 멤버_멤버1_생성();
             단일_멤버_저장(member1);
 
-            final var page = 페이지요청_생성(0, 10, 최신순);
+            final var page = 페이지요청_생성(0, 10, 최신순, 아이디_내림차순);
 
             // when
             final var actual = recipeService.findBookmarkRecipeByMember(member1.getId(), page);
@@ -863,7 +862,7 @@ class RecipeServiceTest extends ServiceTest {
         void 존재하지_않는_멤버가_해당_멤버의_저장한_레시피를_조회하면_예외가_발생한다() {
             // given
             final var notExistMemberId = 99999L;
-            final var page = 페이지요청_생성(0, 10, 최신순);
+            final var page = 페이지요청_생성(0, 10, 최신순, 아이디_내림차순);
 
             // when & then
             assertThatThrownBy(() -> recipeService.findBookmarkRecipeByMember(notExistMemberId, page))
