@@ -6,6 +6,7 @@ import static com.funeat.fixture.ImageFixture.이미지_생성;
 import static com.funeat.fixture.MemberFixture.멤버_멤버1_생성;
 import static com.funeat.fixture.MemberFixture.멤버_멤버2_생성;
 import static com.funeat.fixture.MemberFixture.멤버_비로그인_생성;
+import static com.funeat.fixture.PageFixture.아이디_내림차순;
 import static com.funeat.fixture.PageFixture.최신순;
 import static com.funeat.fixture.PageFixture.페이지요청_생성;
 import static com.funeat.fixture.ProductFixture.상품_삼각김밥_가격1000원_평점2점_생성;
@@ -674,7 +675,7 @@ class ReviewServiceTest extends ServiceTest {
             복수_리뷰_저장(review1_1, review2_1, review2_2, review3_1, review3_2);
 
             // when
-            final var page = 페이지요청_생성(0, 10, 최신순);
+            final var page = 페이지요청_생성(0, 10, 최신순, 아이디_내림차순);
             final var member1Id = member1.getId();
             final var result = reviewService.findReviewByMember(member1Id, page);
 
@@ -699,7 +700,7 @@ class ReviewServiceTest extends ServiceTest {
         void 존재하지_않은_사용자가_작성한_리뷰를_조회할때_예외가_발생한다() {
             // given
             final var notExistMemberId = 999999L;
-            final var page = 페이지요청_생성(0, 10, 최신순);
+            final var page = 페이지요청_생성(0, 10, 최신순, 아이디_내림차순);
 
             // when & then
             assertThatThrownBy(() -> reviewService.findReviewByMember(notExistMemberId, page))
