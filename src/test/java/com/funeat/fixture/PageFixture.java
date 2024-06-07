@@ -6,6 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @SuppressWarnings("NonAsciiCharacters")
 public class PageFixture {
 
@@ -34,12 +38,16 @@ public class PageFixture {
         return PageRequest.of(page, size);
     }
 
-    public static PageRequest 페이지요청_생성(final int page, final int size, final String sort) {
-        final String[] splitSort = sort.split(",");
-        final String order = splitSort[0];
-        final Direction direction = Direction.fromString(splitSort[1]);
+    public static PageRequest 페이지요청_생성(final int page, final int size, final String... sorts) {
+        final List<Sort.Order> orders = new ArrayList<>();
+        Arrays.stream(sorts).forEach(sort -> {
+            final String[] splitSort = sort.split(",");
+            final String property = splitSort[0];
+            final Direction direction = Direction.fromString(splitSort[1]);
+            orders.add(new Sort.Order(direction, property));
+        });
 
-        return PageRequest.of(page, size, Sort.by(direction, order));
+        return PageRequest.of(page, size, Sort.by(orders));
     }
 
     public static PageDto 응답_페이지_생성(final Long totalDataCount, final Long totalPages, final boolean firstPage,
