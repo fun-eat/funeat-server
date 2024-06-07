@@ -88,6 +88,15 @@ public class ReviewSteps {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 리뷰_랭킹_조회_요청(final String loginCookie) {
+        return given()
+                .cookie("SESSION", loginCookie)
+                .when()
+                .get("/api/ranks/reviews")
+                .then()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> 좋아요를_제일_많이_받은_리뷰_조회_요청(final Long productId) {
         return given()
                 .when()
