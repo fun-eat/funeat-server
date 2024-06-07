@@ -6,14 +6,19 @@ public class MemberProfileResponse {
 
     private final String nickname;
     private final String profileImage;
+    private final Long reviewCount;
+    private final Long recipeCount;
 
-    public MemberProfileResponse(final String nickname, final String profileImage) {
+    public MemberProfileResponse(final String nickname, final String profileImage,
+                                 final Long reviewCount, final Long recipeCount) {
         this.nickname = nickname;
         this.profileImage = profileImage;
+        this.reviewCount = reviewCount;
+        this.recipeCount = recipeCount;
     }
 
-    public static MemberProfileResponse toResponse(final Member member) {
-        return new MemberProfileResponse(member.getNickname(), member.getProfileImage());
+    public static MemberProfileResponse toResponse(final Member member, final Long reviewCount, final Long recipeCount) {
+        return new MemberProfileResponse(member.getNickname(), member.getProfileImage(), reviewCount, recipeCount);
     }
 
     public String getNickname() {
@@ -22,5 +27,13 @@ public class MemberProfileResponse {
 
     public String getProfileImage() {
         return profileImage;
+    }
+
+    public Long getReviewCount() {
+        return reviewCount;
+    }
+
+    public Long getRecipeCount() {
+        return recipeCount;
     }
 }

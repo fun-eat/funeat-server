@@ -6,11 +6,15 @@ import static com.funeat.fixture.PageFixture.평점_내림차순;
 import static com.funeat.fixture.PageFixture.평점_오름차순;
 
 import com.funeat.member.domain.Member;
+import com.funeat.member.domain.favorite.ReviewFavorite;
 import com.funeat.product.domain.Product;
 import com.funeat.review.domain.Review;
+import com.funeat.review.domain.ReviewTag;
 import com.funeat.review.dto.ReviewCreateRequest;
 import com.funeat.review.dto.ReviewFavoriteRequest;
 import com.funeat.review.dto.SortingReviewRequest;
+import com.funeat.tag.domain.Tag;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -102,6 +106,10 @@ public class ReviewFixture {
         return new ReviewFavoriteRequest(favorite);
     }
 
+    public static ReviewFavorite 리뷰_좋아요_생성(final Member member, final Review review, final Boolean favorite) {
+        return ReviewFavorite.create(member, review, favorite);
+    }
+
     public static SortingReviewRequest 리뷰정렬요청_좋아요수_내림차순_생성(final Long lastReviewId) {
         return new SortingReviewRequest(좋아요수_내림차순, lastReviewId);
     }
@@ -120,5 +128,12 @@ public class ReviewFixture {
 
     public static SortingReviewRequest 리뷰정렬요청_존재하지않는정렬_생성() {
         return new SortingReviewRequest("test,test", 1L);
+    }
+
+    public static class ReviewTagFixture {
+
+        public static ReviewTag 리뷰태그_생성(final Review review, final Tag tag) {
+            return ReviewTag.createReviewTag(review, tag);
+        }
     }
 }

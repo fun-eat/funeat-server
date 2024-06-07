@@ -64,7 +64,7 @@ public interface ReviewController {
             description = "리뷰 랭킹 Top3 조회 성공."
     )
     @GetMapping
-    ResponseEntity<RankingReviewsResponse> getRankingReviews();
+    ResponseEntity<RankingReviewsResponse> getRankingReviews(@AuthenticationPrincipal final LoginInfo loginInfo);
 
     @Operation(summary = "좋아요를 제일 많은 받은 리뷰 조회", description = "특정 상품에 대해 좋아요를 제일 많이 받은 리뷰를 조회한다.")
     @ApiResponse(

@@ -14,4 +14,6 @@ public interface ReviewFavoriteRepository extends JpaRepository<ReviewFavorite, 
     void deleteByReview(final Review review);
 
     List<ReviewFavorite> findByReview(final Review review);
+
+    boolean existsByMemberAndReviewAndFavoriteTrue(final Member member, final Review review);
 }

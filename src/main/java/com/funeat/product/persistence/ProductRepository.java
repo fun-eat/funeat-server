@@ -4,11 +4,12 @@ import com.funeat.common.repository.BaseRepository;
 import com.funeat.product.domain.Product;
 import com.funeat.product.dto.ProductReviewCountDto;
 import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ProductRepository extends BaseRepository<Product, Long> {
+public interface ProductRepository extends BaseRepository<Product, Long>, ProductRepositoryCustom {
 
     @Query("SELECT new com.funeat.product.dto.ProductReviewCountDto(p, COUNT(r.id)) "
             + "FROM Product p "

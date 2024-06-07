@@ -28,10 +28,8 @@ public class ReviewSteps {
         return requestSpec
                 .multiPart("reviewRequest", request, "application/json")
                 .when()
-                .log().all()
                 .post("/api/products/{productId}/reviews", productId)
                 .then()
-                .log().all()
                 .extract();
     }
 
@@ -61,7 +59,7 @@ public class ReviewSteps {
         return given()
                 .queryParam("sort", sort)
                 .queryParam("page", page)
-                .queryParam("lastReviewId", lastReviewId).log().all()
+                .queryParam("lastReviewId", lastReviewId)
                 .when()
                 .get("/api/products/{product_id}/reviews", productId)
                 .then()
@@ -75,10 +73,10 @@ public class ReviewSteps {
                 .cookie("SESSION", loginCookie)
                 .queryParam("sort", sort)
                 .queryParam("page", page)
-                .queryParam("lastReviewId", lastReviewId).log().all()
+                .queryParam("lastReviewId", lastReviewId)
                 .when()
                 .get("/api/products/{product_id}/reviews", productId)
-                .then().log().all()
+                .then()
                 .extract();
     }
 
@@ -90,21 +88,28 @@ public class ReviewSteps {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 리뷰_랭킹_조회_요청(final String loginCookie) {
+        return given()
+                .cookie("SESSION", loginCookie)
+                .when()
+                .get("/api/ranks/reviews")
+                .then()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> 좋아요를_제일_많이_받은_리뷰_조회_요청(final Long productId) {
         return given()
                 .when()
                 .get("/api/ranks/products/{product_id}/reviews", productId)
-                .then().log().all()
+                .then()
                 .extract();
     }
 
     public static ExtractableResponse<Response> 리뷰_상세_조회_요청(final Long reviewId) {
         return given()
                 .when()
-                .log().all()
                 .get("/api/reviews/{reviewId}", reviewId)
                 .then()
-                .log().all()
                 .extract();
     }
 }

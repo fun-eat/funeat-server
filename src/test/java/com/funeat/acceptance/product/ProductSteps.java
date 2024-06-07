@@ -21,10 +21,9 @@ public class ProductSteps {
 
     public static ExtractableResponse<Response> 상품_상세_조회_요청(final Long productId) {
         return given()
-                .log().all()
                 .when()
                 .get("/api/products/{product_id}", productId)
-                .then().log().all()
+                .then()
                 .extract();
     }
 
@@ -63,6 +62,17 @@ public class ProductSteps {
                 .queryParam("page", page)
                 .when()
                 .get("/api/products/{productId}/recipes", productId)
+                .then()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 태그_상품_검색_결과_조회_요청(final Long tagId, final Long lastProductId) {
+        return given()
+                .log().all()
+                .queryParam("tagId", tagId)
+                .queryParam("lastProductId", lastProductId)
+                .when()
+                .get("/api/search/tags/results")
                 .then()
                 .extract();
     }

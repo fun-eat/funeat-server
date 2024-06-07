@@ -2,31 +2,17 @@ package com.funeat.product.dto;
 
 import com.funeat.product.domain.Product;
 
-public class SearchProductDto {
-
-    private final Long id;
-    private final String name;
-    private final String categoryType;
-
-    public SearchProductDto(final Long id, final String name, final String categoryType) {
-        this.id = id;
-        this.name = name;
-        this.categoryType = categoryType;
-    }
+public record SearchProductDto(
+        Long id,
+        String name,
+        Long price,
+        String image,
+        Double averageRating,
+        String categoryType
+) {
 
     public static SearchProductDto toDto(final Product product) {
-        return new SearchProductDto(product.getId(), product.getName(), product.getCategory().getType().getName());
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getCategoryType() {
-        return categoryType;
+        return new SearchProductDto(product.getId(), product.getName(), product.getPrice(), product.getImage(),
+                product.getAverageRating(), product.getCategory().getType().getName());
     }
 }

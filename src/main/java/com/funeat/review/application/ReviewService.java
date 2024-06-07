@@ -63,6 +63,7 @@ public class ReviewService {
     private static final int RANKING_SIZE = 2;
     private static final long RANKING_MINIMUM_FAVORITE_COUNT = 1L;
     private static final int REVIEW_PAGE_SIZE = 10;
+    private static final long GUEST_ID = -1L;
 
     private final ReviewRepository reviewRepository;
     private final TagRepository tagRepository;
@@ -212,15 +213,25 @@ public class ReviewService {
         return sortingReviews.size() > REVIEW_PAGE_SIZE;
     }
 
-    public RankingReviewsResponse getTopReviews() {
+    public RankingReviewsResponse getTopReviews(final Long memberId) {
         final List<Review> reviews = reviewRepository.findReviewsByFavoriteCountGreaterThanEqual(RANKING_MINIMUM_FAVORITE_COUNT);
         final List<RankingReviewDto> dtos = reviews.stream()
                 .sorted(Comparator.comparing(Review::calculateRankingScore).reversed())
                 .limit(RANKING_SIZE)
-                .map(RankingReviewDto::toDto)
-                .collect(Collectors.toList());
-
+                .map(review -> createRankingReviewDto(memberId, review))
+                .toList();
         return RankingReviewsResponse.toResponse(dtos);
+    }
+
+    private RankingReviewDto createRankingReviewDto(final Long memberId, final Review review) {
+        if (memberId == GUEST_ID) {
+            return RankingReviewDto.toDto(review, false);
+        }
+
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND, memberId));
+        final Boolean favorite = reviewFavoriteRepository.existsByMemberAndReviewAndFavoriteTrue(member, review);
+        return RankingReviewDto.toDto(review, favorite);
     }
 
     public MemberReviewsResponse findReviewByMember(final Long memberId, final Pageable pageable) {
@@ -231,10 +242,16 @@ public class ReviewService {
         final PageDto pageDto = PageDto.toDto(sortedReviewPages);
 
         final List<MemberReviewDto> dtos = sortedReviewPages.stream()
-                .map(MemberReviewDto::toDto)
-                .collect(Collectors.toList());
+                .map(this::transformMemberReviewDtoWithReviewAndTag)
+                .toList();
 
         return MemberReviewsResponse.toResponse(pageDto, dtos);
+    }
+
+    private MemberReviewDto transformMemberReviewDtoWithReviewAndTag(final Review review) {
+        final List<Tag> tags = tagRepository.findTagsByReviewId(review.getId());
+
+        return MemberReviewDto.toDto(review, tags);
     }
 
     @Transactional

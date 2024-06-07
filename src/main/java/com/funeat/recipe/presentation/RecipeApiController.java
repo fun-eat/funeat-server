@@ -5,6 +5,7 @@ import com.funeat.auth.util.AuthenticationPrincipal;
 import com.funeat.common.logging.Logging;
 import com.funeat.recipe.application.RecipeService;
 import com.funeat.recipe.dto.RankingRecipesResponse;
+import com.funeat.recipe.dto.RecipeBookmarkRequest;
 import com.funeat.recipe.dto.RecipeCommentCondition;
 import com.funeat.recipe.dto.RecipeCommentCreateRequest;
 import com.funeat.recipe.dto.RecipeCommentsResponse;
@@ -73,6 +74,16 @@ public class RecipeApiController implements RecipeController {
                                            @PathVariable final Long recipeId,
                                            @RequestBody @Valid final RecipeFavoriteRequest request) {
         recipeService.likeRecipe(loginInfo.getId(), recipeId, request);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Logging
+    @PatchMapping(value = "/api/recipes/{recipeId}/bookmark")
+    public ResponseEntity<Void> bookmarkRecipe(@AuthenticationPrincipal final LoginInfo loginInfo,
+                                               @PathVariable final Long recipeId,
+                                               @RequestBody @Valid final RecipeBookmarkRequest request) {
+        recipeService.bookmarkRecipe(loginInfo.getId(), recipeId, request);
 
         return ResponseEntity.noContent().build();
     }

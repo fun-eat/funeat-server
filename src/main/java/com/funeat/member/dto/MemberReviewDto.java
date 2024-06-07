@@ -1,38 +1,50 @@
 package com.funeat.member.dto;
 
 import com.funeat.review.domain.Review;
+import com.funeat.tag.domain.Tag;
+import com.funeat.tag.dto.TagDto;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class MemberReviewDto {
 
     private final Long reviewId;
     private final Long productId;
-    private final String categoryType;
     private final String productName;
     private final String content;
     private final Long rating;
-    private final Long favoriteCount;
+    private final List<TagDto> tags;
+    private final String image;
+    private final LocalDateTime createdAt;
 
-    private MemberReviewDto(final Long reviewId, final Long productId, final String categoryType,
-                            final String productName, final String content,
-                            final Long rating, final Long favoriteCount) {
+    private MemberReviewDto(final Long reviewId, final Long productId, final String productName,
+                            final String content, final Long rating, final List<TagDto> tags, final String image,
+                            final LocalDateTime createdAt) {
         this.reviewId = reviewId;
         this.productId = productId;
-        this.categoryType = categoryType;
         this.productName = productName;
         this.content = content;
         this.rating = rating;
-        this.favoriteCount = favoriteCount;
+        this.tags = tags;
+        this.image = image;
+        this.createdAt = createdAt;
     }
 
-    public static MemberReviewDto toDto(final Review review) {
+    public static MemberReviewDto toDto(final Review review, final List<Tag> tags) {
+        final List<TagDto> tagDtos = tags.stream()
+                .map(TagDto::toDto)
+                .toList();
+
         return new MemberReviewDto(
                 review.getId(),
                 review.getProduct().getId(),
-                review.getProduct().getCategory().getType().getName(),
                 review.getProduct().getName(),
                 review.getContent(),
                 review.getRating(),
-                review.getFavoriteCount()
+                tagDtos,
+                review.getImage(),
+                review.getCreatedAt()
         );
     }
 
@@ -56,11 +68,15 @@ public class MemberReviewDto {
         return rating;
     }
 
-    public Long getFavoriteCount() {
-        return favoriteCount;
+    public List<TagDto> getTags() {
+        return tags;
     }
 
-    public String getCategoryType() {
-        return categoryType;
+    public String getImage() {
+        return image;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }
