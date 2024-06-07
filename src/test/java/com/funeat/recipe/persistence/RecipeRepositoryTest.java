@@ -5,6 +5,7 @@ import static com.funeat.fixture.MemberFixture.멤버_멤버1_생성;
 import static com.funeat.fixture.MemberFixture.멤버_멤버2_생성;
 import static com.funeat.fixture.MemberFixture.멤버_멤버3_생성;
 import static com.funeat.fixture.PageFixture.과거순;
+import static com.funeat.fixture.PageFixture.아이디_내림차순;
 import static com.funeat.fixture.PageFixture.좋아요수_내림차순;
 import static com.funeat.fixture.PageFixture.최신순;
 import static com.funeat.fixture.PageFixture.페이지요청_생성;
@@ -166,7 +167,7 @@ class RecipeRepositoryTest extends RepositoryTest {
         }
 
         @Test
-        void 꿀조합을_최신순으로_정렬한다() throws InterruptedException {
+        void 꿀조합을_최신순으로_정렬한다() {
             // given
             final var member1 = 멤버_멤버1_생성();
             final var member2 = 멤버_멤버2_생성();
@@ -182,9 +183,7 @@ class RecipeRepositoryTest extends RepositoryTest {
             복수_상품_저장(product1, product2, product3);
 
             final var recipe1_1 = 레시피_생성(member1, 1L);
-            Thread.sleep(100);
             final var recipe1_2 = 레시피_생성(member1, 3L);
-            Thread.sleep(100);
             final var recipe1_3 = 레시피_생성(member1, 2L);
             복수_꿀조합_저장(recipe1_1, recipe1_2, recipe1_3);
 
@@ -200,7 +199,7 @@ class RecipeRepositoryTest extends RepositoryTest {
             final var recipeImage1_2 = 레시피이미지_생성(recipe1_2);
             복수_꿀조합_이미지_저장(recipeImage1_1, recipeImage1_2);
 
-            final var page = 페이지요청_생성(0, 10, 최신순);
+            final var page = 페이지요청_생성(0, 10, 최신순, 아이디_내림차순);
             final var expected = List.of(recipe1_3, recipe1_2, recipe1_1);
 
             // when
@@ -371,7 +370,7 @@ class RecipeRepositoryTest extends RepositoryTest {
             복수_레시피_북마크_저장(bookmarkRecipe1, bookmarkRecipe2, bookmarkRecipe3);
 
             final var expected = List.of(recipe3, recipe2);
-            final var page = 페이지요청_생성(0, 10, 최신순);
+            final var page = 페이지요청_생성(0, 10, 최신순, 아이디_내림차순);
 
             // when
             final var actual = recipeRepository.findBookmarkedRecipesByMember(member, page).getContent();
@@ -392,7 +391,7 @@ class RecipeRepositoryTest extends RepositoryTest {
             복수_꿀조합_저장(recipe1, recipe2);
 
             final var expected = Collections.emptyList();
-            final var page = 페이지요청_생성(0, 10, 최신순);
+            final var page = 페이지요청_생성(0, 10, 최신순, 아이디_내림차순);
 
             // when
             final var actual = recipeRepository.findBookmarkedRecipesByMember(member, page).getContent();
