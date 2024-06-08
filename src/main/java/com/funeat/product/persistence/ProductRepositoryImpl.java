@@ -21,22 +21,17 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         final String jpql = """
                 SELECT DISTINCT p
                 FROM Product p
-                WHERE p.id IN (
-                    SELECT p2.id
-                    FROM Product p2
-                    JOIN p2.reviews r2
-                    JOIN r2.reviewTags rt2
-                    WHERE rt2.tag.id = :tagId
-                      AND rt2.tag.id IN (
-                          SELECT rt3.tag.id
-                          FROM Review r3
-                          JOIN r3.reviewTags rt3
-                          WHERE r3.product.id = p2.id
-                          GROUP BY rt3.tag.id
-                          ORDER BY COUNT(rt3.tag.id) DESC
-                          LIMIT 3
-                      )
-                )
+                JOIN p.reviews r
+                JOIN r.reviewTags rt
+                JOIN (
+                    SELECT rt2.tag.id AS tagId
+                    FROM ReviewTag rt2
+                    GROUP BY rt2.tag.id
+                    ORDER BY COUNT(rt2.tag.id) DESC
+                    LIMIT 3
+                ) AS topTags
+                ON rt.tag.id = topTags.tagId
+                WHERE rt.tag.id = :tagId
                 ORDER BY p.id DESC
                 """;
 
@@ -52,27 +47,20 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     public List<Product> searchProductsByTopTags(final Long tagId, final Long lastProductId, final Pageable pageable) {
         final String jpql = """
                 SELECT DISTINCT p
-                FROM Product p
-                WHERE p.id < :lastProductId
-                AND p.id IN (
-                    SELECT p2.id
-                    FROM Product p2
-                    JOIN p2.reviews r2
-                    JOIN r2.reviewTags rt2
-                    WHERE rt2.tag.id = :tagId
-                    AND rt2.tag.id IN (
-                        SELECT rt3.tag.id
-                        FROM Review r3
-                        JOIN r3.reviewTags rt3
-                        WHERE r3.product.id = p2.id
-                        GROUP BY rt3.tag.id
-                        ORDER BY COUNT(rt3.tag.id) DESC
-                        LIMIT 3
-                    )
-                    GROUP BY p2.id
-                    HAVING COUNT(DISTINCT rt2.tag.id) <= 3
-                )
-                ORDER BY p.id DESC
+                  FROM Product p
+                  JOIN p.reviews r
+                  JOIN r.reviewTags rt
+                  JOIN (
+                      SELECT rt2.tag.id AS tagId
+                      FROM ReviewTag rt2
+                      GROUP BY rt2.tag.id
+                      ORDER BY COUNT(rt2.tag.id) DESC
+                      LIMIT 3
+                  ) AS topTags
+                  ON rt.tag.id = topTags.tagId
+                  WHERE rt.tag.id = :tagId
+                  AND p.id < :lastProductId
+                  ORDER BY p.id DESC
                 """;
 
         final TypedQuery<Product> query = entityManager.createQuery(jpql, Product.class);
