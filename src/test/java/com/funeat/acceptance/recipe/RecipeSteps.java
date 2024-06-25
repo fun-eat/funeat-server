@@ -88,8 +88,8 @@ public class RecipeSteps {
         }
     }
 
-    public static ExtractableResponse<Response> 레시피_북마크_요청(final String loginCookie, final Long recipeId,
-                                                           final RecipeBookmarkRequest request) {
+    public static ExtractableResponse<Response> 레시피_저장_요청(final String loginCookie, final Long recipeId,
+                                                          final RecipeBookmarkRequest request) {
         return given()
                 .cookie("SESSION", loginCookie)
                 .contentType("application/json")

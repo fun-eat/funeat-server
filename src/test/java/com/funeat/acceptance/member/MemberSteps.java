@@ -72,7 +72,7 @@ public class MemberSteps {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 사용자_북마크한_꿀조합_조회_요청(final String loginCookie, final Long page) {
+    public static ExtractableResponse<Response> 사용자_저장한_꿀조합_조회_요청(final String loginCookie, final Long page) {
         return given()
                 .when()
                 .cookie("SESSION", loginCookie)

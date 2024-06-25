@@ -19,11 +19,11 @@ import static com.funeat.fixture.ProductFixture.상품_삼각김밥_가격2000�
 import static com.funeat.fixture.ProductFixture.상품_삼각김밥_가격3000원_평점4점_생성;
 import static com.funeat.fixture.RecipeFixture.레시피_생성;
 import static com.funeat.fixture.RecipeFixture.레시피_좋아요_생성;
-import static com.funeat.fixture.RecipeFixture.레시피북마크요청_생성;
+import static com.funeat.fixture.RecipeFixture.레시피저장요청_생성;
 import static com.funeat.fixture.RecipeFixture.레시피이미지_생성;
 import static com.funeat.fixture.RecipeFixture.레시피좋아요요청_생성;
 import static com.funeat.fixture.RecipeFixture.레시피추가요청_생성;
-import static com.funeat.fixture.RecipeFixture.북마크O;
+import static com.funeat.fixture.RecipeFixture.저장O;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -676,7 +676,7 @@ class RecipeServiceTest extends ServiceTest {
     class bookmarkRecipe_성공_테스트 {
 
         @Test
-        void 꿀조합에_북마크를_할_수_있다() {
+        void 꿀조합을_저장할_수_있다() {
             // given
             final var category = 카테고리_간편식사_생성();
             단일_카테고리_저장(category);
@@ -698,7 +698,7 @@ class RecipeServiceTest extends ServiceTest {
             final var recipeId = recipeService.create(authorId, images, createRequest);
 
             // when
-            final var bookmarkRequest = 레시피북마크요청_생성(true);
+            final var bookmarkRequest = 레시피저장요청_생성(true);
             recipeService.bookmarkRecipe(memberId, recipeId, bookmarkRequest);
 
             final var actualRecipe = recipeRepository.findById(recipeId).get();
@@ -709,7 +709,7 @@ class RecipeServiceTest extends ServiceTest {
         }
 
         @Test
-        void 꿀조합에_북마크를_취소할_수_있다() {
+        void 저장한_꿀조합을_저장취소할_수_있다() {
             // given
             final var category = 카테고리_간편식사_생성();
             단일_카테고리_저장(category);
@@ -730,11 +730,11 @@ class RecipeServiceTest extends ServiceTest {
             final var createRequest = 레시피추가요청_생성(productIds);
             final var recipeId = recipeService.create(authorId, images, createRequest);
 
-            final var bookmarkRequest = 레시피북마크요청_생성(true);
+            final var bookmarkRequest = 레시피저장요청_생성(true);
             recipeService.bookmarkRecipe(memberId, recipeId, bookmarkRequest);
 
             // when
-            final var cancelBookmarkRequest = 레시피북마크요청_생성(false);
+            final var cancelBookmarkRequest = 레시피저장요청_생성(false);
             recipeService.bookmarkRecipe(memberId, recipeId, cancelBookmarkRequest);
 
             final var actualRecipe = recipeRepository.findById(recipeId).get();
@@ -749,7 +749,7 @@ class RecipeServiceTest extends ServiceTest {
     class bookmarkRecipe_실패_테스트 {
 
         @Test
-        void 존재하지_않는_멤버가_레시피에_북마크를_하면_예외가_발생한다() {
+        void 존재하지_않는_멤버가_레시피를_저장하면_예외가_발생한다() {
             // given
             final var category = 카테고리_간편식사_생성();
             단일_카테고리_저장(category);
@@ -770,13 +770,13 @@ class RecipeServiceTest extends ServiceTest {
             final var recipeId = recipeService.create(authorId, images, createRequest);
 
             // when & then
-            final var bookmarkRequest = 레시피북마크요청_생성(true);
+            final var bookmarkRequest = 레시피저장요청_생성(true);
             assertThatThrownBy(() -> recipeService.bookmarkRecipe(wrongMemberId, recipeId, bookmarkRequest))
                     .isInstanceOf(MemberNotFoundException.class);
         }
 
         @Test
-        void 멤버가_존재하지_않는_레시피에_북마크를_하면_예외가_발생한다() {
+        void 멤버가_존재하지_않는_레시피를_저장하면_예외가_발생한다() {
             // given
             final var member = 멤버_멤버1_생성();
             final var memberId = 단일_멤버_저장(member);
@@ -784,7 +784,7 @@ class RecipeServiceTest extends ServiceTest {
             final var wrongRecipeId = 999L;
 
             // when & then
-            final var bookmarkRequest = 레시피북마크요청_생성(true);
+            final var bookmarkRequest = 레시피저장요청_생성(true);
             assertThatThrownBy(() -> recipeService.bookmarkRecipe(memberId, wrongRecipeId, bookmarkRequest))
                     .isInstanceOf(RecipeNotFoundException.class);
         }
@@ -814,7 +814,7 @@ class RecipeServiceTest extends ServiceTest {
             final var productRecipe2 = 레시피_안에_들어가는_상품_생성(product2, recipe2);
             복수_꿀조합_상품_저장(productRecipe1, productRecipe2);
 
-            final var request = 레시피북마크요청_생성(북마크O);
+            final var request = 레시피저장요청_생성(저장O);
             recipeService.bookmarkRecipe(member1.getId(), recipe2.getId(), request);
 
             final var page = 페이지요청_생성(0, 10, 최신순, 아이디_내림차순);
