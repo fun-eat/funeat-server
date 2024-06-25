@@ -62,6 +62,8 @@ import static com.funeat.fixture.RecipeFixture.레시피_제목;
 import static com.funeat.fixture.RecipeFixture.레시피북마크요청_생성;
 import static com.funeat.fixture.RecipeFixture.레시피좋아요요청_생성;
 import static com.funeat.fixture.RecipeFixture.레시피추가요청_생성;
+import static com.funeat.fixture.RecipeFixture.북마크O;
+import static com.funeat.fixture.RecipeFixture.북마크X;
 import static com.funeat.fixture.RecipeFixture.존재하지_않는_레시피;
 import static com.funeat.fixture.RecipeFixture.좋아요O;
 import static com.funeat.fixture.RecipeFixture.좋아요X;
@@ -388,7 +390,7 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
 
             // when
-            final var 응답 = 레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피북마크요청_생성(좋아요O));
+            final var 응답 = 레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피북마크요청_생성(북마크O));
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리_NO_CONTENT);
@@ -402,10 +404,10 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             final var 상품 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점1점_생성(카테고리));
 
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
-            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피북마크요청_생성(좋아요O));
+            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피북마크요청_생성(북마크O));
 
             // when
-            final var 응답 = 레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피북마크요청_생성(좋아요X));
+            final var 응답 = 레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피북마크요청_생성(북마크X));
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리_NO_CONTENT);
@@ -426,7 +428,7 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
 
             // when
-            final var 응답 = 레시피_북마크_요청(cookie, 레시피, 레시피북마크요청_생성(좋아요O));
+            final var 응답 = 레시피_북마크_요청(cookie, 레시피, 레시피북마크요청_생성(북마크O));
 
             // then
             STATUS_CODE를_검증한다(응답, 인증되지_않음);
@@ -455,7 +457,7 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
         @Test
         void 존재하지_않는_레시피에_사용자가_저장할_때_예외가_발생한다() {
             // given & when
-            final var 응답 = 레시피_북마크_요청(로그인_쿠키_획득(멤버1), 존재하지_않는_레시피, 레시피북마크요청_생성(좋아요O));
+            final var 응답 = 레시피_북마크_요청(로그인_쿠키_획득(멤버1), 존재하지_않는_레시피, 레시피북마크요청_생성(북마크O));
 
             // then
             STATUS_CODE를_검증한다(응답, 찾을수_없음);
