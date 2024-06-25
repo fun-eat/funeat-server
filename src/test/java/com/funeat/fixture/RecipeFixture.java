@@ -74,8 +74,8 @@ public class RecipeFixture {
         return new RecipeFavoriteRequest(favorite);
     }
 
-    public static RecipeBookmarkRequest 레시피북마크요청_생성(final Boolean favorite) {
-        return new RecipeBookmarkRequest(favorite);
+    public static RecipeBookmarkRequest 레시피북마크요청_생성(final Boolean bookmark) {
+        return new RecipeBookmarkRequest(bookmark);
     }
 
     public static RecipeImage 레시피이미지_생성(final Recipe recipe) {
