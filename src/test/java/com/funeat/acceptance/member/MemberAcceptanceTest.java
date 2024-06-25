@@ -13,10 +13,10 @@ import static com.funeat.acceptance.common.CommonSteps.페이지를_검증한다
 import static com.funeat.acceptance.member.MemberSteps.리뷰_삭제_요청;
 import static com.funeat.acceptance.member.MemberSteps.사용자_꿀조합_조회_요청;
 import static com.funeat.acceptance.member.MemberSteps.사용자_리뷰_조회_요청;
-import static com.funeat.acceptance.member.MemberSteps.사용자_북마크한_꿀조합_조회_요청;
+import static com.funeat.acceptance.member.MemberSteps.사용자_저장한_꿀조합_조회_요청;
 import static com.funeat.acceptance.member.MemberSteps.사용자_정보_수정_요청;
 import static com.funeat.acceptance.member.MemberSteps.사용자_정보_조회_요청;
-import static com.funeat.acceptance.recipe.RecipeSteps.레시피_북마크_요청;
+import static com.funeat.acceptance.recipe.RecipeSteps.레시피_저장_요청;
 import static com.funeat.acceptance.recipe.RecipeSteps.레시피_작성_요청;
 import static com.funeat.acceptance.review.ReviewSteps.리뷰_작성_요청;
 import static com.funeat.auth.exception.AuthErrorCode.LOGIN_MEMBER_NOT_FOUND;
@@ -43,10 +43,10 @@ import static com.funeat.fixture.RecipeFixture.레시피;
 import static com.funeat.fixture.RecipeFixture.레시피1;
 import static com.funeat.fixture.RecipeFixture.레시피2;
 import static com.funeat.fixture.RecipeFixture.레시피3;
-import static com.funeat.fixture.RecipeFixture.레시피북마크요청_생성;
+import static com.funeat.fixture.RecipeFixture.레시피저장요청_생성;
 import static com.funeat.fixture.RecipeFixture.레시피추가요청_생성;
-import static com.funeat.fixture.RecipeFixture.북마크O;
-import static com.funeat.fixture.RecipeFixture.북마크X;
+import static com.funeat.fixture.RecipeFixture.저장O;
+import static com.funeat.fixture.RecipeFixture.저장X;
 import static com.funeat.fixture.ReviewFixture.리뷰1;
 import static com.funeat.fixture.ReviewFixture.리뷰2;
 import static com.funeat.fixture.ReviewFixture.리뷰추가요청_재구매O_생성;
@@ -416,12 +416,12 @@ public class MemberAcceptanceTest extends AcceptanceTest {
             final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(0L), 총_페이지(0L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
 
             // when
-            final var 응답 = 사용자_북마크한_꿀조합_조회_요청(로그인_쿠키_획득(멤버1), FIRST_PAGE);
+            final var 응답 = 사용자_저장한_꿀조합_조회_요청(로그인_쿠키_획득(멤버1), FIRST_PAGE);
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
             페이지를_검증한다(응답, 예상_응답_페이지);
-            사용자_북마크한_꿀조합_조회_결과를_검증한다(응답, Collections.emptyList());
+            사용자_저장한_꿀조합_조회_결과를_검증한다(응답, Collections.emptyList());
         }
 
         @Test
@@ -435,18 +435,18 @@ public class MemberAcceptanceTest extends AcceptanceTest {
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지2), 레시피추가요청_생성(상품));
             레시피_작성_요청(로그인_쿠키_획득(멤버2), 여러개_사진_명세_요청(이미지3), 레시피추가요청_생성(상품));
 
-            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피1, 레시피북마크요청_생성(북마크O));
-            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피3, 레시피북마크요청_생성(북마크O));
+            레시피_저장_요청(로그인_쿠키_획득(멤버1), 레시피1, 레시피저장요청_생성(저장O));
+            레시피_저장_요청(로그인_쿠키_획득(멤버1), 레시피3, 레시피저장요청_생성(저장O));
 
             final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(2L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
 
             // when
-            final var 응답 = 사용자_북마크한_꿀조합_조회_요청(로그인_쿠키_획득(멤버1), FIRST_PAGE);
+            final var 응답 = 사용자_저장한_꿀조합_조회_요청(로그인_쿠키_획득(멤버1), FIRST_PAGE);
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
             페이지를_검증한다(응답, 예상_응답_페이지);
-            사용자_북마크한_꿀조합_조회_결과를_검증한다(응답, List.of(레시피3, 레시피1));
+            사용자_저장한_꿀조합_조회_결과를_검증한다(응답, List.of(레시피3, 레시피1));
         }
 
         @Test
@@ -459,20 +459,20 @@ public class MemberAcceptanceTest extends AcceptanceTest {
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
             레시피_작성_요청(로그인_쿠키_획득(멤버2), 여러개_사진_명세_요청(이미지2), 레시피추가요청_생성(상품));
 
-            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피1, 레시피북마크요청_생성(북마크O));
-            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피2, 레시피북마크요청_생성(북마크O));
+            레시피_저장_요청(로그인_쿠키_획득(멤버1), 레시피1, 레시피저장요청_생성(저장O));
+            레시피_저장_요청(로그인_쿠키_획득(멤버1), 레시피2, 레시피저장요청_생성(저장O));
 
-            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피1, 레시피북마크요청_생성(북마크X));
+            레시피_저장_요청(로그인_쿠키_획득(멤버1), 레시피1, 레시피저장요청_생성(저장X));
 
             final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(1L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
 
             // when
-            final var 응답 = 사용자_북마크한_꿀조합_조회_요청(로그인_쿠키_획득(멤버1), FIRST_PAGE);
+            final var 응답 = 사용자_저장한_꿀조합_조회_요청(로그인_쿠키_획득(멤버1), FIRST_PAGE);
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
             페이지를_검증한다(응답, 예상_응답_페이지);
-            사용자_북마크한_꿀조합_조회_결과를_검증한다(응답, List.of(레시피2));
+            사용자_저장한_꿀조합_조회_결과를_검증한다(응답, List.of(레시피2));
         }
 
         @Test
@@ -483,17 +483,17 @@ public class MemberAcceptanceTest extends AcceptanceTest {
             final var 상품 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점5점_생성(카테고리));
 
             레시피_작성_요청(로그인_쿠키_획득(멤버1), null, 레시피추가요청_생성(상품));
-            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피1, 레시피북마크요청_생성(북마크O));
+            레시피_저장_요청(로그인_쿠키_획득(멤버1), 레시피1, 레시피저장요청_생성(저장O));
 
             final var 예상_응답_페이지 = 응답_페이지_생성(총_데이터_개수(1L), 총_페이지(1L), 첫페이지O, 마지막페이지O, FIRST_PAGE, PAGE_SIZE);
 
             // when
-            final var 응답 = 사용자_북마크한_꿀조합_조회_요청(로그인_쿠키_획득(멤버1), FIRST_PAGE);
+            final var 응답 = 사용자_저장한_꿀조합_조회_요청(로그인_쿠키_획득(멤버1), FIRST_PAGE);
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리);
             페이지를_검증한다(응답, 예상_응답_페이지);
-            사용자_북마크한_꿀조합_조회_결과를_검증한다(응답, List.of(레시피));
+            사용자_저장한_꿀조합_조회_결과를_검증한다(응답, List.of(레시피));
             조회한_꿀조합의_이미지가_없는지_확인한다(응답);
         }
     }
@@ -505,7 +505,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         @NullAndEmptySource
         void 로그인하지_않은_사용자가_저장한_꿀조합을_조회할때_예외가_발생한다(final String cookie) {
             // given & when
-            final var 응답 = 사용자_북마크한_꿀조합_조회_요청(cookie, FIRST_PAGE);
+            final var 응답 = 사용자_저장한_꿀조합_조회_요청(cookie, FIRST_PAGE);
 
             // then
             STATUS_CODE를_검증한다(응답, 인증되지_않음);
@@ -570,8 +570,8 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(actual).isNull();
     }
 
-    private void 사용자_북마크한_꿀조합_조회_결과를_검증한다(final ExtractableResponse<Response> response,
-                                          final List<Long> recipeIds) {
+    private void 사용자_저장한_꿀조합_조회_결과를_검증한다(final ExtractableResponse<Response> response,
+                                         final List<Long> recipeIds) {
         final var actual = response.jsonPath()
                 .getList("recipes", MemberBookmarkRecipeDto.class);
 

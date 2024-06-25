@@ -198,7 +198,7 @@ public abstract class RepositoryTest {
         recipeFavoriteRepository.save(recipeFavorite);
     }
 
-    protected void 복수_레시피_북마크_저장(final RecipeBookmark... recipeBookmarksToSave) {
+    protected void 복수_저장한_레시피_저장(final RecipeBookmark... recipeBookmarksToSave) {
         final var recipeBookmarks = List.of(recipeBookmarksToSave);
 
         recipeBookmarkRepository.saveAll(recipeBookmarks);

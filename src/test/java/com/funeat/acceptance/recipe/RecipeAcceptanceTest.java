@@ -15,7 +15,7 @@ import static com.funeat.acceptance.recipe.RecipeSteps.레시피_댓글_작성_�
 import static com.funeat.acceptance.recipe.RecipeSteps.레시피_댓글_조회_요청;
 import static com.funeat.acceptance.recipe.RecipeSteps.레시피_랭킹_조회_요청;
 import static com.funeat.acceptance.recipe.RecipeSteps.레시피_목록_요청;
-import static com.funeat.acceptance.recipe.RecipeSteps.레시피_북마크_요청;
+import static com.funeat.acceptance.recipe.RecipeSteps.레시피_저장_요청;
 import static com.funeat.acceptance.recipe.RecipeSteps.레시피_상세_정보_요청;
 import static com.funeat.acceptance.recipe.RecipeSteps.레시피_작성_요청;
 import static com.funeat.acceptance.recipe.RecipeSteps.레시피_좋아요_요청;
@@ -59,11 +59,11 @@ import static com.funeat.fixture.RecipeFixture.레시피8;
 import static com.funeat.fixture.RecipeFixture.레시피9;
 import static com.funeat.fixture.RecipeFixture.레시피_본문;
 import static com.funeat.fixture.RecipeFixture.레시피_제목;
-import static com.funeat.fixture.RecipeFixture.레시피북마크요청_생성;
+import static com.funeat.fixture.RecipeFixture.레시피저장요청_생성;
 import static com.funeat.fixture.RecipeFixture.레시피좋아요요청_생성;
 import static com.funeat.fixture.RecipeFixture.레시피추가요청_생성;
-import static com.funeat.fixture.RecipeFixture.북마크O;
-import static com.funeat.fixture.RecipeFixture.북마크X;
+import static com.funeat.fixture.RecipeFixture.저장O;
+import static com.funeat.fixture.RecipeFixture.저장X;
 import static com.funeat.fixture.RecipeFixture.존재하지_않는_레시피;
 import static com.funeat.fixture.RecipeFixture.좋아요O;
 import static com.funeat.fixture.RecipeFixture.좋아요X;
@@ -381,7 +381,7 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
     class bookmarkRecipe_성공_테스트 {
 
         @Test
-        void 레시피에_북마크를_할_수_있다() {
+        void 레시피_저장을_할_수_있다() {
             // given
             final var 카테고리 = 카테고리_간편식사_생성();
             단일_카테고리_저장(카테고리);
@@ -390,24 +390,24 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
 
             // when
-            final var 응답 = 레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피북마크요청_생성(북마크O));
+            final var 응답 = 레시피_저장_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피저장요청_생성(저장O));
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리_NO_CONTENT);
         }
 
         @Test
-        void 레시피예_북마크를_취소할_수_있다() {
+        void 레시피_저장을_취소할_수_있다() {
             // given
             final var 카테고리 = 카테고리_간편식사_생성();
             단일_카테고리_저장(카테고리);
             final var 상품 = 단일_상품_저장(상품_삼각김밥_가격1000원_평점1점_생성(카테고리));
 
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
-            레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피북마크요청_생성(북마크O));
+            레시피_저장_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피저장요청_생성(저장O));
 
             // when
-            final var 응답 = 레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피북마크요청_생성(북마크X));
+            final var 응답 = 레시피_저장_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피저장요청_생성(저장X));
 
             // then
             STATUS_CODE를_검증한다(응답, 정상_처리_NO_CONTENT);
@@ -428,7 +428,7 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
 
             // when
-            final var 응답 = 레시피_북마크_요청(cookie, 레시피, 레시피북마크요청_생성(북마크O));
+            final var 응답 = 레시피_저장_요청(cookie, 레시피, 레시피저장요청_생성(저장O));
 
             // then
             STATUS_CODE를_검증한다(응답, 인증되지_않음);
@@ -446,18 +446,18 @@ public class RecipeAcceptanceTest extends AcceptanceTest {
             레시피_작성_요청(로그인_쿠키_획득(멤버1), 여러개_사진_명세_요청(이미지1), 레시피추가요청_생성(상품));
 
             // when
-            final var 응답 = 레시피_북마크_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피북마크요청_생성(null));
+            final var 응답 = 레시피_저장_요청(로그인_쿠키_획득(멤버1), 레시피, 레시피저장요청_생성(null));
 
             // then
             STATUS_CODE를_검증한다(응답, 잘못된_요청);
             RESPONSE_CODE와_MESSAGE를_검증한다(응답, REQUEST_VALID_ERROR_CODE.getCode(),
-                    "북마크를 확인해주세요. " + REQUEST_VALID_ERROR_CODE.getMessage());
+                    "레시피 저장 기능을 확인해주세요. " + REQUEST_VALID_ERROR_CODE.getMessage());
         }
 
         @Test
         void 존재하지_않는_레시피에_사용자가_저장할_때_예외가_발생한다() {
             // given & when
-            final var 응답 = 레시피_북마크_요청(로그인_쿠키_획득(멤버1), 존재하지_않는_레시피, 레시피북마크요청_생성(북마크O));
+            final var 응답 = 레시피_저장_요청(로그인_쿠키_획득(멤버1), 존재하지_않는_레시피, 레시피저장요청_생성(저장O));
 
             // then
             STATUS_CODE를_검증한다(응답, 찾을수_없음);

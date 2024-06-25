@@ -30,8 +30,8 @@ public class RecipeFixture {
 
     public static final boolean 좋아요O = true;
     public static final boolean 좋아요X = false;
-    public static final boolean 북마크O = true;
-    public static final boolean 북마크X = false;
+    public static final boolean 저장O = true;
+    public static final boolean 저장X = false;
 
     public static final String 레시피_제목 = "The most delicious recipes";
     public static final String 레시피_본문 = "More rice, more rice, more rice.. Done!!";
@@ -54,7 +54,7 @@ public class RecipeFixture {
         return new RecipeFavorite(member, recipe, favorite);
     }
 
-    public static RecipeBookmark 레시피_북마크_생성(final Member member, final Recipe recipe, final Boolean bookmark) {
+    public static RecipeBookmark 레시피_저장_생성(final Member member, final Recipe recipe, final Boolean bookmark) {
         return new RecipeBookmark(member, recipe, bookmark);
     }
 
@@ -74,7 +74,7 @@ public class RecipeFixture {
         return new RecipeFavoriteRequest(favorite);
     }
 
-    public static RecipeBookmarkRequest 레시피북마크요청_생성(final Boolean bookmark) {
+    public static RecipeBookmarkRequest 레시피저장요청_생성(final Boolean bookmark) {
         return new RecipeBookmarkRequest(bookmark);
     }
 
